@@ -1,0 +1,1 @@
+UPDATE public.profiles SET avatar_url = 'https://jqaqmuvkfqqgncgushng.supabase.co/storage/v1/object/public/avatars/695beb27-a85a-4a55-a322-b755768bc347/avatar.jpeg?t=' || extract(epoch from now())::bigint::text WHERE email = 'aduamankwahpeniel@gmail.com';

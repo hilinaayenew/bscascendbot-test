@@ -1,0 +1,28 @@
+{
+  "name": "Ascendency — The African Mentorship Platform",
+  "short_name": "Ascendency",
+  "description": "A trusted mentorship ecosystem connecting ambitious Africans with world-class guidance.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#5C0A1A",
+  "background_color": "#5C0A1A",
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

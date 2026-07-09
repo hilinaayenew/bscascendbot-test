@@ -1,0 +1,1 @@
+ALTER TABLE public.mentor_details ADD COLUMN meeting_link text DEFAULT NULL;

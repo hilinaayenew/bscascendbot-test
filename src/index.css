@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Because She Can / Ascendency Brand System */
+    --brand-maroon: 320 80% 18%;       /* Deep maroon #4B0A2D */
+    --brand-crimson: 348 87% 43%;      /* Crimson red #C8102E */
+    --brand-crimson-hover: 348 87% 37%;
+
+    --background: 0 0% 100%;
+    --foreground: 320 80% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 320 80% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 320 80% 12%;
+
+    --primary: 348 87% 43%;            /* Crimson red */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 320 80% 18%;          /* Deep maroon */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 320 80% 18%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 348 87% 43%;
+
+    --radius: 0.375rem;
+
+    /* Extended palette */
+    --crimson-light: 348 87% 95%;
+    --maroon-light: 320 40% 95%;
+    --warm-gray: 0 0% 97%;
+
+    /* Shadows */
+    --shadow-card: 0 4px 24px -4px rgba(75, 10, 45, 0.12);
+    --shadow-elevated: 0 12px 40px -8px rgba(75, 10, 45, 0.18);
+
+    /* Hero overlay */
+    --hero-overlay: linear-gradient(to right, rgba(75, 10, 45, 0.7) 0%, rgba(75, 10, 45, 0.25) 70%, transparent 100%);
+
+    /* Announcement bar */
+    --announcement-bg: 320 80% 18%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Sora', sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-body {
+    font-family: 'Sora', sans-serif;
+  }
+
+  /* Sora weight helpers */
+  .sora-light     { font-family: 'Sora', sans-serif; font-weight: 300; }
+  .sora-regular   { font-family: 'Sora', sans-serif; font-weight: 400; }
+  .sora-medium    { font-family: 'Sora', sans-serif; font-weight: 500; }
+  .sora-semibold  { font-family: 'Sora', sans-serif; font-weight: 600; }
+  .sora-bold      { font-family: 'Sora', sans-serif; font-weight: 700; }
+  .sora-extrabold { font-family: 'Sora', sans-serif; font-weight: 800; }
+
+  /* Hero overlay */
+  .hero-overlay {
+    background: var(--hero-overlay);
+  }
+
+  /* Section alternating backgrounds */
+  .section-warm {
+    background-color: hsl(var(--warm-gray));
+  }
+
+  .section-maroon-light {
+    background-color: hsl(var(--maroon-light));
+  }
+
+  /* Fade in up */
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.7s ease-out forwards;
+  }
+
+  /* Stagger children */
+  .stagger-children > * {
+    opacity: 0;
+    animation: fade-in-up 0.6s ease-out forwards;
+  }
+  .stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+  .stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+  .stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+  .stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+  .stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+  .stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+
+  /* Slide transition */
+  .slide-enter {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  .slide-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  /* Hide scrollbar */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}

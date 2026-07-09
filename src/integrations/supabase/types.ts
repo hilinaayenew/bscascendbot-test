@@ -1,0 +1,1136 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.4"
+  }
+  public: {
+    Tables: {
+      account_deletions_log: {
+        Row: {
+          created_at: string
+          deleted_email: string
+          deleted_user_role: string
+          email_blocked: boolean
+          id: string
+          initiated_by: string
+          initiated_by_admin_id: string | null
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          deleted_email: string
+          deleted_user_role: string
+          email_blocked?: boolean
+          id?: string
+          initiated_by?: string
+          initiated_by_admin_id?: string | null
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          deleted_email?: string
+          deleted_user_role?: string
+          email_blocked?: boolean
+          id?: string
+          initiated_by?: string
+          initiated_by_admin_id?: string | null
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      blocked_emails: {
+        Row: {
+          blocked_by: string
+          created_at: string
+          email: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_by: string
+          created_at?: string
+          email: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_by?: string
+          created_at?: string
+          email?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      booking_slots: {
+        Row: {
+          created_at: string
+          duration_minutes: number
+          id: string
+          mentor_id: string
+          slot_end: string
+          slot_start: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          mentor_id: string
+          slot_end: string
+          slot_start: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          mentor_id?: string
+          slot_end?: string
+          slot_start?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          booker_id: string
+          booking_date: string
+          cancel_token: string | null
+          created_at: string
+          end_time: string
+          id: string
+          mentor_id: string
+          notes: string | null
+          reminder_sent: boolean | null
+          slot_id: string | null
+          start_time: string
+          status: string
+          timezone: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          booker_id: string
+          booking_date: string
+          cancel_token?: string | null
+          created_at?: string
+          end_time: string
+          id?: string
+          mentor_id: string
+          notes?: string | null
+          reminder_sent?: boolean | null
+          slot_id?: string | null
+          start_time: string
+          status?: string
+          timezone?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          booker_id?: string
+          booking_date?: string
+          cancel_token?: string | null
+          created_at?: string
+          end_time?: string
+          id?: string
+          mentor_id?: string
+          notes?: string | null
+          reminder_sent?: boolean | null
+          slot_id?: string | null
+          start_time?: string
+          status?: string
+          timezone?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "booking_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_checklist_items: {
+        Row: {
+          course_id: string
+          created_at: string
+          description: string | null
+          id: string
+          resource_url: string | null
+          sort_order: number
+          target_role: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          resource_url?: string | null
+          sort_order?: number
+          target_role?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          resource_url?: string | null
+          sort_order?: number
+          target_role?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_checklist_items_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_item_completions: {
+        Row: {
+          completed_at: string
+          course_id: string
+          id: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          course_id: string
+          id?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          course_id?: string
+          id?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_item_completions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_item_completions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "course_checklist_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_progress: {
+        Row: {
+          completed_modules: string[]
+          course_id: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_modules?: string[]
+          course_id: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_modules?: string[]
+          course_id?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          audience: string
+          cohort_label: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          published: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          cohort_label?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          published?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          cohort_label?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          published?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      discount_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          redeemed_at: string | null
+          redeemed_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+        }
+        Relationships: []
+      }
+      email_send_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          message_id: string | null
+          metadata: Json | null
+          recipient_email: string
+          status: string
+          template_name: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          recipient_email: string
+          status: string
+          template_name: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          recipient_email?: string
+          status?: string
+          template_name?: string
+        }
+        Relationships: []
+      }
+      email_send_state: {
+        Row: {
+          auth_email_ttl_minutes: number
+          batch_size: number
+          id: number
+          retry_after_until: string | null
+          send_delay_ms: number
+          transactional_email_ttl_minutes: number
+          updated_at: string
+        }
+        Insert: {
+          auth_email_ttl_minutes?: number
+          batch_size?: number
+          id?: number
+          retry_after_until?: string | null
+          send_delay_ms?: number
+          transactional_email_ttl_minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          auth_email_ttl_minutes?: number
+          batch_size?: number
+          id?: number
+          retry_after_until?: string | null
+          send_delay_ms?: number
+          transactional_email_ttl_minutes?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_unsubscribe_tokens: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          token: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
+      goals: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          pairing_id: string
+          target_date: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          pairing_id: string
+          target_date?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          pairing_id?: string
+          target_date?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_pairing_id_fkey"
+            columns: ["pairing_id"]
+            isOneToOne: false
+            referencedRelation: "pairings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentor_availability: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          mentor_id: string
+          start_time: string
+          timezone: string | null
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          mentor_id: string
+          start_time: string
+          timezone?: string | null
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          mentor_id?: string
+          start_time?: string
+          timezone?: string | null
+        }
+        Relationships: []
+      }
+      mentor_blocked_dates: {
+        Row: {
+          blocked_date: string
+          created_at: string
+          id: string
+          mentor_id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_date: string
+          created_at?: string
+          id?: string
+          mentor_id: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_date?: string
+          created_at?: string
+          id?: string
+          mentor_id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      mentor_booking_settings: {
+        Row: {
+          buffer_minutes: number
+          created_at: string
+          id: string
+          max_bookings_per_day: number
+          mentor_id: string
+          minimum_notice: string
+          session_duration: number
+          updated_at: string
+        }
+        Insert: {
+          buffer_minutes?: number
+          created_at?: string
+          id?: string
+          max_bookings_per_day?: number
+          mentor_id: string
+          minimum_notice?: string
+          session_duration?: number
+          updated_at?: string
+        }
+        Update: {
+          buffer_minutes?: number
+          created_at?: string
+          id?: string
+          max_bookings_per_day?: number
+          mentor_id?: string
+          minimum_notice?: string
+          session_duration?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mentor_details: {
+        Row: {
+          admin_notes: string | null
+          approval_status: Database["public"]["Enums"]["approval_status"]
+          availability: Json | null
+          created_at: string
+          hourly_rate: number | null
+          id: string
+          meeting_link: string | null
+          specializations: string[] | null
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          approval_status?: Database["public"]["Enums"]["approval_status"]
+          availability?: Json | null
+          created_at?: string
+          hourly_rate?: number | null
+          id?: string
+          meeting_link?: string | null
+          specializations?: string[] | null
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          admin_notes?: string | null
+          approval_status?: Database["public"]["Enums"]["approval_status"]
+          availability?: Json | null
+          created_at?: string
+          hourly_rate?: number | null
+          id?: string
+          meeting_link?: string | null
+          specializations?: string[] | null
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          pairing_id: string | null
+          read: boolean | null
+          receiver_id: string
+          reminders_sent: number
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          pairing_id?: string | null
+          read?: boolean | null
+          receiver_id: string
+          reminders_sent?: number
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          pairing_id?: string | null
+          read?: boolean | null
+          receiver_id?: string
+          reminders_sent?: number
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_pairing_id_fkey"
+            columns: ["pairing_id"]
+            isOneToOne: false
+            referencedRelation: "pairings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pairings: {
+        Row: {
+          admin_approved: boolean | null
+          ai_match_reason: string | null
+          ai_match_score: number | null
+          created_at: string
+          id: string
+          matched_by: string | null
+          mentee_id: string
+          mentor_id: string
+          status: Database["public"]["Enums"]["pairing_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_approved?: boolean | null
+          ai_match_reason?: string | null
+          ai_match_score?: number | null
+          created_at?: string
+          id?: string
+          matched_by?: string | null
+          mentee_id: string
+          mentor_id: string
+          status?: Database["public"]["Enums"]["pairing_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_approved?: boolean | null
+          ai_match_reason?: string | null
+          ai_match_score?: number | null
+          created_at?: string
+          id?: string
+          matched_by?: string | null
+          mentee_id?: string
+          mentor_id?: string
+          status?: Database["public"]["Enums"]["pairing_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          expertise: string[] | null
+          full_name: string
+          id: string
+          interests: string[] | null
+          linkedin_url: string | null
+          pathway_level: string | null
+          phone: string | null
+          portfolio_url: string | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          expertise?: string[] | null
+          full_name?: string
+          id?: string
+          interests?: string[] | null
+          linkedin_url?: string | null
+          pathway_level?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          expertise?: string[] | null
+          full_name?: string
+          id?: string
+          interests?: string[] | null
+          linkedin_url?: string | null
+          pathway_level?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      session_logs: {
+        Row: {
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          logged_by: string
+          notes: string | null
+          pairing_id: string
+          session_date: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          logged_by: string
+          notes?: string | null
+          pairing_id: string
+          session_date?: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          logged_by?: string
+          notes?: string | null
+          pairing_id?: string
+          session_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_logs_pairing_id_fkey"
+            columns: ["pairing_id"]
+            isOneToOne: false
+            referencedRelation: "pairings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppressed_emails: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          metadata: Json | null
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          metadata?: Json | null
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          metadata?: Json | null
+          reason?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workshops_sessions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          link: string | null
+          location: string | null
+          starts_at: string
+          title: string
+          type: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          link?: string | null
+          location?: string | null
+          starts_at: string
+          title: string
+          type?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          link?: string | null
+          location?: string | null
+          starts_at?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      profiles_directory: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          country: string | null
+          expertise: string[] | null
+          full_name: string | null
+          interests: string[] | null
+          pathway_level: string | null
+          role: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          country: string | null
+          created_at: string | null
+          expertise: string[] | null
+          full_name: string | null
+          interests: string[] | null
+          linkedin_url: string | null
+          pathway_level: string | null
+          portfolio_url: string | null
+          updated_at: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          expertise?: string[] | null
+          full_name?: string | null
+          interests?: string[] | null
+          linkedin_url?: string | null
+          pathway_level?: string | null
+          portfolio_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          expertise?: string[] | null
+          full_name?: string | null
+          interests?: string[] | null
+          linkedin_url?: string | null
+          pathway_level?: string | null
+          portfolio_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Functions: {
+      admin_get_invited_mentor_emails: {
+        Args: never
+        Returns: {
+          recipient_email: string
+        }[]
+      }
+      admin_get_profile_contacts: {
+        Args: { _user_ids: string[] }
+        Returns: {
+          email: string
+          full_name: string
+          phone: string
+          user_id: string
+        }[]
+      }
+      delete_email: {
+        Args: { message_id: number; queue_name: string }
+        Returns: boolean
+      }
+      delete_user_account: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
+      enqueue_email: {
+        Args: { payload: Json; queue_name: string }
+        Returns: number
+      }
+      generate_unique_username: { Args: { seed: string }; Returns: string }
+      get_mentors_last_sign_in: {
+        Args: never
+        Returns: {
+          last_sign_in_at: string
+          user_id: string
+        }[]
+      }
+      get_my_contact_info: {
+        Args: never
+        Returns: {
+          email: string
+          phone: string
+        }[]
+      }
+      get_my_mentor_meeting_link: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_email_blocked: { Args: { check_email: string }; Returns: boolean }
+      move_to_dlq: {
+        Args: {
+          dlq_name: string
+          message_id: number
+          payload: Json
+          source_queue: string
+        }
+        Returns: number
+      }
+      read_email_batch: {
+        Args: { batch_size: number; queue_name: string; vt: number }
+        Returns: {
+          message: Json
+          msg_id: number
+          read_ct: number
+        }[]
+      }
+      redeem_discount_code: { Args: { p_code: string }; Returns: Json }
+      send_system_message: {
+        Args: { p_content: string; p_receiver_id: string }
+        Returns: undefined
+      }
+      was_email_invited: { Args: { check_email: string }; Returns: boolean }
+    }
+    Enums: {
+      app_role: "admin" | "moderator" | "mentor" | "mentee"
+      approval_status: "pending" | "approved" | "rejected"
+      pairing_status: "pending" | "active" | "completed" | "cancelled"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      app_role: ["admin", "moderator", "mentor", "mentee"],
+      approval_status: ["pending", "approved", "rejected"],
+      pairing_status: ["pending", "active", "completed", "cancelled"],
+    },
+  },
+} as const

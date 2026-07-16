@@ -12,7 +12,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { BSCCoach } from "./bsc-coach.ts";
 import { BotemaCoach } from "./botema-coach.ts";
-import type { UserProfile, ConverserContext, AzureConfig, OAIMessage } from "./converser.ts";
+import type { UserProfile, ConverserContext, AzureConfig, AzureToolSchema, OAIMessage } from "./converser.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,66 +22,58 @@ const corsHeaders = {
 const AI_COACH_ID = "00000000-0000-0000-0000-000000000002";
 
 // ============================================================
-// KEYWORD ROUTER — fast, reliable routing without an extra AI call
+// AI ROUTER — the model picks which function to call via
+// Azure OpenAI function calling (tool_choice: required), using the
+// coach's own routing instructions and function schemas.
 // ============================================================
-function routeMessage(message: string, context: ConverserContext): { fnName: string; fnArgs: Record<string, unknown> } {
-  const m = message.toLowerCase().trim();
+async function routeWithAI(
+  instructions: string,
+  functionSchemas: AzureToolSchema[],
+  history: OAIMessage[],
+  message: string,
+  azureConfig: AzureConfig
+): Promise<{ fnName: string; fnArgs: Record<string, unknown>; debug?: string }> {
+  // If routing fails outright, decline rather than silently guessing a topic —
+  // answering the wrong domain in-voice is worse than asking the user to retry.
+  const fallback = { fnName: "answerOutOfScope", fnArgs: {} };
 
-  // Greeting — only pure greetings with no career content
-  if (/^(hi|hello|hey|good morning|good afternoon|good evening|howdy|hiya|sup|what's up|whats up)[\s!?.,']*$/.test(m)) {
-    return { fnName: "howCoachWorks", fnArgs: {} };
+  const url = `${azureConfig.endpoint}openai/deployments/${azureConfig.deployment}/chat/completions?api-version=${azureConfig.apiVersion}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "api-key": azureConfig.apiKey },
+    body: JSON.stringify({
+      messages: [
+        { role: "system", content: instructions },
+        ...history.slice(-6),
+        { role: "user", content: message },
+      ],
+      tools: functionSchemas,
+      tool_choice: "required",
+      parallel_tool_calls: false,
+      max_completion_tokens: 300,
+    }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    console.error("Azure OpenAI routing error:", data);
+    return { ...fallback, debug: `api_error: ${JSON.stringify(data).slice(0, 500)}` };
   }
 
-  // Mindset challenges
-  if (/imposter|don.t belong|dont belong|i don.t fit|feel like a fraud|not smart enough|not good enough|afraid (of|that)|scared|anxiety|anxious|burnout|burnt out|demotivat|unmotivat|lost (my )?motivation|no motivation|feel stuck|feel lost|feel overwhelm|losing hope|giving up|self.doubt|insecur|lack confidence/.test(m)) {
-    return { fnName: "addressMindsetChallenge", fnArgs: { challenge_type: "general" } };
+  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+  if (!toolCall) {
+    console.error("Azure OpenAI routing returned no tool call, finish_reason:", data.choices?.[0]?.finish_reason);
+    return { ...fallback, debug: `no_tool_call: finish_reason=${data.choices?.[0]?.finish_reason}` };
   }
 
-  // Background capture — only when message is long and shares substantial personal detail
-  if (
-    message.length > 120 &&
-    /\b(i am|i'm|i work(ed)?|my background|i studied|i graduated|years? of experience|i have \d|my goal is|i want to become|i currently)\b/.test(m)
-  ) {
-    return { fnName: "captureUserBackground", fnArgs: extractBackground(m) };
+  let fnArgs: Record<string, unknown> = {};
+  try {
+    fnArgs = JSON.parse(toolCall.function.arguments || "{}");
+  } catch {
+    fnArgs = {};
   }
 
-  // Everything else → topic advice (the main function)
-  return { fnName: "updateCareerTopic", fnArgs: { topic: extractTopic(m) } };
-}
-
-function extractTopic(m: string): string {
-  if (/cv|resume|cover letter/.test(m)) return "cv and job search";
-  if (/job search|job hunt|find(ing)? a job|job board|apply|application|linkedin/.test(m)) return "job search";
-  if (/interview|technical test|coding test|leetcode/.test(m)) return "interview preparation";
-  if (/salary|pay rise|pay raise|negotiat|compensation/.test(m)) return "salary negotiation";
-  if (/imposter|confidence|belong|motivat|burnout|mental|overwhelm/.test(m)) return "mindset";
-  if (/mentor|sponsor|bsc|pairing/.test(m)) return "mentorship";
-  if (/master|degree|certif|bootcamp|further study|scholarship/.test(m)) return "further education";
-  if (/python|javascript|html|css|coding|programming|software|developer|web dev|full.?stack|frontend|backend/.test(m)) return "software development";
-  if (/data science|machine learning|ml|ai|artificial intelligence|data analyst/.test(m)) return "data science and AI";
-  if (/ux|ui|design|figma|user research/.test(m)) return "UX design";
-  if (/cybersecur|security|ethical hack|pentest/.test(m)) return "cybersecurity";
-  if (/cloud|devops|aws|azure|gcp|docker|kubernetes/.test(m)) return "cloud and DevOps";
-  if (/product manager|product management|pm role/.test(m)) return "product management";
-  if (/start|begin|new to tech|no background|where do i|how do i get into|learn tech|learn to code/.test(m)) return "getting started in tech";
-  if (/africa|ethiopia|nigeria|kenya|ghana|uganda|rwanda|remote|work from home/.test(m)) return "tech careers in Africa";
-  return "tech career guidance";
-}
-
-function extractBackground(m: string): Record<string, string> {
-  const args: Record<string, string> = {};
-  if (/beginner|new to tech|no background|no experience|complete(ly)? new/.test(m)) args.career_stage = "complete_beginner";
-  else if (/switch(ing)?|transition(ing)?|career change/.test(m)) args.career_stage = "career_changer";
-  else if (/junior|early career|just started|graduate|entry level/.test(m)) args.career_stage = "early_career";
-  if (/nurse|teacher|finance|banking|accountant|lawyer|doctor|engineer|marketing|sales/.test(m)) {
-    const match = m.match(/(nurse|teacher|finance|banking|accountant|lawyer|doctor|engineer|marketing|sales)/);
-    if (match) args.current_background = match[1];
-  }
-  if (/developer|data scientist|designer|product manager|devops|cloud|security/.test(m)) {
-    const match = m.match(/(developer|data scientist|designer|product manager|devops|cloud engineer|security engineer)/);
-    if (match) args.target_role = match[1];
-  }
-  return args;
+  return { fnName: toolCall.function.name, fnArgs };
 }
 
 // ============================================================
@@ -152,9 +144,15 @@ Deno.serve(async (req) => {
       ? new BotemaCoach(context, supabase, sender_id, azureConfig)
       : new BSCCoach(context, supabase, sender_id, azureConfig);
 
-    // ── 4. Keyword-based routing (fast, reliable, no extra API call) ──
-    const { fnName, fnArgs } = routeMessage(message, context);
-    console.log(`[Converser] Routing → ${fnName}`, fnArgs);
+    // ── 4. AI routing call — model selects the function via tool_choice ──
+    const { fnName, fnArgs, debug: routingDebug } = await routeWithAI(
+      coach.instructions,
+      coach.functionSchemas,
+      conversationHistory,
+      message,
+      azureConfig
+    );
+    console.log(`[Converser] Routing → ${fnName}`, fnArgs, routingDebug ? `(${routingDebug})` : "");
 
     // ── 5. Execute the selected function ──────────────────────────────
     let replyText: string;
@@ -176,7 +174,12 @@ Deno.serve(async (req) => {
     if (insertError) throw insertError;
 
     return new Response(
-      JSON.stringify({ success: true, reply: replyText, function_called: functionCalled }),
+      JSON.stringify({
+        success: true,
+        reply: replyText,
+        function_called: functionCalled,
+        ...(routingDebug ? { routing_debug: routingDebug } : {}),
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 

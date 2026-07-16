@@ -1,0 +1,2 @@
+ALTER TABLE public.feedback_questions DROP CONSTRAINT IF EXISTS feedback_questions_question_type_check;
+ALTER TABLE public.feedback_questions ADD CONSTRAINT feedback_questions_question_type_check CHECK (question_type IN ('text','rating','single_select','multi_select'));

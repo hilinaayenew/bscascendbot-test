@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.send_system_message(uuid, text) TO authenticated;

@@ -44,18 +44,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
+    // email and phone are restricted at the column level; fetch them via RPC for the owner.
     const [{ data, error: profileError }, { data: contact, error: contactError }] = await Promise.all([
       supabase
         .from("profiles")
-        .select("id, user_id, full_name, bio, country, username, avatar_url, linkedin_url, portfolio_url, expertise, interests, pathway_level, created_at, updated_at")
+        .select("id, user_id, full_name, bio, country, username, avatar_url, linkedin_url, portfolio_url, expertise, interests, pathway_level, created_at, updated_at, email_notify_new_message, email_notify_message_reminders")
         .eq("user_id", userId)
         .single(),
       supabase.rpc("get_my_contact_info" as any),
     ]);
-
-    if (!isMissingSchemaError(profileError) && !isMissingSchemaError(contactError)) {
-      // Ignore the missing-schema case here; the app can still render without these profile fields.
-    }
 
     const hasMissingSchema = isMissingSchemaError(profileError) || isMissingSchemaError(contactError);
     if (hasMissingSchema) {

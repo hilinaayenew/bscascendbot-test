@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Menu, X, Sparkles, Users } from "lucide-react";
+import { Menu, X, Sparkles, Users, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -10,10 +10,10 @@ const Navbar = () => {
   const { user, loading } = useAuth();
 
   const navLinks = [
-    { label: "Pathways", href: "#pathways" },
-    { label: "For Business", href: "#business" },
-    { label: "Free Cohort", href: "#cohort" },
+    { label: "Individuals", href: "#pathways" },
     { label: "Marketplace", href: "#marketplace" },
+    { label: "For Employers", href: "#employers" },
+    { label: "For Business", href: "#business" },
   ];
 
   return (
@@ -47,6 +47,12 @@ const Navbar = () => {
                   {link.label}
                 </a>
               ))}
+              <Link
+                to="/faq"
+                className="font-body text-sm sora-medium text-foreground/70 hover:text-primary transition-colors"
+              >
+                FAQ
+              </Link>
             </nav>
 
             {/* CTA */}
@@ -91,6 +97,18 @@ const Navbar = () => {
                             <p className="font-body text-[11px] text-muted-foreground">Guide others</p>
                           </div>
                         </Link>
+                        <div className="border-t border-border" />
+                        <Link
+                          to="/auth?role=employer"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors"
+                          onClick={() => setHoverOpen(false)}
+                        >
+                          <Building2 className="h-4 w-4 text-primary" />
+                          <div>
+                            <p className="font-body text-sm sora-semibold text-foreground">Employer</p>
+                            <p className="font-body text-[11px] text-muted-foreground">Hire</p>
+                          </div>
+                        </Link>
                       </div>
                     </div>
                   )}
@@ -122,6 +140,13 @@ const Navbar = () => {
                   {link.label}
                 </a>
               ))}
+              <Link
+                to="/faq"
+                className="font-body text-base sora-medium text-foreground py-2"
+                onClick={() => setMobileOpen(false)}
+              >
+                FAQ
+              </Link>
               <div className="flex flex-col gap-2 pt-3 border-t border-border">
                 {!loading && user ? (
                   <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
@@ -134,6 +159,9 @@ const Navbar = () => {
                     </Link>
                     <Link to="/auth?role=mentor" onClick={() => setMobileOpen(false)}>
                       <Button variant="outline" className="w-full">Sign In as Mentor</Button>
+                    </Link>
+                    <Link to="/auth?role=employer" onClick={() => setMobileOpen(false)}>
+                      <Button variant="outline" className="w-full">Sign In as Employer</Button>
                     </Link>
                   </>
                 )}

@@ -4,18 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ArrowRight, Sparkles, Users } from "lucide-react";
+import { ArrowRight, Sparkles, Users, Building2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
-  const initialRole = searchParams.get("role") === "mentor" ? "mentor" : "mentee";
+  const roleParam = searchParams.get("role");
+  const initialRole: "mentor" | "mentee" | "employer" =
+    roleParam === "mentor" ? "mentor" : roleParam === "employer" ? "employer" : "mentee";
   const [view, setView] = useState<"signin" | "signup" | "forgot" | "reset">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState<"mentee" | "mentor">(initialRole);
+  const [role, setRole] = useState<"mentee" | "mentor" | "employer">(initialRole);
+  const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(false);
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const navigate = useNavigate();
@@ -46,7 +49,10 @@ const Auth = () => {
       } else if (event === "SIGNED_IN") {
         const isRecovery = window.location.hash.includes("type=recovery");
         if (!isRecovery) {
-          const next = searchParams.get("next") || "/dashboard";
+          const invite = searchParams.get("invite");
+          const next =
+            searchParams.get("next") ||
+            (invite ? `/employer/invite?token=${invite}` : role === "employer" ? "/employer" : "/dashboard");
           navigate(next);
         }
       }
@@ -80,7 +86,11 @@ const Auth = () => {
           email,
           password,
           options: {
-            data: { full_name: fullName, role },
+            data: {
+              full_name: fullName,
+              role,
+              ...(role === "employer" && companyName.trim() ? { company_name: companyName.trim() } : {}),
+            },
             emailRedirectTo: getRedirectUrl(),
           },
         });
@@ -118,7 +128,10 @@ const Auth = () => {
           return;
         }
 
-        const next = searchParams.get("next") || "/dashboard";
+        const invite = searchParams.get("invite");
+        const next =
+          searchParams.get("next") ||
+          (invite ? `/employer/invite?token=${invite}` : role === "employer" ? "/employer" : "/dashboard");
         navigate(next);
       } else if (view === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -208,8 +221,14 @@ const Auth = () => {
                   role === "mentor" ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent"
                 }`}
               >
-                {role === "mentor" ? <Sparkles className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />}
-                {role === "mentor" ? "Mentor" : "Mentee"}
+                {role === "mentor" ? (
+                  <Sparkles className="h-3.5 w-3.5" />
+                ) : role === "employer" ? (
+                  <Building2 className="h-3.5 w-3.5" />
+                ) : (
+                  <Users className="h-3.5 w-3.5" />
+                )}
+                {role === "mentor" ? "Mentor" : role === "employer" ? "Employer" : "Mentee"}
               </div>
             </div>
             <h2 className="font-body text-2xl sora-bold text-foreground">
@@ -228,38 +247,51 @@ const Auth = () => {
                   ? "Enter your email to receive a reset link."
                   : view === "reset"
                     ? "Enter your new password below."
-                    : `Sign in to continue as a ${role}.`}
+                    : `Sign in to continue as ${role === "employer" ? "an" : "a"} ${role}.`}
             </p>
           </div>
 
           {/* Role selector — sign up only */}
           {view === "signup" && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setRole("mentee")}
-                className={`p-4 rounded-lg border-2 text-left transition-all font-body ${
+                className={`p-3 rounded-lg border-2 text-left transition-all font-body ${
                   role === "mentee"
                     ? "border-primary bg-crimson-light"
                     : "border-border hover:border-muted-foreground/30"
                 }`}
               >
                 <Users className={`h-5 w-5 mb-2 ${role === "mentee" ? "text-primary" : "text-muted-foreground"}`} />
-                <p className="sora-semibold text-sm text-foreground">Mentee</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Find a mentor</p>
+                <p className="sora-semibold text-xs text-foreground">Mentee</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Find a mentor</p>
               </button>
               <button
                 type="button"
                 onClick={() => setRole("mentor")}
-                className={`p-4 rounded-lg border-2 text-left transition-all font-body ${
+                className={`p-3 rounded-lg border-2 text-left transition-all font-body ${
                   role === "mentor"
                     ? "border-primary bg-crimson-light"
                     : "border-border hover:border-muted-foreground/30"
                 }`}
               >
                 <Sparkles className={`h-5 w-5 mb-2 ${role === "mentor" ? "text-primary" : "text-muted-foreground"}`} />
-                <p className="sora-semibold text-sm text-foreground">Mentor</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Guide others</p>
+                <p className="sora-semibold text-xs text-foreground">Mentor</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Guide others</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("employer")}
+                className={`p-3 rounded-lg border-2 text-left transition-all font-body ${
+                  role === "employer"
+                    ? "border-primary bg-crimson-light"
+                    : "border-border hover:border-muted-foreground/30"
+                }`}
+              >
+                <Building2 className={`h-5 w-5 mb-2 ${role === "employer" ? "text-primary" : "text-muted-foreground"}`} />
+                <p className="sora-semibold text-xs text-foreground">Employer</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Hire &amp; train</p>
               </button>
             </div>
           )}
@@ -273,6 +305,17 @@ const Auth = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required
+                  className="font-body h-11"
+                />
+              </div>
+            )}
+            {view === "signup" && role === "employer" && (
+              <div>
+                <label className="font-body text-xs sora-medium text-foreground/70 mb-1.5 block">Company name</label>
+                <Input
+                  placeholder="Your company"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
                   className="font-body h-11"
                 />
               </div>
@@ -340,7 +383,7 @@ const Auth = () => {
                 </p>
                 <p className="font-body text-xs text-muted-foreground">
                   Read our full{" "}
-                  <a href="/privacy" className="underline text-primary hover:text-primary/80">
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline text-primary hover:text-primary/80">
                     Privacy Policy
                   </a>{" "}
                   for more details.
@@ -411,13 +454,21 @@ const Auth = () => {
                 : "Create an account"}
           </button>
 
-          {view !== "forgot" && view !== "reset" && (
-            <button
-              onClick={() => setRole(role === "mentee" ? "mentor" : "mentee")}
-              className="w-full font-body text-xs sora-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              {role === "mentee" ? "Switch to Mentor →" : "Switch to Mentee →"}
-            </button>
+          {view === "signin" && (
+            <div className="flex flex-wrap justify-center gap-3 font-body text-xs sora-medium text-muted-foreground">
+              {(["mentee", "mentor", "employer"] as const)
+                .filter((r) => r !== role)
+                .map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setRole(r)}
+                    className="hover:text-primary transition-colors"
+                  >
+                    Switch to {r.charAt(0).toUpperCase() + r.slice(1)} →
+                  </button>
+                ))}
+            </div>
           )}
         </div>
       </div>

@@ -18,17 +18,18 @@ Deno.serve(async (req) => {
   }
 
   // Restrict to service_role callers — cron only.
+  // Cryptographically verify the JWT via getClaims (not just base64-decode the payload).
   const authHeader = req.headers.get("Authorization") || "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice("Bearer ".length).trim() : "";
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1] || ""));
-    if (payload?.role !== "service_role") {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-  } catch {
+  if (!token) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const verifier = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!);
+  const { data: claimsData, error: claimsErr } = await verifier.auth.getClaims(token);
+  if (claimsErr || claimsData?.claims?.role !== "service_role") {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -103,7 +104,7 @@ Deno.serve(async (req) => {
   });
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("user_id, full_name, email")
+    .select("user_id, full_name, email, email_notify_message_reminders")
     .in("user_id", Array.from(userIds));
   const profileMap = new Map(profiles?.map((p) => [p.user_id, p]) || []);
 
@@ -114,6 +115,13 @@ Deno.serve(async (req) => {
     const recipient = profileMap.get(msg.receiver_id);
     const sender = profileMap.get(msg.sender_id);
     if (!recipient?.email) continue;
+
+    // Respect recipient's notification preference
+    if ((recipient as any).email_notify_message_reminders === false) {
+      // Mark as processed so we don't keep evaluating it
+      await supabase.from("messages").update({ reminders_sent: targetStage }).eq("id", msg.id);
+      continue;
+    }
 
     // Do not send automated message reminders to the admin/BSC email
     const recipientEmailLower = recipient.email.toLowerCase();

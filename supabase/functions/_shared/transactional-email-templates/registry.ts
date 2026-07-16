@@ -22,6 +22,12 @@ import { template as bookingReminderBooker } from './booking-reminder-booker.tsx
 import { template as bookingCancelled } from './booking-cancelled.tsx'
 import { template as mentorPoolInvite } from './mentor-pool-invite.tsx'
 import { template as messageReminder } from './message-reminder.tsx'
+import { template as newMessageNotification } from './new-message-notification.tsx'
+import { template as sessionNotLogged } from './session-not-logged.tsx'
+import { template as subscriptionExpiring } from './subscription-expiring.tsx'
+import { template as missedDigest } from './missed-digest.tsx'
+import { template as workshopReminder } from './workshop-reminder.tsx'
+import { template as agreementLink } from './agreement-link.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'mentor-welcome': mentorWelcome,
@@ -37,4 +43,10 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'booking-cancelled': bookingCancelled,
   'mentor-pool-invite': mentorPoolInvite,
   'message-reminder': messageReminder,
+  'new-message-notification': newMessageNotification,
+  'session-not-logged': sessionNotLogged,
+  'subscription-expiring': subscriptionExpiring,
+  'missed-digest': missedDigest,
+  'workshop-reminder': workshopReminder,
+  'agreement-link': agreementLink,
 }

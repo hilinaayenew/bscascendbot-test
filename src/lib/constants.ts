@@ -1,6 +1,6 @@
-// BSC Coordinator system account UUID — used for platform-to-user messages
+// BSC Admin system account UUID — used for two-way platform messaging
 export const BSC_COORDINATOR_ID = "00000000-0000-0000-0000-000000000001";
-export const BSC_COORDINATOR_NAME = "BSC Coordinator";
+export const BSC_COORDINATOR_NAME = "BSC Admin";
 
 // AI Career Coach system account UUID
 export const AI_COACH_ID = "00000000-0000-0000-0000-000000000002";

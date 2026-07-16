@@ -16,20 +16,22 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
   // Restrict to service_role callers only — this is a cron job, not user-facing.
+  // Cryptographically verify the JWT via getClaims (not just base64-decode the payload).
   const authHeader = req.headers.get('Authorization') || ''
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length).trim() : ''
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1] || ''))
-    if (payload?.role !== 'service_role') {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-    }
-  } catch {
+  if (!token) {
+    return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  }
+  const verifier = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!)
+  const { data: claimsData, error: claimsErr } = await verifier.auth.getClaims(token)
+  if (claimsErr || claimsData?.claims?.role !== 'service_role') {
     return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
   // Find bookings for tomorrow (UTC date) that haven't had reminders sent

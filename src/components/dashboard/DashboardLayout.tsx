@@ -10,6 +10,7 @@ import { LayoutDashboard, Users, MessageSquare, Target, Calendar, LogOut, Menu, 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { format, addHours } from "date-fns";
+import AICoachWidget from "@/components/AICoachWidget";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const { user, profile, roles, signOut } = useAuth();
@@ -137,6 +138,8 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
         </header>
         <main className="flex-1 p-4 md:p-8">{children}</main>
       </div>
+
+      <AICoachWidget />
     </div>
   );
 };

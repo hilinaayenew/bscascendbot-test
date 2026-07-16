@@ -1,9 +1,31 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
-  const links = {
-    Platform: ["Pathways", "Free Cohort", "Marketplace", "AI Matching"],
-    Business: ["Enterprise Solutions", "Staff Training", "Analytics", "Request Demo"],
-    Company: ["About Us", "Careers", "Blog", "Contact"],
-    Legal: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
+  const links: Record<string, { label: string; href: string }[]> = {
+    Platform: [
+      { label: "Pathways", href: "#" },
+      { label: "Free Cohort", href: "#" },
+      { label: "Marketplace", href: "#" },
+      { label: "AI Matching", href: "#" },
+    ],
+    Business: [
+      { label: "Enterprise Solutions", href: "#" },
+      { label: "Staff Training", href: "#" },
+      { label: "Analytics", href: "#" },
+      { label: "Request Demo", href: "#" },
+    ],
+    Company: [
+      { label: "About Us", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
+    Legal: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "FAQ", href: "/faq" },
+      { label: "Terms of Service", href: "#" },
+      { label: "Cookie Policy", href: "#" },
+    ],
   };
 
   return (
@@ -25,16 +47,28 @@ const Footer = () => {
             <div key={category}>
               <h4 className="font-body text-sm sora-semibold mb-4">{category}</h4>
               <ul className="flex flex-col gap-2">
-                {items.map((item) => (
-                  <li key={item}>
-                    <a
-                      href="#"
-                      className="font-body text-sm text-accent-foreground/60 hover:text-primary transition-colors sora-regular"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                {items.map((item) => {
+                  const isInternal = item.href.startsWith("/");
+                  return (
+                    <li key={item.label}>
+                      {isInternal ? (
+                        <Link
+                          to={item.href}
+                          className="font-body text-sm text-accent-foreground/60 hover:text-primary transition-colors sora-regular"
+                        >
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <a
+                          href={item.href}
+                          className="font-body text-sm text-accent-foreground/60 hover:text-primary transition-colors sora-regular"
+                        >
+                          {item.label}
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

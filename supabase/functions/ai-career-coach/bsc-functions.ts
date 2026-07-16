@@ -1,5 +1,5 @@
 // @ts-nocheck
-// BSC Career Coach — 6 domain-specific functions
+// BSC Career Coach — 7 domain-specific functions
 // Mirrors the Movivid functions pattern from vivid-insights-main/examples/movivid/movivid_functions.py
 //
 // Function map:
@@ -8,6 +8,7 @@
 //   adviseOnCareerTopic   (WORDALISE)
 //   addressMindsetChallenge (WORDALISE)
 //   howCoachWorks         (INSTRUCTIONS)
+//   answerOutOfScope      (INSTRUCTIONS)
 //   inviteUserContext     (ENGAGE)
 
 import {
@@ -174,7 +175,7 @@ export class AdviseOnCareerTopic extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: "You are the BSC AI Career Coach. Answer in first person. Be empathetic, practical, and concise. 2-3 short paragraphs. No markdown formatting. Always end with a question that invites the user to share more about their situation.",
+        content: "You are the BSC AI Career Coach. Answer in first person. Be empathetic, practical, and concise. 2-3 short paragraphs. No markdown formatting. Always end with a question that invites the user to share more about their situation. If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.",
       },
       ...history,
       { role: "user", content: prompt },
@@ -251,6 +252,24 @@ export class HowCoachWorks extends InstructionsFunction {
 I can help you with: getting started in tech, choosing a career path, writing a CV and job searching, interview preparation, salary negotiation, further education decisions, finding and using mentors, and working through mindset challenges like imposter syndrome or motivation.
 
 The best way to use me is to be specific about where you are and what you are trying to figure out. The more context you share about your background and goals, the more useful I can be. What's on your mind?`;
+  }
+}
+
+// ----------------------------------------------------------------
+// INSTRUCTIONS: OutOfScope
+// Declines gracefully when the message has nothing to do with tech
+// career coaching (general trivia, unrelated technical help, etc).
+// ----------------------------------------------------------------
+export class OutOfScope extends InstructionsFunction {
+  get name() { return "answerOutOfScope"; }
+  get description() {
+    return "Call this when the user's message has nothing to do with tech career coaching — e.g. general trivia, requests unrelated to careers, creative writing requests, or asking you to do something other than coach them on their tech career.";
+  }
+
+  getInstructionsContent(): string {
+    return `That's a bit outside what I can help with — I'm the BSC AI Career Coach, so I'm focused specifically on tech career guidance: things like getting started in tech, choosing a path, CVs and job search, interview prep, salary negotiation, further education, mentorship, and working through the mindset side of a career change.
+
+If there's a tech career question on your mind, I'd love to help with that. What's going on with your career right now?`;
   }
 }
 

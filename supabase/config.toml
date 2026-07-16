@@ -17,3 +17,11 @@ project_id = "uylxkbcaibhjqcsehcuk"
     verify_jwt = false
   [functions.cancel-booking-by-token]
     verify_jwt = false
+  [functions.send-booking-reminders]
+    verify_jwt = true
+  [functions.send-message-reminders]
+    verify_jwt = true
+  [functions.send-action-reminders]
+    verify_jwt = true
+  [functions.send-workshop-reminders]
+    verify_jwt = true

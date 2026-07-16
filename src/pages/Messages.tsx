@@ -8,7 +8,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, Plus, MessageSquare, Compass, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { BSC_COORDINATOR_ID, BSC_COORDINATOR_NAME, AI_COACH_ID, AI_COACH_NAME } from "@/lib/constants";
+import { BSC_COORDINATOR_ID, BSC_COORDINATOR_NAME, AI_COACH_ID } from "@/lib/constants";
 
 interface Message {
   id: string;
@@ -77,25 +77,10 @@ const Messages = () => {
   const [showNewConvo, setShowNewConvo] = useState(false);
   const [pairableUsers, setPairableUsers] = useState<PairableUser[]>([]);
   const [hasPairings, setHasPairings] = useState<boolean | null>(null);
-  const [selectedBot, setSelectedBot] = useState<"botema" | "chataki" | null>(() => {
-    const saved = sessionStorage.getItem("selectedBot");
-    return (saved === "botema" || saved === "chataki") ? saved : null;
-  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const pickBot = (bot: "botema" | "chataki") => {
-    sessionStorage.setItem("selectedBot", bot);
-    setSelectedBot(bot);
-  };
-
-  const clearBot = () => {
-    sessionStorage.removeItem("selectedBot");
-    setSelectedBot(null);
-  };
-
   const isMentor = roles.includes("mentor");
-  const isSystemContact = selectedContact === BSC_COORDINATOR_ID || selectedContact === AI_COACH_ID;
-  const isReadOnlyContact = selectedContact === BSC_COORDINATOR_ID;
+  const isSystemContact = selectedContact === BSC_COORDINATOR_ID;
 
   // Fetch contacts (people user has messaged or received from)
   const fetchContacts = useCallback(async () => {
@@ -128,19 +113,8 @@ const Messages = () => {
     const userIds = Array.from(contactMap.keys()).filter(id => id !== BSC_COORDINATOR_ID && id !== AI_COACH_ID);
     const hasBSC = contactMap.has(BSC_COORDINATOR_ID);
 
-    // Build contact list
+    // Build contact list — BSC Admin is always pinned first
     const contactList: Contact[] = [];
-
-    // Add AI Coach (always pinned)
-    contactList.push({
-      user_id: AI_COACH_ID,
-      full_name: AI_COACH_NAME,
-      lastMessage: contactMap.get(AI_COACH_ID)?.lastMessage,
-      unread: contactMap.get(AI_COACH_ID)?.unread || 0,
-      isSystem: true,
-    });
-
-    // Add BSC Coordinator first (pinned)
     if (hasBSC) {
       contactList.push({
         user_id: BSC_COORDINATOR_ID,
@@ -247,9 +221,6 @@ const Messages = () => {
     if (selectedContact === BSC_COORDINATOR_ID) {
       setContactName(BSC_COORDINATOR_NAME);
       setContactNameLoading(false);
-    } else if (selectedContact === AI_COACH_ID) {
-      setContactName(AI_COACH_NAME);
-      setContactNameLoading(false);
     } else {
       supabase
         .from("profiles")
@@ -295,17 +266,28 @@ const Messages = () => {
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedContact || !user || isReadOnlyContact) return;
-    
-    const msgText = newMessage.trim();
-    setNewMessage("");
+    if (!newMessage.trim() || !selectedContact || !user) return;
 
-    // Optimistic UI update
-    const tempId = crypto.randomUUID();
+    const msgText = newMessage.trim();
+    const { data: inserted, error } = await supabase
+      .from("messages")
+      .insert({
+        sender_id: user.id,
+        receiver_id: selectedContact,
+        content: msgText,
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      toast.error("Failed to send message.");
+      return;
+    }
+
     setMessages((prev) => [
       ...prev,
       {
-        id: tempId,
+        id: inserted?.id ?? crypto.randomUUID(),
         sender_id: user.id,
         receiver_id: selectedContact,
         content: msgText,
@@ -313,44 +295,26 @@ const Messages = () => {
         read: false,
       },
     ]);
+    setNewMessage("");
+    fetchContacts();
 
-    const { error } = await supabase.from("messages").insert({
-      sender_id: user.id,
-      receiver_id: selectedContact,
-      content: msgText,
-    });
-    
-    if (error) {
-      toast.error("Failed to send message.");
-      setMessages((prev) => prev.filter(m => m.id !== tempId));
-    } else {
-      fetchContacts();
-      
-      if (selectedContact === AI_COACH_ID) {
-        supabase.functions.invoke('ai-career-coach', {
-          body: { message: msgText, sender_id: user.id, bot: selectedBot ?? "chataki" }
-        }).then(() => {
-          fetchMessages();
-        }).catch(err => {
-          console.error("AI Coach Error:", err);
-          toast.error("AI Coach is unavailable right now.");
-        });
-      }
+    if (inserted?.id) {
+      // Fire-and-forget instant email notification (recipient preference checked server-side)
+      supabase.functions
+        .invoke("notify-new-message", { body: { messageId: inserted.id } })
+        .catch((err) => console.error("notify-new-message failed", err));
     }
   };
 
   const startConversation = (userId: string) => {
     setSelectedContact(userId);
     setShowNewConvo(false);
-    if (userId !== AI_COACH_ID) clearBot();
   };
 
   const displayName = contactNameLoading
     ? selectedContact
-      ? selectedContact === BSC_COORDINATOR_ID
+      ? isSystemContact
         ? BSC_COORDINATOR_NAME
-        : selectedContact === AI_COACH_ID
-        ? AI_COACH_NAME
         : getInitials(contacts.find((c) => c.user_id === selectedContact)?.full_name || "??")
       : ""
     : contactName || "Unknown";
@@ -506,39 +470,11 @@ const Messages = () => {
                       {getInitials(contactName || contacts.find((c) => c.user_id === selectedContact)?.full_name || "??")}
                     </div>
                   )}
-                  {selectedContact === AI_COACH_ID
-                    ? selectedBot === "botema" ? "Botema" : selectedBot === "chataki" ? "Chataki" : "AI Career Coach"
-                    : displayName}
-                  {isSystemContact && !selectedBot && (
+                  {displayName}
+                  {isSystemContact && (
                     <span className="text-xs font-body text-muted-foreground font-normal ml-1">
-                      · Platform notifications
+                      · Platform support
                     </span>
-                  )}
-
-                  {/* Bot switcher — inline dropdown like model selector */}
-                  {selectedContact === AI_COACH_ID && (
-                    <div className="ml-auto relative group">
-                      <button className="flex items-center gap-1 text-xs font-body px-2 py-1 rounded-md border border-border hover:border-primary hover:text-primary transition-all text-muted-foreground">
-                        {selectedBot === "botema" ? "🤖 Botema" : selectedBot === "chataki" ? "🤖 Chataki" : "Select coach"}
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                      </button>
-                      <div className="absolute right-0 top-full mt-1 w-64 bg-popover border border-border rounded-lg shadow-lg z-50 hidden group-focus-within:block group-hover:block">
-                        <button
-                          onClick={() => pickBot("botema")}
-                          className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors rounded-t-lg ${selectedBot === "botema" ? "bg-muted" : ""}`}
-                        >
-                          <p className="font-body text-sm font-semibold">🤖 Botema</p>
-                          <p className="font-body text-xs text-muted-foreground mt-0.5">Direct, personal, African tech context</p>
-                        </button>
-                        <button
-                          onClick={() => pickBot("chataki")}
-                          className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors rounded-b-lg ${selectedBot === "chataki" ? "bg-muted" : ""}`}
-                        >
-                          <p className="font-body text-sm font-semibold">🤖 Chataki</p>
-                          <p className="font-body text-xs text-muted-foreground mt-0.5">Warm, thorough, research-backed</p>
-                        </button>
-                      </div>
-                    </div>
                   )}
                 </CardTitle>
               </CardHeader>
@@ -577,27 +513,19 @@ const Messages = () => {
                 ))}
                 <div ref={messagesEndRef} />
               </CardContent>
-              {/* Input area — hidden for read-only system contact */}
-              {isReadOnlyContact ? (
-                <div className="p-4 border-t border-border">
-                  <p className="font-body text-xs text-muted-foreground text-center">
-                    This is a one-way notification channel. You cannot reply to BSC Coordinator messages.
-                  </p>
-                </div>
-              ) : (
-                <div className="p-4 border-t border-border flex gap-2">
-                  <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                    placeholder="Type a message..."
-                    className="font-body"
-                  />
-                  <Button size="icon" onClick={sendMessage}>
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
+              {/* Input area */}
+              <div className="p-4 border-t border-border flex gap-2">
+                <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                  placeholder={isSystemContact ? "Message BSC Admin..." : "Type a message..."}
+                  className="font-body"
+                />
+                <Button size="icon" onClick={sendMessage}>
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center">
@@ -623,7 +551,7 @@ const Messages = () => {
 
                 {/* Mobile: show contacts inline */}
                 <div className="md:hidden space-y-2 mt-4">
-                  {/* BSC Coordinator on mobile */}
+                  {/* BSC Admin on mobile */}
                   {contacts.filter(c => c.isSystem).map((c) => (
                     <button
                       key={c.user_id}

@@ -59,7 +59,10 @@ class BotemaAdvise extends WordaliseFunction {
   async generateResponse(prompt: string, _question: string): Promise<string> {
     const history = this.converser.context.conversationHistory.slice(-6);
     const messages: OAIMessage[] = [
-      { role: "system", content: BOTEMA_SYSTEM_PROMPT },
+      {
+        role: "system",
+        content: BOTEMA_SYSTEM_PROMPT + " If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.",
+      },
       ...history,
       { role: "user", content: prompt },
     ];
@@ -126,6 +129,18 @@ The best way to use me is to be specific about where you are and what you're try
   }
 }
 
+// ── INSTRUCTIONS: out of scope (Botema voice) ──────────────────────────────
+class BotemaOutOfScope extends InstructionsFunction {
+  get name() { return "answerOutOfScope"; }
+  get description() { return "Call this when the user's message has nothing to do with tech career coaching — general trivia, unrelated technical help, creative writing requests, or anything unrelated to careers, jobs, skills, mentorship, or mindset."; }
+
+  getInstructionsContent(): string {
+    return `That one's outside my lane — I'm Botema, your BSC Career Coach, and I stick to tech careers: getting started, choosing a path, CVs and job search, interview prep, salary negotiation, further education, mentorship, and the mindset side of a career change.
+
+If you've got a tech career question, bring it — I'll give you my honest take. What's going on with your career right now?`;
+  }
+}
+
 // ── ENGAGE: invite user context (Botema voice) ────────────────────────────
 class BotemaInvite extends EngageFunction {
   get name() { return "inviteUserContext"; }
@@ -177,17 +192,19 @@ Current career topic in focus: ${currentTopic}
 
 ROUTING RULES — always call exactly one function, never respond directly:
 
-1. MINDSET — user expresses fear, self-doubt, imposter syndrome, burnout, anxiety, motivation loss, feeling they don't belong → call addressMindsetChallenge.
+1. OUT OF SCOPE — the message has nothing to do with tech career coaching: general trivia, unrelated technical help (e.g. "write me a script", "what's the capital of France"), creative writing requests, or anything unrelated to careers, jobs, skills, mentorship, or mindset → call answerOutOfScope.
 
-2. BACKGROUND — user explicitly shares detailed personal info: their current job title, years of experience, specific goals, location, or education level → call captureUserBackground. Do NOT use this for short replies like "I'm new" or "I'm a beginner".
+2. MINDSET — user expresses fear, self-doubt, imposter syndrome, burnout, anxiety, motivation loss, feeling they don't belong → call addressMindsetChallenge.
 
-3. GREETING — user says hello, hi, asks what you can do, or sends their very first message with no topic → call howCoachWorks.
+3. BACKGROUND — user explicitly shares detailed personal info: their current job title, years of experience, specific goals, location, or education level → call captureUserBackground. Do NOT use this for short replies like "I'm new" or "I'm a beginner".
 
-4. VAGUE — message has fewer than 5 words and no topic can be determined → call inviteUserContext.
+4. GREETING — user says hello, hi, asks what you can do, or sends their very first message with no topic → call howCoachWorks.
 
-5. TOPIC/QUESTION (DEFAULT) — anything else: a career question, a topic, a skill, a field, a request for advice, even short messages like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer.
+5. VAGUE — message has fewer than 5 words and no topic can be determined → call inviteUserContext.
 
-When in doubt, use updateCareerTopic. It is the most common function.
+6. TOPIC/QUESTION (DEFAULT) — anything else: a career question, a topic, a skill, a field, a request for advice, even short messages like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer.
+
+When in doubt between updateCareerTopic and answerOutOfScope, prefer updateCareerTopic unless the message is clearly unrelated to tech careers.
 
 Always call exactly one function.`;
   }
@@ -200,6 +217,7 @@ Always call exactly one function.`;
       new BoteMindset(this),
       new BotemaHowItWorks(this),
       new BotemaInvite(this),
+      new BotemaOutOfScope(this),
     ];
   }
 }

@@ -12,6 +12,7 @@ import {
   Check,
   X,
   Sparkles,
+  RefreshCw,
   Shield,
   UserPlus,
   Ticket,
@@ -26,11 +27,16 @@ import {
   CalendarDays,
   Camera,
   BookOpen,
+  MessagesSquare,
+  Quote,
+  Star,
+  LifeBuoy,
+  FileSignature,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { resolveAvatarUrl } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SmartAvatarImage } from "@/components/SmartAvatarImage";
 import AdminDeleteUserDialog from "@/components/admin/AdminDeleteUserDialog";
 import AdminMessaging from "@/components/admin/AdminMessaging";
 import AdminMentorImport from "@/components/admin/AdminMentorImport";
@@ -39,6 +45,12 @@ import AdminPairingsManagement from "@/components/admin/AdminPairingsManagement"
 import AdminWorkshops from "@/components/admin/AdminWorkshops";
 import AdminCoursesView from "@/components/courses/AdminCoursesView";
 import AdminAiMatching from "@/components/admin/AdminAiMatching";
+import AdminForum from "@/components/admin/AdminForum";
+import AdminTestimonials from "@/components/admin/AdminTestimonials";
+import AdminFeedback from "@/components/admin/AdminFeedback";
+import AdminHelpCenter from "@/components/admin/AdminHelpCenter";
+import AdminAgreements from "@/components/admin/AdminAgreements";
+import AdminAgreementTemplate from "@/components/admin/AdminAgreementTemplate";
 
 const Admin = () => {
   const { user, roles, loading } = useAuth();
@@ -69,6 +81,31 @@ const Admin = () => {
     Promise.all([fetchAll(), fetchCodes(), fetchBlockedEmails(), fetchDeletionLog()]);
   }, [user, roles]);
 
+  // Refetch pending lists when admin returns to the tab and on realtime mentor_details changes
+  useEffect(() => {
+    if (!user || !isAdmin) return;
+    const onFocus = () => fetchAll();
+    window.addEventListener("focus", onFocus);
+    const channel = supabase
+      .channel("admin-mentor-details")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "mentor_details" },
+        () => fetchAll(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "pairings" },
+        () => fetchAll(),
+      )
+      .subscribe();
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isAdmin]);
+
   const fetchBlockedEmails = async () => {
     const { data } = await supabase.from("blocked_emails").select("*").order("created_at", { ascending: false });
     setBlockedEmails(data || []);
@@ -88,7 +125,11 @@ const Admin = () => {
     const [mentorsRes, pairingsRes, allProfilesRes, allRolesRes, contactsRes] = await Promise.all([
       supabase.from("mentor_details").select("*").eq("approval_status", "pending"),
       supabase.from("pairings").select("*").eq("admin_approved", false).eq("status", "pending"),
-      supabase.from("profiles").select("*"),
+      supabase
+        .from("profiles")
+        .select(
+          "id, user_id, full_name, avatar_url, bio, linkedin_url, expertise, interests, pathway_level, created_at, updated_at, portfolio_url, username, country",
+        ),
       supabase.from("user_roles").select("*"),
       supabase.rpc("admin_get_profile_contacts", { _user_ids: null as any }),
     ]);
@@ -170,6 +211,20 @@ const Admin = () => {
       await fetchCodes();
     }
     setGeneratingCodes(false);
+  };
+
+  const revokeCode = async (codeId: string, menteeName: string) => {
+    if (!confirm(`Revoke access for ${menteeName}? Their code will become available again and they will lose full mentee access.`)) return;
+    const { error } = await supabase
+      .from("discount_codes")
+      .update({ redeemed_by: null, redeemed_at: null })
+      .eq("id", codeId);
+    if (error) {
+      toast.error("Failed to revoke access.");
+    } else {
+      toast.success("Access revoked.");
+      await fetchCodes();
+    }
   };
 
   const approveMentor = async (userId: string) => {
@@ -315,12 +370,9 @@ const Admin = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
-      const url = `${urlData.publicUrl}?t=${Date.now()}`;
-
       const { error: updateError } = await supabase
         .from("profiles")
-        .update({ avatar_url: url })
+        .update({ avatar_url: path })
         .eq("user_id", targetUserId);
       if (updateError) throw updateError;
 
@@ -389,9 +441,32 @@ const Admin = () => {
             <TabsTrigger value="courses" className="font-body">
               <BookOpen className="h-4 w-4 mr-1" /> Courses
             </TabsTrigger>
+            <TabsTrigger value="forum" className="font-body">
+              <MessagesSquare className="h-4 w-4 mr-1" /> Forum
+            </TabsTrigger>
+            <TabsTrigger value="testimonials" className="font-body">
+              <Quote className="h-4 w-4 mr-1" /> Testimonials
+            </TabsTrigger>
+            <TabsTrigger value="feedback" className="font-body">
+              <Star className="h-4 w-4 mr-1" /> Feedback
+            </TabsTrigger>
+            <TabsTrigger value="help" className="font-body">
+              <LifeBuoy className="h-4 w-4 mr-1" /> Help Center
+            </TabsTrigger>
+            <TabsTrigger value="agreements" className="font-body">
+              <FileSignature className="h-4 w-4 mr-1" /> Agreements
+            </TabsTrigger>
+            <TabsTrigger value="agreement-template" className="font-body">
+              <FileSignature className="h-4 w-4 mr-1" /> Agreement Template
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="mentors" className="space-y-4 mt-4">
+            <div className="flex justify-end">
+              <Button size="sm" variant="outline" onClick={() => fetchAll()} className="font-body">
+                <RefreshCw className="h-4 w-4 mr-1" /> Refresh
+              </Button>
+            </div>
             {pendingMentors.map((m) => (
               <Card key={m.user_id} className="shadow-card">
                 <CardContent className="p-4 flex items-center justify-between">
@@ -485,9 +560,7 @@ const Admin = () => {
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3 min-w-0">
                     <Avatar className="h-10 w-10 shrink-0">
-                      {resolveAvatarUrl(u.avatar_url) ? (
-                        <AvatarImage src={resolveAvatarUrl(u.avatar_url)!} alt={u.full_name || "User"} />
-                      ) : null}
+                      <SmartAvatarImage avatarUrl={u.avatar_url} alt={u.full_name || "User"} />
                       <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
                         {u.full_name?.[0]?.toUpperCase() || "?"}
                       </AvatarFallback>
@@ -598,7 +671,17 @@ const Admin = () => {
                             Code: {c.code} · {c.redeemed_at ? new Date(c.redeemed_at).toLocaleDateString() : "—"}
                           </p>
                         </div>
-                        <Badge className="font-body text-xs">Activated</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge className="font-body text-xs">Activated</Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="font-body text-xs h-7"
+                            onClick={() => revokeCode(c.id, mentee?.full_name || "this user")}
+                          >
+                            <Ban className="h-3.5 w-3.5 mr-1" /> Revoke
+                          </Button>
+                        </div>
                       </div>
                     );
                   })}
@@ -768,6 +851,30 @@ const Admin = () => {
 
           <TabsContent value="courses" className="mt-4">
             <AdminCoursesView />
+          </TabsContent>
+
+          <TabsContent value="forum" className="mt-4">
+            <AdminForum />
+          </TabsContent>
+
+          <TabsContent value="testimonials" className="mt-4">
+            <AdminTestimonials />
+          </TabsContent>
+
+          <TabsContent value="feedback" className="mt-4">
+            <AdminFeedback />
+          </TabsContent>
+
+          <TabsContent value="help" className="mt-4">
+            <AdminHelpCenter />
+          </TabsContent>
+
+          <TabsContent value="agreements" className="mt-4">
+            <AdminAgreements />
+          </TabsContent>
+
+          <TabsContent value="agreement-template" className="mt-4">
+            <AdminAgreementTemplate />
           </TabsContent>
         </Tabs>
 

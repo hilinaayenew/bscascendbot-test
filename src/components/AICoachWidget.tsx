@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Bot, Send, X } from "lucide-react";
 import { toast } from "sonner";
 import { AI_COACH_ID, AI_COACH_NAME } from "@/lib/constants";
@@ -33,6 +33,7 @@ const AICoachWidget = () => {
     return saved === "botema" || saved === "chataki" ? saved : null;
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const pickBot = (bot: "botema" | "chataki") => {
     sessionStorage.setItem("selectedBot", bot);
@@ -106,6 +107,14 @@ const AICoachWidget = () => {
   useEffect(() => {
     if (open) messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
+
+  // Auto-grow the textarea with content, up to a max height, then scroll internally.
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  }, [newMessage]);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !user || sending) return;
@@ -216,15 +225,22 @@ const AICoachWidget = () => {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t border-border flex gap-2">
-            <Input
+          <div className="p-3 border-t border-border flex gap-2 items-end">
+            <Textarea
+              ref={textareaRef}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
               placeholder="Ask your AI Career Coach..."
-              className="font-body"
+              rows={1}
+              className="font-body min-h-[40px] max-h-[120px] resize-none py-2"
             />
-            <Button size="icon" onClick={sendMessage} disabled={sending}>
+            <Button size="icon" onClick={sendMessage} disabled={sending} className="shrink-0">
               <Send className="h-4 w-4" />
             </Button>
           </div>

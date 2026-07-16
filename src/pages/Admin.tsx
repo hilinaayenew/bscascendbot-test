@@ -51,6 +51,8 @@ import AdminFeedback from "@/components/admin/AdminFeedback";
 import AdminHelpCenter from "@/components/admin/AdminHelpCenter";
 import AdminAgreements from "@/components/admin/AdminAgreements";
 import AdminAgreementTemplate from "@/components/admin/AdminAgreementTemplate";
+import AdminProjects from "@/components/admin/AdminProjects";
+import { Rocket } from "lucide-react";
 
 const Admin = () => {
   const { user, roles, loading } = useAuth();
@@ -458,6 +460,9 @@ const Admin = () => {
             </TabsTrigger>
             <TabsTrigger value="agreement-template" className="font-body">
               <FileSignature className="h-4 w-4 mr-1" /> Agreement Template
+            </TabsTrigger>
+            <TabsTrigger value="projects" className="font-body">
+              <Rocket className="h-4 w-4 mr-1" /> Projects
             </TabsTrigger>
           </TabsList>
 
@@ -875,6 +880,10 @@ const Admin = () => {
 
           <TabsContent value="agreement-template" className="mt-4">
             <AdminAgreementTemplate />
+          </TabsContent>
+
+          <TabsContent value="projects" className="mt-4">
+            <AdminProjects />
           </TabsContent>
         </Tabs>
 

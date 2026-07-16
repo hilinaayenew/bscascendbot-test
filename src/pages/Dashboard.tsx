@@ -7,8 +7,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Users, MessageSquare, Target, Calendar } from "lucide-react";
 import ActivationBanner from "@/components/ActivationBanner";
 import MentorStatusBanner from "@/components/MentorStatusBanner";
+import AgreementBanner from "@/components/AgreementBanner";
 import UpcomingSessions from "@/components/dashboard/UpcomingSessions";
 import UpcomingWorkshopsWidget from "@/components/dashboard/UpcomingWorkshopsWidget";
+import PastWorkshopsRatings from "@/components/dashboard/PastWorkshopsRatings";
+import TestimonialPromptCard from "@/components/dashboard/TestimonialPromptCard";
+import MonthlyFeedbackCard from "@/components/dashboard/MonthlyFeedbackCard";
+import ActionPoints from "@/components/dashboard/ActionPoints";
+import ProfileOnboardingDialog from "@/components/dashboard/ProfileOnboardingDialog";
+import ProfileStrengthCard from "@/components/dashboard/ProfileStrengthCard";
+import LatestProjectsWidget from "@/components/dashboard/LatestProjectsWidget";
 
 const Dashboard = () => {
   const { user, roles, loading, profile } = useAuth();
@@ -61,14 +69,22 @@ const Dashboard = () => {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center font-body">Loading...</div>;
   if (!user) return <Navigate to="/mentee-auth" replace />;
+  if (roles.includes("employer") && !roles.includes("mentor") && !roles.includes("mentee"))
+    return <Navigate to="/employer" replace />;
 
   const isMentor = roles.includes("mentor");
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <ProfileOnboardingDialog />
         <MentorStatusBanner />
         <ActivationBanner />
+        <AgreementBanner />
+        <ProfileStrengthCard />
+        <ActionPoints />
+        <TestimonialPromptCard />
+        <MonthlyFeedbackCard />
         <div>
           <h1 className="font-display text-2xl font-bold text-foreground">
             Welcome back, {profile?.full_name || "there"}!
@@ -105,7 +121,9 @@ const Dashboard = () => {
         </div>
 
         <UpcomingSessions userId={user.id} />
+        <LatestProjectsWidget />
         <UpcomingWorkshopsWidget limit={5} />
+        <PastWorkshopsRatings limit={5} />
       </div>
     </DashboardLayout>
   );

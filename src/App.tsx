@@ -22,6 +22,9 @@ import Profile from "./pages/Profile.tsx";
 import Courses from "./pages/Courses.tsx";
 import Marketplace from "./pages/Marketplace.tsx";
 import MarketplaceListing from "./pages/MarketplaceListing.tsx";
+import Projects from "./pages/Projects.tsx";
+import ProjectDetail from "./pages/ProjectDetail.tsx";
+import ProjectSubmit from "./pages/ProjectSubmit.tsx";
 import ProfilePreview from "./pages/ProfilePreview.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import VerifyEmail from "./pages/VerifyEmail.tsx";
@@ -71,6 +74,10 @@ const App = () => (
             <Route path="/dashboard/courses" element={<Courses />} />
             <Route path="/dashboard/marketplace" element={<Marketplace />} />
             <Route path="/dashboard/marketplace/listing" element={<MarketplaceListing />} />
+            <Route path="/dashboard/projects" element={<Projects />} />
+            <Route path="/dashboard/projects/new" element={<ProjectSubmit />} />
+            <Route path="/dashboard/projects/:id" element={<ProjectDetail />} />
+            <Route path="/dashboard/projects/:id/edit" element={<ProjectSubmit />} />
             <Route path="/dashboard/forum" element={<Forum />} />
             <Route path="/dashboard/feedback" element={<Feedback />} />
             <Route path="/dashboard/help" element={<Help />} />

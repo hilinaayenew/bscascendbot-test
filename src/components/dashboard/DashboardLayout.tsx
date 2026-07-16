@@ -6,10 +6,29 @@ import { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Users, MessageSquare, Target, Calendar, LogOut, Menu, X, Settings, CreditCard, GraduationCap, Store } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  MessageSquare,
+  Target,
+  Calendar,
+  LogOut,
+  Menu,
+  X,
+  Settings,
+  CreditCard,
+  GraduationCap,
+  MessagesSquare,
+  ClipboardList,
+  HelpCircle,
+  Rocket,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { format, addHours } from "date-fns";
+import FeedbackGate from "@/components/dashboard/FeedbackGate";
+import HelpSheet from "@/components/help/HelpSheet";
+import TourLauncher from "@/components/WelcomeTourDialog";
 import AICoachWidget from "@/components/AICoachWidget";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
@@ -48,13 +67,15 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
     { label: "Courses", href: "/dashboard/courses", icon: GraduationCap },
     { label: "Explore", href: "/dashboard/explore", icon: Users },
     { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
+    { label: "Forum", href: "/dashboard/forum", icon: MessagesSquare },
+    { label: "Project Wall", href: "/dashboard/projects", icon: Rocket },
     { label: "My Pairings", href: "/dashboard/pairings", icon: Target },
     { label: "Sessions", href: "/dashboard/sessions", icon: Calendar, dot: hasUpcomingSession },
-    { label: "Marketplace", href: "/dashboard/marketplace", icon: Store, badge: "Soon" },
-    { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    { label: "Feedback", href: "/dashboard/feedback", icon: ClipboardList },
+    { label: "Help", href: "/dashboard/help", icon: HelpCircle },
+    { label: "Profile Settings", href: "/dashboard/settings", icon: Settings },
     ...(isMentee && !isMentor ? [{ label: "Subscribe", href: "/dashboard/subscribe", icon: CreditCard }] : []),
   ];
-
 
   const handleSignOut = async () => {
     await signOut();
@@ -64,18 +85,18 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="min-h-screen bg-muted flex">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform md:translate-x-0 md:static ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform md:translate-x-0 md:sticky md:top-0 md:h-screen ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-border">
             <Link to="/" className="font-display text-xl font-bold text-accent tracking-tight">
               Ascendency
             </Link>
-            <p className="font-body text-xs text-muted-foreground mt-1">
-              {isMentor ? "Mentor" : "Mentee"} Dashboard
-            </p>
+            <p className="font-body text-xs text-muted-foreground mt-1">{isMentor ? "Mentor" : "Mentee"} Dashboard</p>
           </div>
 
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 px-4 pt-2 pb-4 space-y-1 overflow-y-auto">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.href;
@@ -94,11 +115,6 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
                   {item.label}
                   {"dot" in item && item.dot && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-destructive" />
-                  )}
-                  {"badge" in item && item.badge && (
-                    <span className="ml-auto text-[10px] font-body uppercase tracking-wide px-1.5 py-0.5 rounded bg-crimson-light text-primary">
-                      {item.badge}
-                    </span>
                   )}
                 </Link>
               );
@@ -130,15 +146,19 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-3 flex items-center gap-3 md:hidden">
-          <button onClick={() => setSidebarOpen(true)} className="p-1">
+        <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-3 flex items-center gap-3">
+          <button onClick={() => setSidebarOpen(true)} className="p-1 md:hidden">
             <Menu className="h-5 w-5" />
           </button>
-          <span className="font-display text-lg font-bold text-accent">Ascendency</span>
+          <span className="font-display text-lg font-bold text-accent md:hidden">Ascendency</span>
+          <div className="ml-auto">
+            <HelpSheet />
+          </div>
         </header>
         <main className="flex-1 p-4 md:p-8">{children}</main>
       </div>
-
+      <FeedbackGate />
+      <TourLauncher />
       <AICoachWidget />
     </div>
   );

@@ -5,8 +5,9 @@
 // Flow per request:
 //   1. Load user profile + conversation history from Supabase
 //   2. Build BSCCoach converser with context
-//   3. Routing call → Azure OpenAI selects which function to invoke (tool_choice: required)
-//   4. Execute the function (CHANGE_CONTEXT auto-chains to WORDALISE)
+//   3. Routing call → Azure OpenAI selects which function to invoke (tool_choice: auto),
+//      or answers directly if no function fits
+//   4. Execute the function (CHANGE_CONTEXT auto-chains to WORDALISE), or use the direct answer
 //   5. Save AI reply to messages table + return it
 
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -152,16 +153,33 @@ Deno.serve(async (req) => {
       ? new BotemaCoach(context, supabase, sender_id, azureConfig)
       : new BSCCoach(context, supabase, sender_id, azureConfig);
 
-    // ── 4. Keyword-based routing (fast, reliable, no extra API call) ──
-    const { fnName, fnArgs } = routeMessage(message, context);
-    console.log(`[Converser] Routing → ${fnName}`, fnArgs);
+    // ── 4. AI-based routing: the model picks which function to call ───
+    // Falls back to the keyword router only if the Azure routing call itself
+    // errors (network/credentials) — not when the model simply finds no
+    // function fits, which is handled by `directAnswer` below.
+    let fnName: string | null;
+    let fnArgs: Record<string, unknown>;
+    let directAnswer: string | null;
+    try {
+      ({ fnName, fnArgs, directAnswer } = await coach.routeViaAI(message));
+      console.log(`[Converser] AI routing → ${fnName ?? "direct answer"}`, fnArgs);
+    } catch (routingError) {
+      console.error("AI routing failed, falling back to keyword router:", routingError);
+      const fallback = routeMessage(message, context);
+      fnName = fallback.fnName;
+      fnArgs = fallback.fnArgs;
+      directAnswer = null;
+      console.log(`[Converser] Keyword routing → ${fnName}`, fnArgs);
+    }
 
-    // ── 5. Execute the selected function ──────────────────────────────
+    // ── 5. Execute the selected function, or use the model's direct answer ──
     let replyText: string;
     const functionCalled = fnName;
 
-    {
-      const fn = coach.getFunctionByName(fnName) || coach.getFunctionByName("adviseOnCareerTopic");
+    if (directAnswer) {
+      replyText = directAnswer;
+    } else {
+      const fn = coach.getFunctionByName(fnName!) || coach.getFunctionByName("adviseOnCareerTopic");
       if (!fn) throw new Error(`No function found: ${fnName}`);
       replyText = await fn.call(fnArgs, message);
     }

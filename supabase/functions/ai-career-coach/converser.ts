@@ -229,4 +229,51 @@ export abstract class Converser {
   getFunctionByName(name: string): ChatFunction | undefined {
     return this.functions.find((f) => f.name === name);
   }
+
+  // AI-based routing: lets the model pick which function to call (tool_choice: "auto").
+  // If none of the functions genuinely fit, the model answers directly instead —
+  // that reply is returned as `directAnswer` rather than forcing a function call.
+  async routeViaAI(message: string): Promise<{ fnName: string | null; fnArgs: Record<string, unknown>; directAnswer: string | null }> {
+    const url = `${this.azureConfig.endpoint}openai/deployments/${this.azureConfig.deployment}/chat/completions?api-version=${this.azureConfig.apiVersion}`;
+    const messages: OAIMessage[] = [
+      { role: "system", content: this.instructions },
+      ...this.context.conversationHistory.slice(-6),
+      { role: "user", content: message },
+    ];
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "api-key": this.azureConfig.apiKey },
+      body: JSON.stringify({
+        messages,
+        tools: this.functionSchemas,
+        tool_choice: "auto",
+        max_completion_tokens: 2000,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error("Azure OpenAI routing error:", data);
+      throw new Error("Azure OpenAI routing call failed");
+    }
+
+    const choice = data.choices?.[0];
+    const toolCall = choice?.message?.tool_calls?.[0];
+
+    if (toolCall) {
+      let fnArgs: Record<string, unknown> = {};
+      try {
+        fnArgs = JSON.parse(toolCall.function.arguments || "{}");
+      } catch {
+        fnArgs = {};
+      }
+      return { fnName: toolCall.function.name, fnArgs, directAnswer: null };
+    }
+
+    const directAnswer = choice?.message?.content;
+    if (!directAnswer) {
+      console.error("Azure OpenAI routing returned neither a tool call nor content, finish_reason:", choice?.finish_reason);
+    }
+    return { fnName: null, fnArgs: {}, directAnswer: directAnswer || null };
+  }
 }

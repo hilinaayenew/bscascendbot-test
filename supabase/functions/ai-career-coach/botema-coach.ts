@@ -126,6 +126,18 @@ The best way to use me is to be specific about where you are and what you're try
   }
 }
 
+// ── INSTRUCTIONS: out of scope (Botema voice) ─────────────────────────────
+class BotemaOutOfScope extends InstructionsFunction {
+  get name() { return "outOfScope"; }
+  get description() { return "Call this when the user's message has nothing to do with career coaching, tech careers, or this platform — e.g. general trivia, unrelated requests, or anything outside the coach's purpose."; }
+
+  getInstructionsContent(): string {
+    return `I'm Botema, your BSC Career Coach — I'm here for tech career questions: getting started in tech, CVs, job search, interview prep, salary negotiation, further education, mentorship, or mindset challenges like imposter syndrome.
+
+That one's outside what I can help with here. What's actually going on with your tech career or job search that I can help you with?`;
+  }
+}
+
 // ── ENGAGE: invite user context (Botema voice) ────────────────────────────
 class BotemaInvite extends EngageFunction {
   get name() { return "inviteUserContext"; }
@@ -175,7 +187,7 @@ export class BotemaCoach extends Converser {
 Current user profile: ${profileSummary}
 Current career topic in focus: ${currentTopic}
 
-ROUTING RULES — always call exactly one function, never respond directly:
+ROUTING RULES — call the one function that best matches the message:
 
 1. MINDSET — user expresses fear, self-doubt, imposter syndrome, burnout, anxiety, motivation loss, feeling they don't belong → call addressMindsetChallenge.
 
@@ -187,9 +199,11 @@ ROUTING RULES — always call exactly one function, never respond directly:
 
 5. TOPIC/QUESTION (DEFAULT) — anything else: a career question, a topic, a skill, a field, a request for advice, even short messages like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer.
 
+6. OUT OF SCOPE — the message has nothing to do with careers, tech, or this coaching service (e.g. general trivia, unrelated requests, or anything outside a career coach's role) → call outOfScope.
+
 When in doubt, use updateCareerTopic. It is the most common function.
 
-Always call exactly one function.`;
+If none of these functions genuinely fit but the message is still a legitimate career-related question or comment, don't force a function call — answer the user directly and briefly yourself instead, in Botema's direct, personal voice.`;
   }
 
   initializeFunctions(): ChatFunction[] {
@@ -200,6 +214,7 @@ Always call exactly one function.`;
       new BoteMindset(this),
       new BotemaHowItWorks(this),
       new BotemaInvite(this),
+      new BotemaOutOfScope(this),
     ];
   }
 }

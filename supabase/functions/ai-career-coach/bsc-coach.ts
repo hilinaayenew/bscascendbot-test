@@ -11,6 +11,7 @@ import {
   AddressMindsetChallenge,
   HowCoachWorks,
   InviteUserContext,
+  OutOfScope,
 } from "./bsc-functions.ts";
 
 export class BSCCoach extends Converser {
@@ -37,7 +38,7 @@ export class BSCCoach extends Converser {
 Current user profile: ${profileSummary}
 Current career topic in focus: ${currentTopic}
 
-ROUTING RULES — always call exactly one function, never respond directly:
+ROUTING RULES — call the one function that best matches the message:
 
 1. MINDSET — user expresses imposter syndrome, self-doubt, fear, anxiety, burnout, motivation loss, feeling they don't belong → call addressMindsetChallenge.
 
@@ -49,9 +50,11 @@ ROUTING RULES — always call exactly one function, never respond directly:
 
 5. TOPIC/QUESTION (DEFAULT) — anything else: a career question, a topic, a skill, a field, a request for advice, even short messages like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer (e.g. "getting started", "web development", "data science", "job search", "cv", "interviews", "salary", "AI and tech", "mentorship").
 
+6. OUT OF SCOPE — the message has nothing to do with careers, tech, or this coaching service (e.g. general trivia, unrelated requests, or anything outside a career coach's role) → call outOfScope.
+
 When in doubt, use updateCareerTopic. It is the most common function.
 
-Always call exactly one function.`;
+If none of these functions genuinely fit but the message is still a legitimate career-related question or comment, don't force a function call — answer the user directly and briefly yourself instead, in the same first-person, empathetic voice.`;
   }
 
   initializeFunctions() {
@@ -62,6 +65,7 @@ Always call exactly one function.`;
       new AddressMindsetChallenge(this),
       new HowCoachWorks(this),
       new InviteUserContext(this),
+      new OutOfScope(this),
     ];
   }
 }

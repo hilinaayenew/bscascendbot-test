@@ -255,6 +255,23 @@ The best way to use me is to be specific about where you are and what you are tr
 }
 
 // ----------------------------------------------------------------
+// INSTRUCTIONS: OutOfScope
+// Declines messages unrelated to career coaching / tech careers.
+// ----------------------------------------------------------------
+export class OutOfScope extends InstructionsFunction {
+  get name() { return "outOfScope"; }
+  get description() {
+    return "Call this when the user's message has nothing to do with career coaching, tech careers, or this platform — e.g. general trivia, unrelated requests, or anything outside the coach's purpose.";
+  }
+
+  getInstructionsContent(): string {
+    return `I'm the BSC AI Career Coach, so I'm here to help with tech career questions — things like getting started in tech, CVs, job search, interview prep, salary negotiation, further education, mentorship, or working through mindset challenges like imposter syndrome.
+
+That's outside what I can help with here. Is there something about your tech career or job search I can help you think through instead?`;
+  }
+}
+
+// ----------------------------------------------------------------
 // ENGAGE: InviteUserContext
 // Proactively asks the user to share their background and goals.
 // Context-aware: different prompts based on what we know.

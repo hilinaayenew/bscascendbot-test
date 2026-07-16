@@ -60,13 +60,11 @@ Entry point: `index.ts`, a single Deno edge function handling `POST /ai-career-c
 1. **Frontend sends** `{ message, sender_id, bot }` (`bot` is `"botema"` or `"chataki"`, chosen by the user in the UI — see `Messages.tsx` around the persona-picker dropdown).
 2. **Load context**: the function fetches the user's saved profile (`coach_user_profiles`) and their last 10 messages with the AI Coach (`messages` table), then builds a `ConverserContext` (profile + entities + conversation history).
 3. **Build the coach**: instantiates `BotemaCoach` or `BSCCoach` (default) with that context.
-4. **Route the message**: `routeMessage()` in `index.ts` — a plain regex/keyword classifier, **not an AI call** — decides which function to invoke:
-   - Pure greeting → `howCoachWorks`
-   - Mindset/emotional language (imposter syndrome, burnout, anxiety, etc.) → `addressMindsetChallenge`
-   - Long message with personal background details → `captureUserBackground`
-   - Everything else (the common case) → `updateCareerTopic`
-   
-   > Note: the `instructions` getter and `functionSchemas` on each persona class describe an *LLM-based* routing approach (an Azure tool-call that picks the function) — that was the original design, but it was replaced with the faster, free, more predictable keyword router you see in `routeMessage()`. The instructions/schemas are currently unused dead weight from that earlier design; don't be confused if you see them.
+4. **Route the message**: `coach.routeViaAI()` (in `converser.ts`) sends the message, conversation history, and the persona's `instructions` + `functionSchemas` to Azure OpenAI as a tool-call request (`tool_choice: "auto"`). The model either:
+   - calls one of the persona's functions (`howCoachWorks`, `addressMindsetChallenge`, `captureUserBackground`, `updateCareerTopic`, `outOfScope`, etc.) — `outOfScope` is a fixed `INSTRUCTIONS` reply for messages unrelated to career coaching entirely, or
+   - decides none of them fit but the message is still legitimately career-related, and answers directly — that reply is used as-is, no function is executed.
+
+   `routeMessage()` in `index.ts` (a plain regex/keyword classifier) still exists as a fallback, used only if the Azure routing call itself throws (network/credentials issue) — not when the model simply finds no function fits, which is the `directAnswer` path above.
 5. **Execute the function**: `fn.call(args, message)` runs. If it's a `CHANGE_CONTEXT` function, it updates state and immediately chains into its paired `WORDALISE` function.
 6. **Generate the reply** (only for `WORDALISE` functions): builds a prompt from domain knowledge + few-shot examples + recent conversation, sends it to Azure OpenAI, and returns the text.
 7. **Save + respond**: the reply is inserted into the `messages` table (as a message from the AI Coach system user) and returned to the frontend as JSON.
@@ -141,4 +139,4 @@ Debugging an empty/broken reply:
 1. Check the edge function logs in the Supabase dashboard (Functions → ai-career-coach → Logs) for `console.error` output — both `callAzure()` helpers log the raw Azure error body on a non-OK response, and log `finish_reason` if content came back empty.
 2. If `finish_reason` is `"length"`, the token budget was exhausted — see §6.
 3. If the error is about missing credentials, check `npx supabase secrets list` — the four `AZURE_OPENAI_*` secrets must all be set.
-4. `console.log('[Converser] Routing → ...')` in `index.ts` shows which function the keyword router picked for a given message — useful for figuring out if a message was misrouted rather than the AI call actually failing.
+4. `console.log('[Converser] AI routing → ...')` (or `Keyword routing → ...` if the AI routing call fell back) in `index.ts` shows which function was picked — or that the model answered directly — for a given message, useful for figuring out if a message was misrouted rather than the AI call actually failing.

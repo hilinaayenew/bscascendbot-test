@@ -50,7 +50,9 @@ async function routeWithAI(
       tools: functionSchemas,
       tool_choice: "required",
       parallel_tool_calls: false,
-      max_completion_tokens: 300,
+      // gpt-5-nano is a reasoning model — it spends part of this budget on hidden
+      // reasoning before the tool call itself, so keep this generous (see README §6).
+      max_completion_tokens: 2000,
     }),
   });
 

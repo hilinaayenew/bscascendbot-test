@@ -4,7 +4,7 @@ Welcome! This doc explains how the AI Career Coach chatbot works, end to end. It
 
 ## 1. What this feature is
 
-A chatbot inside the Messages page that gives BSC users career advice. Users open a chat with the "AI Career Coach" system contact and pick one of two coach personas to talk to:
+A chatbot, reachable via a floating icon in the bottom-right corner of every dashboard page (`src/components/AICoachWidget.tsx`), that gives BSC users career advice. Users open the widget and pick one of two coach personas to talk to:
 
 - **Chataki** — warm, thorough, research-backed tone (default)
 - **Botema** — direct, personal, African-tech-context aware
@@ -14,7 +14,7 @@ Both personas answer using the same knowledge base and the same underlying code 
 ## 2. Where the code lives
 
 ```
-src/pages/Messages.tsx                          ← frontend chat UI, persona picker
+src/components/AICoachWidget.tsx                 ← frontend chat UI, floating icon, persona picker
 src/lib/constants.ts                             ← AI_COACH_ID constant
 
 supabase/functions/ai-career-coach/
@@ -57,16 +57,12 @@ These are defined as classes in `converser.ts` (`InstructionsFunction`, `EngageF
 
 Entry point: `index.ts`, a single Deno edge function handling `POST /ai-career-coach`.
 
-1. **Frontend sends** `{ message, sender_id, bot }` (`bot` is `"botema"` or `"chataki"`, chosen by the user in the UI — see `Messages.tsx` around the persona-picker dropdown).
+1. **Frontend sends** `{ message, sender_id, bot }` (`bot` is `"botema"` or `"chataki"`, chosen by the user in the widget's persona picker).
 2. **Load context**: the function fetches the user's saved profile (`coach_user_profiles`) and their last 10 messages with the AI Coach (`messages` table), then builds a `ConverserContext` (profile + entities + conversation history).
 3. **Build the coach**: instantiates `BotemaCoach` or `BSCCoach` (default) with that context.
-4. **Route the message**: `routeMessage()` in `index.ts` — a plain regex/keyword classifier, **not an AI call** — decides which function to invoke:
-   - Pure greeting → `howCoachWorks`
-   - Mindset/emotional language (imposter syndrome, burnout, anxiety, etc.) → `addressMindsetChallenge`
-   - Long message with personal background details → `captureUserBackground`
-   - Everything else (the common case) → `updateCareerTopic`
-   
-   > Note: the `instructions` getter and `functionSchemas` on each persona class describe an *LLM-based* routing approach (an Azure tool-call that picks the function) — that was the original design, but it was replaced with the faster, free, more predictable keyword router you see in `routeMessage()`. The instructions/schemas are currently unused dead weight from that earlier design; don't be confused if you see them.
+4. **Route the message**: `routeWithAI()` in `index.ts` sends the message, conversation history, and the persona's `instructions` + `functionSchemas` to Azure OpenAI as a tool-call request (`tool_choice: "required"`, `parallel_tool_calls: false` — the model must call exactly one function, never answer directly). The model picks one of the persona's functions, including `answerOutOfScope` — a fixed `INSTRUCTIONS` reply used whenever the message is unrelated to career coaching entirely (general trivia, unrelated technical help, travel, etc.).
+
+   If the routing call itself fails (API error, or the model returns no tool call — e.g. it burned its token budget on hidden reasoning, see §6), `routeWithAI()` falls back to `answerOutOfScope` rather than guessing a topic — declining is safer than answering the wrong domain in the coach's voice. As a second line of defense, `adviseOnCareerTopic`'s own system prompt (in `bsc-functions.ts`/`botema-coach.ts`) also instructs the model to refuse off-topic questions even if it somehow got routed there. `console.log('[Converser] Routing → ...')` in `index.ts` shows which function was picked and includes a `debug` reason string whenever the fallback fired.
 5. **Execute the function**: `fn.call(args, message)` runs. If it's a `CHANGE_CONTEXT` function, it updates state and immediately chains into its paired `WORDALISE` function.
 6. **Generate the reply** (only for `WORDALISE` functions): builds a prompt from domain knowledge + few-shot examples + recent conversation, sends it to Azure OpenAI, and returns the text.
 7. **Save + respond**: the reply is inserted into the `messages` table (as a message from the AI Coach system user) and returned to the frontend as JSON.
@@ -111,27 +107,28 @@ Config comes from Supabase secrets (`AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_API_K
 | `coach_wordalisations` | Few-shot example answers for Chataki's `WORDALISE` functions, keyed by `function_name`. Service-role-only (RLS blocks direct user access — only the edge function, using the service role key, can read it). This is where Chataki's real voice data (from the training-questions CSV) will eventually live. |
 | `messages` | The shared messaging table used across the whole app. The AI Coach is a real row in `auth.users` (id `00000000-0000-0000-0000-000000000002`, seeded by `20260525124600_add_ai_coach_profile.sql`) so normal foreign keys and RLS policies work without special-casing. A dedicated RLS policy (`20260528000000_allow_system_account_messages.sql`) lets any authenticated user message this system account directly, without needing an existing pairing/booking. |
 
-## 8. Frontend integration (`src/pages/Messages.tsx`)
+## 8. Frontend integration (`src/components/AICoachWidget.tsx`)
 
 - `selectedBot` state (`"botema" | "chataki" | null`), persisted in `sessionStorage` so the choice survives a page refresh within the session.
-- Persona picker dropdown lets the user switch between Botema and Chataki at any time.
-- Sending a message to the AI Coach contact calls the edge function:
+- Persona picker dropdown (in the widget's chat header) lets the user switch between Botema and Chataki at any time.
+- Sending a message to the AI Coach calls the edge function:
   ```ts
   supabase.functions.invoke('ai-career-coach', {
     body: { message: msgText, sender_id: user.id, bot: selectedBot ?? "chataki" }
   })
   ```
 - The function's reply is written straight to the `messages` table by the edge function itself (step 7 above) — the frontend just re-fetches messages afterwards rather than rendering the HTTP response directly.
+- The widget is mounted once in `src/components/dashboard/DashboardLayout.tsx`, so it floats on every dashboard page. The AI Coach no longer appears in `src/pages/Messages.tsx` — that page is human-to-human (+ BSC Admin) only now.
 
 ## 9. How to extend this
 
 **Add a new topic to the knowledge base:** add an entry to `KNOWLEDGE_BASE` in `bsc-knowledge.ts`, and add a matching pattern in `classifyTopic()` so the router can reach it.
 
-**Add a new function (new type of thing the coach can do):** create a class extending the right base (`WordaliseFunction` if it needs to generate free text, `InstructionsFunction`/`EngageFunction` for fixed responses, `ChangeContextFunction` if it needs to update state first), add it to both personas' `initializeFunctions()` if it should exist in both, and add a routing rule for it in `routeMessage()` in `index.ts`.
+**Add a new function (new type of thing the coach can do):** create a class extending the right base (`WordaliseFunction` if it needs to generate free text, `InstructionsFunction`/`EngageFunction` for fixed responses, `ChangeContextFunction` if it needs to update state first), add it to both personas' `initializeFunctions()` if it should exist in both, and add a routing rule for it in that persona's `instructions` getter (in `bsc-coach.ts`/`botema-coach.ts`) so the AI router knows when to call it.
 
 **Add/improve a persona's voice:** for Botema, add more real Q&A pairs to `BOTEMA_EXAMPLES` in `botema-examples.ts`. For Chataki, add rows to `coach_wordalisations` (via a migration, matching the pattern in `20260615110000_seed_wordalisations.sql`) — ideally sourced from a real coach's answers, same as Botema.
 
-**Add a third persona:** create a new `*-coach.ts` file mirroring `botema-coach.ts` (own system prompt, own `callAzure`, own function set), wire it into the `bot` parameter switch in `index.ts`, and add it to the picker dropdown in `Messages.tsx`.
+**Add a third persona:** create a new `*-coach.ts` file mirroring `botema-coach.ts` (own system prompt, own `callAzure`, own function set), wire it into the `bot` parameter switch in `index.ts`, and add it to the picker dropdown in `AICoachWidget.tsx`.
 
 ## 10. Deploying and debugging
 
@@ -141,4 +138,4 @@ Debugging an empty/broken reply:
 1. Check the edge function logs in the Supabase dashboard (Functions → ai-career-coach → Logs) for `console.error` output — both `callAzure()` helpers log the raw Azure error body on a non-OK response, and log `finish_reason` if content came back empty.
 2. If `finish_reason` is `"length"`, the token budget was exhausted — see §6.
 3. If the error is about missing credentials, check `npx supabase secrets list` — the four `AZURE_OPENAI_*` secrets must all be set.
-4. `console.log('[Converser] Routing → ...')` in `index.ts` shows which function the keyword router picked for a given message — useful for figuring out if a message was misrouted rather than the AI call actually failing.
+4. `console.log('[Converser] Routing → ...')` in `index.ts` shows which function the AI router picked for a given message, plus a `debug` reason string if it had to fall back to `answerOutOfScope` — useful for telling a misroute apart from an outright API failure.

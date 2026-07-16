@@ -156,7 +156,7 @@ const AICoachWidget = () => {
   return (
     <>
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[22rem] max-w-[calc(100vw-3rem)] h-[32rem] max-h-[calc(100vh-8rem)] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed bottom-40 right-6 z-50 w-[22rem] max-w-[calc(100vw-3rem)] h-[32rem] max-h-[calc(100vh-12rem)] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="p-3 border-b border-border flex items-center gap-2 bg-primary text-primary-foreground">
             <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center shrink-0">
@@ -250,7 +250,7 @@ const AICoachWidget = () => {
       {/* Floating icon */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed bottom-20 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform"
         title="AI Career Coach"
       >
         {open ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}

@@ -228,18 +228,14 @@ INSERT INTO public.coach_wordalisations (function_name, topic, question, knowled
 
 -- ============================================================
 -- addressMindsetChallenge — tagged by challenge_type
+-- Note: "stay motivated when progress feels slow" (motivation), "I constantly
+-- feel like I don't belong" (belonging), and "stop holding myself back from
+-- applying" (confidence) are already seeded by
+-- 20260615110000_seed_wordalisations.sql, so they're skipped here.
 -- ============================================================
-('addressMindsetChallenge', 'motivation', 'How do I stay motivated when progress feels slow?',
- 'Shifting measurement from outcomes (job offers) to inputs (hours practised, projects completed) helps, since the learning curve is exponential and early progress always feels slower than it is.',
- 'Shift what you''re measuring from outcomes to inputs — hours practised, projects finished — since the curve is exponential and early progress always feels slower than it is. What does your routine look like right now?'),
-
 ('addressMindsetChallenge', 'general', 'How do I manage my mental health while going through a challenging career transition?',
  'Treating rest and support as a built-in part of the plan, not an afterthought, reflects that a career transition is genuinely stressful and deserves real care.',
  'Treat rest and support as part of the plan, not an afterthought — a career transition is genuinely stressful and deserves real care. What''s weighing on you most right now?'),
-
-('addressMindsetChallenge', 'belonging', 'I constantly feel like I don''t belong in tech.',
- 'This feeling is extremely common, particularly among women and career changers, and is often evidence of self-awareness in a field that has historically excluded many groups rather than evidence of incompetence.',
- 'That feeling is incredibly common and it''s not evidence you don''t belong — it''s often evidence you''re paying attention in a field that hasn''t always been welcoming. What''s making you feel this most strongly right now?'),
 
 ('addressMindsetChallenge', 'confidence', 'How do I handle moments when I feel less competent than my colleagues?',
  'Comparing your own behind-the-scenes uncertainty to colleagues'' polished, visible output is a common but misleading comparison — most people feel less certain than they appear.',
@@ -248,10 +244,6 @@ INSERT INTO public.coach_wordalisations (function_name, topic, question, knowled
 ('addressMindsetChallenge', 'confidence', 'How do I build confidence speaking up in meetings or presenting my work?',
  'Starting with one small contribution per meeting builds confidence through action, rather than waiting to feel confident before speaking up.',
  'Start small — one comment or question per meeting — confidence tends to follow action, not the other way around. What''s holding you back in the room right now?'),
-
-('addressMindsetChallenge', 'confidence', 'How do I stop holding myself back from applying to roles I feel underqualified for?',
- 'Research shows women apply for jobs when they meet 100% of requirements, men at around 60%; job descriptions are wish lists, not checklists, and companies rarely hire their perfect candidate.',
- 'Job descriptions are wish lists, not checklists — apply if you could learn the gaps within three months of being hired. What role have you been hesitating on?'),
 
 ('addressMindsetChallenge', 'general', 'How do I actually internalise my achievements instead of brushing them off?',
  'Keeping a running written log of wins as they happen makes them much harder to dismiss than relying on memory alone.',

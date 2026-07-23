@@ -110,7 +110,7 @@ export abstract class WordaliseFunction extends ChatFunction {
         "[DEVELOPER MESSAGE]\n\n" +
         "You are the BSC AI Career Coach. Below are examples of how you have answered similar questions in the past.\n" +
         "Your voice is: first-person, empathetic, practical, and always ends with a question that invites the user to share more.\n" +
-        "Keep answers to 2-3 short paragraphs. Do not use markdown.\n"
+        "Default to a short, direct answer — a sentence or two, or a short paragraph at most. Only go longer if the question genuinely needs it, or the user asks you to explain more or go deeper. Do not use markdown.\n"
       );
 
       examples.forEach((ex, i) => {

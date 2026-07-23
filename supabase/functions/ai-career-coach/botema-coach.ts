@@ -4,7 +4,7 @@
 
 import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType } from "./converser.ts";
 import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./bsc-functions.ts";
-import { KNOWLEDGE_BASE, classifyTopic } from "./bsc-knowledge.ts";
+import { KNOWLEDGE_BASE, classifyTopic, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT } from "./botema-examples.ts";
 
 async function callAzure(
@@ -34,9 +34,9 @@ class BotemaAdvise extends WordaliseFunction {
   get description() { return "Give career advice in Botema's direct, personal voice."; }
 
   getDomainKnowledge(_args: Record<string, unknown>): string {
-    const topic = this.converser.context.currentEntities[0] || "cv_job_search";
+    const topic = this.converser.context.currentEntities[0] || "general";
     const userProfile = this.converser.context.userProfile;
-    let knowledge = KNOWLEDGE_BASE[topic] || KNOWLEDGE_BASE["cv_job_search"];
+    let knowledge = KNOWLEDGE_BASE[topic] || GENERAL_FALLBACK;
     if (userProfile.current_background || userProfile.target_role || userProfile.career_stage) {
       knowledge = `User context: ${[
         userProfile.career_stage && `Career stage: ${userProfile.career_stage}`,

@@ -20,7 +20,7 @@ import {
   AzureConfig,
   OAIMessage,
 } from "./converser.ts";
-import { KNOWLEDGE_BASE, classifyTopic } from "./bsc-knowledge.ts";
+import { KNOWLEDGE_BASE, classifyTopic, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 
 // Helper: call Azure OpenAI chat completions
 async function callAzure(
@@ -153,10 +153,10 @@ export class AdviseOnCareerTopic extends WordaliseFunction {
   }
 
   getDomainKnowledge(_args: Record<string, unknown>): string {
-    const topic = this.converser.context.currentEntities[0] || "cv_job_search";
+    const topic = this.converser.context.currentEntities[0] || "general";
     const userProfile = this.converser.context.userProfile;
 
-    let knowledge = KNOWLEDGE_BASE[topic] || KNOWLEDGE_BASE["cv_job_search"];
+    let knowledge = KNOWLEDGE_BASE[topic] || GENERAL_FALLBACK;
 
     if (userProfile.current_background || userProfile.target_role || userProfile.career_stage) {
       knowledge = `User context: ${[
@@ -175,7 +175,7 @@ export class AdviseOnCareerTopic extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: "You are the BSC AI Career Coach. Answer in first person. Be empathetic, practical, and concise. 2-3 short paragraphs. No markdown formatting. Always end with a question that invites the user to share more about their situation. If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.",
+        content: "You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Default to a short, direct answer — a sentence or two, or a short paragraph at most. Only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper. Always end with a question that invites the user to share more about their situation. If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.",
       },
       ...history,
       { role: "user", content: prompt },
@@ -220,7 +220,7 @@ export class AddressMindsetChallenge extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: "You are the BSC AI Career Coach addressing a mindset challenge. Lead with validation before advice — acknowledge what the user is feeling before suggesting anything. Speak in first person. Be warm, honest, and grounded. 2-3 paragraphs. No markdown. End with a question that invites them to share more.",
+        content: "You are the BSC AI Career Coach addressing a mindset challenge. Lead with validation before advice — acknowledge what the user is feeling before suggesting anything. Speak in first person, warm, honest, and grounded. No markdown. Default to a short, direct response — validation plus one clear next step is often enough. Only go longer if the situation genuinely needs more, or the user asks you to explain more or go deeper. End with a question that invites them to share more.",
       },
       ...history,
       { role: "user", content: prompt },

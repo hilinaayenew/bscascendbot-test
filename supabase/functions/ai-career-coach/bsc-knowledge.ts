@@ -137,6 +137,15 @@ After the interview: send a brief follow-up email thanking the interviewer and r
   `.trim(),
 };
 
+// Used when the topic doesn't match any specific guide below — e.g. a broad or
+// exploratory question (a country, an industry, "what's it like to...") that BSC
+// hasn't written dedicated content for. Rather than silently substituting an
+// unrelated guide (which used to default to cv_job_search), this tells the model
+// to answer from its own general knowledge and then narrow down with the user.
+export const GENERAL_FALLBACK = `
+No specific BSC guide covers this topic directly. Answer using your own general knowledge, keeping the answer relevant to a tech career context (job market, day-to-day work, remote opportunities, skills in demand, etc. — whatever fits the question). Keep it brief and honest that it's general knowledge rather than a BSC-specific guide, then ask a clarifying question about which specific angle they'd like to go deeper on.
+`.trim();
+
 // Maps a topic string from the routing call to a knowledge base key
 export function classifyTopic(topic: string): string {
   const t = topic.toLowerCase();
@@ -151,6 +160,6 @@ export function classifyTopic(topic: string): string {
   if (/master|degree|certification|cert|study|education|scholarship|qualification/.test(t)) return "further_education";
   if (/data science|machine learning|ml|ai|cloud|devops|ux|product manager|pm|cybersecurity|security|software|frontend|backend|full.?stack|mobile/.test(t)) return "career_paths";
 
-  // Default: return the general career advice knowledge
-  return "cv_job_search";
+  // Default: no specific guide fits — use the general fallback, not an unrelated one.
+  return "general";
 }

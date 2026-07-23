@@ -118,14 +118,9 @@ class BotemaHowItWorks extends InstructionsFunction {
   getInstructionsContent(): string {
     const profile = this.converser.context.userProfile;
     const hasProfile = profile.career_stage || profile.target_role || profile.current_background;
-    const greeting = hasProfile
-      ? "I'm Botema, your BSC Career Coach — good to have you back."
-      : "I'm Botema, your BSC Career Coach. I'm here to give you honest, direct guidance on your tech career journey.";
-    return `${greeting}
-
-I can help you with: getting started in tech, choosing the right path, writing a CV and finding a job, interview preparation, salary negotiation, further education choices, finding and using mentors effectively, and working through mindset challenges like imposter syndrome or lack of motivation.
-
-The best way to use me is to be specific about where you are and what you're trying to figure out. I'll give you my honest take. What's on your mind?`;
+    return hasProfile
+      ? "Hi, welcome back. I'm Botema, your BSC Career Coach — how can I help you today?"
+      : "Hi, I'm Botema, your BSC Career Coach — how can I help you today?";
   }
 }
 

@@ -243,15 +243,9 @@ export class HowCoachWorks extends InstructionsFunction {
     const profile = this.converser.context.userProfile;
     const hasProfile = profile.career_stage || profile.target_role || profile.current_background;
 
-    const greeting = hasProfile
-      ? `I'm here as your BSC AI Career Coach — good to hear from you again.`
-      : `I'm your BSC AI Career Coach — I'm here to help you navigate your tech career.`;
-
-    return `${greeting}
-
-I can help you with: getting started in tech, choosing a career path, writing a CV and job searching, interview preparation, salary negotiation, further education decisions, finding and using mentors, and working through mindset challenges like imposter syndrome or motivation.
-
-The best way to use me is to be specific about where you are and what you are trying to figure out. The more context you share about your background and goals, the more useful I can be. What's on your mind?`;
+    return hasProfile
+      ? `Hi, welcome back. I'm your BSC AI Career Coach — how can I help you today?`
+      : `Hi, I'm your BSC AI Career Coach — how can I help you today?`;
   }
 }
 

@@ -152,6 +152,10 @@ export class AdviseOnCareerTopic extends WordaliseFunction {
     return "Generate career advice on the current topic using BSC knowledge and voice. Use after updateCareerTopic has set the current entity.";
   }
 
+  getTopicFilter(_args: Record<string, unknown>): string | null {
+    return this.converser.context.currentEntities[0] || null;
+  }
+
   getDomainKnowledge(_args: Record<string, unknown>): string {
     const topic = this.converser.context.currentEntities[0] || "general";
     const userProfile = this.converser.context.userProfile;
@@ -209,6 +213,10 @@ export class AddressMindsetChallenge extends WordaliseFunction {
       },
       required: [],
     };
+  }
+
+  getTopicFilter(args: Record<string, unknown>): string | null {
+    return (args.challenge_type as string) || null;
   }
 
   getDomainKnowledge(_args: Record<string, unknown>): string {

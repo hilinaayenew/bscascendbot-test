@@ -88,8 +88,29 @@ export abstract class WordaliseFunction extends ChatFunction {
 
   abstract getDomainKnowledge(args: Record<string, unknown>): string;
 
-  async loadFewShotExamples(limit = 3): Promise<Array<{ question: string; knowledge: string; answer: string }>> {
+  // Subclasses override getTopicFilter() to say which topic tag to prefer —
+  // AdviseOnCareerTopic uses the classified career topic, AddressMindsetChallenge
+  // uses the challenge_type argument. Returning null skips topic filtering.
+  getTopicFilter(_args: Record<string, unknown>): string | null {
+    return null;
+  }
+
+  async loadFewShotExamples(args: Record<string, unknown> = {}, limit = 3): Promise<Array<{ question: string; knowledge: string; answer: string }>> {
     try {
+      const topic = this.getTopicFilter(args);
+
+      if (topic) {
+        const { data } = await this.converser.supabase
+          .from("coach_wordalisations")
+          .select("question, knowledge, answer")
+          .eq("function_name", this.name)
+          .eq("topic", topic)
+          .order("created_at", { ascending: false })
+          .limit(limit);
+        if (data && data.length > 0) return data;
+      }
+
+      // No topic match (or no topic given) — fall back to whatever's most recent for this function.
       const { data } = await this.converser.supabase
         .from("coach_wordalisations")
         .select("question, knowledge, answer")
@@ -134,7 +155,7 @@ export abstract class WordaliseFunction extends ChatFunction {
 
   async call(args: Record<string, unknown>, question: string): Promise<string> {
     const knowledge = this.getDomainKnowledge(args);
-    const examples = await this.loadFewShotExamples();
+    const examples = await this.loadFewShotExamples(args);
     const prompt = this.buildFewShotPrompt(question, knowledge, examples);
     return this.generateResponse(prompt, question);
   }

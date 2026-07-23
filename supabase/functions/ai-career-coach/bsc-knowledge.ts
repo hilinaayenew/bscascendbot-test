@@ -135,6 +135,18 @@ Before the interview: research the company's engineering blog, recent product re
 
 After the interview: send a brief follow-up email thanking the interviewer and referencing one specific thing you discussed. This is unusual enough to be memorable and signals genuine interest.
   `.trim(),
+
+  ai_impact: `
+AI is reshaping tech careers rather than eliminating them, but the shift is real and worth planning for. Roles centred on repetitive, well-specified coding tasks are the most exposed; roles centred on judgement, system design, stakeholder communication, and knowing what to build are the most durable. This applies across the stack, not just to developers.
+
+Using AI tools well is now a baseline skill, not a shortcut around learning. GitHub Copilot, ChatGPT, and similar tools accelerate people who already understand the fundamentals and can evaluate what the tool produces — they do not replace that understanding. Treat them as a fast first draft and a research partner, not a substitute for learning to reason about code and systems yourself.
+
+Future-proofing looks like: get strong at the things AI is weak at (ambiguous requirements, cross-team communication, debugging novel problems, ethical and business judgement); build a portfolio that shows you can direct and evaluate AI-assisted work, not just prompt it; keep learning fundamentals rather than only tool-specific tricks, since tools change fast and fundamentals don't.
+
+Hiring is changing too — AI-assisted take-home tests and screening tools are increasingly common, and some companies now explicitly discuss how candidates use AI tools during interviews rather than banning them. Expect more emphasis on system design and judgement-based interviews as pure coding-recall becomes easier to fake.
+
+There are real ethical responsibilities that come with building AI systems: understanding bias in training data and outputs, being honest about a system's limitations rather than overselling it, considering who is affected by a model's mistakes, and pushing back when asked to ship something you know is harmful or deceptive. These are increasingly explicit expectations in tech roles, not optional extras.
+  `.trim(),
 };
 
 // Used when the topic doesn't match any specific guide below — e.g. a broad or
@@ -158,6 +170,7 @@ export function classifyTopic(topic: string): string {
   if (/balance|family|boundary|flexible|wellbeing|health|exhausted|rest/.test(t)) return "wellbeing";
   if (/mentor|sponsor|coach|advisor|pairing/.test(t)) return "mentorship";
   if (/master|degree|certification|cert|study|education|scholarship|qualification/.test(t)) return "further_education";
+  if (/replac|obsolete|future.?proof|automat|ethic|ai tool|copilot|chatgpt|ai.{0,15}(job|career|hiring|recruit)|hiring.{0,15}ai/.test(t)) return "ai_impact";
   if (/data science|machine learning|ml|ai|cloud|devops|ux|product manager|pm|cybersecurity|security|software|frontend|backend|full.?stack|mobile/.test(t)) return "career_paths";
 
   // Default: no specific guide fits — use the general fallback, not an unrelated one.

@@ -48,12 +48,12 @@ class BotemaAdvise extends WordaliseFunction {
     return knowledge;
   }
 
-  async loadFewShotExamples() {
-    return BOTEMA_EXAMPLES.adviseOnCareerTopic.map(ex => ({
-      question: ex.question,
-      knowledge: "",
-      answer: ex.answer,
-    }));
+  async loadFewShotExamples(_args: Record<string, unknown> = {}, limit = 3) {
+    const topic = this.converser.context.currentEntities[0];
+    const pool = BOTEMA_EXAMPLES.adviseOnCareerTopic;
+    const matched = topic ? pool.filter(ex => ex.topic === topic) : [];
+    const chosen = (matched.length > 0 ? matched : pool).slice(0, limit);
+    return chosen.map(ex => ({ question: ex.question, knowledge: "", answer: ex.answer }));
   }
 
   async generateResponse(prompt: string, _question: string): Promise<string> {
@@ -88,12 +88,12 @@ class BoteMindset extends WordaliseFunction {
     return KNOWLEDGE_BASE["mindset"] + "\n\n---\n\n" + KNOWLEDGE_BASE["wellbeing"];
   }
 
-  async loadFewShotExamples() {
-    return BOTEMA_EXAMPLES.addressMindsetChallenge.map(ex => ({
-      question: ex.question,
-      knowledge: "",
-      answer: ex.answer,
-    }));
+  async loadFewShotExamples(args: Record<string, unknown> = {}, limit = 3) {
+    const topic = args.challenge_type as string | undefined;
+    const pool = BOTEMA_EXAMPLES.addressMindsetChallenge;
+    const matched = topic ? pool.filter(ex => ex.topic === topic) : [];
+    const chosen = (matched.length > 0 ? matched : pool).slice(0, limit);
+    return chosen.map(ex => ({ question: ex.question, knowledge: "", answer: ex.answer }));
   }
 
   async generateResponse(prompt: string, _question: string): Promise<string> {

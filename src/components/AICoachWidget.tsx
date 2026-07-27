@@ -50,6 +50,7 @@ const AICoachWidget = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const resizeStartRef = useRef<{ x: number; y: number; top: number; left: number; width: number; height: number; dir: ResizeDir } | null>(null);
   const preMaximizeRef = useRef<{ top: number; left: number; width: number; height: number } | null>(null);
+  const preMinimizeRef = useRef<{ top: number; left: number; width: number; height: number } | null>(null);
 
   // Place the panel above the floating button the first time it's opened.
   useEffect(() => {
@@ -111,6 +112,27 @@ const AICoachWidget = () => {
         setSize({ width, height });
       }
       setMaximized(false);
+    }
+  };
+
+  const toggleMinimize = () => {
+    if (!minimized) {
+      if (position) preMinimizeRef.current = { ...position, ...size };
+      // Snap back to the original default spot next to the floating button.
+      setPosition({
+        left: window.innerWidth - RIGHT_MARGIN - DEFAULT_WIDTH,
+        top: window.innerHeight - BOTTOM_ANCHOR - DEFAULT_HEIGHT,
+      });
+      setSize({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
+      setMinimized(true);
+      setMaximized(false);
+    } else {
+      if (preMinimizeRef.current) {
+        const { top, left, width, height } = preMinimizeRef.current;
+        setPosition({ top, left });
+        setSize({ width, height });
+      }
+      setMinimized(false);
     }
   };
 
@@ -323,10 +345,7 @@ const AICoachWidget = () => {
             </div>
 
             <button
-              onClick={() => {
-                setMinimized((v) => !v);
-                setMaximized(false);
-              }}
+              onClick={toggleMinimize}
               className="p-1 hover:bg-primary-foreground/10 rounded-md transition-colors"
               title={minimized ? "Restore" : "Minimize"}
             >

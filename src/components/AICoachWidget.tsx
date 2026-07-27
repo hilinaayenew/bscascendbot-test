@@ -20,6 +20,11 @@ function formatMessageTime(dateString: string): string {
   return new Date(dateString).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
 
+const MIN_WIDTH = 280;
+const MIN_HEIGHT = 360;
+const DEFAULT_WIDTH = 352;
+const DEFAULT_HEIGHT = 512;
+
 const AICoachWidget = () => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -32,8 +37,30 @@ const AICoachWidget = () => {
     const saved = sessionStorage.getItem("selectedBot");
     return saved === "botema" || saved === "chataki" ? saved : null;
   });
+  const [size, setSize] = useState({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const resizeStartRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
+
+  const handleResizeStart = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    resizeStartRef.current = { x: e.clientX, y: e.clientY, width: size.width, height: size.height };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handleResizeMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const start = resizeStartRef.current;
+    if (!start) return;
+    // Dragging the top-left handle left/up should grow the panel (it's anchored bottom-right).
+    const nextWidth = Math.max(MIN_WIDTH, start.width - (e.clientX - start.x));
+    const nextHeight = Math.max(MIN_HEIGHT, start.height - (e.clientY - start.y));
+    setSize({ width: nextWidth, height: nextHeight });
+  };
+
+  const handleResizeEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    resizeStartRef.current = null;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
 
   const pickBot = (bot: "botema" | "chataki") => {
     sessionStorage.setItem("selectedBot", bot);
@@ -156,7 +183,24 @@ const AICoachWidget = () => {
   return (
     <>
       {open && (
-        <div className="fixed bottom-40 right-6 z-50 w-[22rem] max-w-[calc(100vw-3rem)] h-[32rem] max-h-[calc(100vh-12rem)] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden">
+        <div
+          className="fixed bottom-40 right-6 z-50 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-12rem)] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+          style={{ width: size.width, height: size.height }}
+        >
+          {/* Resize handle — top-left corner, since the panel is anchored bottom-right */}
+          <div
+            onPointerDown={handleResizeStart}
+            onPointerMove={handleResizeMove}
+            onPointerUp={handleResizeEnd}
+            className="absolute top-0 left-0 w-5 h-5 cursor-nwse-resize z-10 touch-none flex items-start justify-start p-1 opacity-40 hover:opacity-80 transition-opacity"
+            title="Resize"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" className="text-muted-foreground">
+              <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="9" y1="5" x2="5" y2="9" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </div>
+
           {/* Header */}
           <div className="p-3 border-b border-border flex items-center gap-2 bg-primary text-primary-foreground">
             <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center shrink-0">

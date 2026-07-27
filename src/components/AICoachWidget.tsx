@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, Send, X } from "lucide-react";
+import { Bot, Send, X, Minus, Square } from "lucide-react";
 import { toast } from "sonner";
 import { AI_COACH_ID, AI_COACH_NAME } from "@/lib/constants";
 
@@ -24,6 +24,11 @@ const MIN_WIDTH = 280;
 const MIN_HEIGHT = 360;
 const DEFAULT_WIDTH = 352;
 const DEFAULT_HEIGHT = 512;
+const RIGHT_MARGIN = 24;
+const BOTTOM_ANCHOR = 160;
+const MAXIMIZE_MARGIN = 16;
+
+type ResizeDir = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
 
 const AICoachWidget = () => {
   const { user } = useAuth();
@@ -38,28 +43,75 @@ const AICoachWidget = () => {
     return saved === "botema" || saved === "chataki" ? saved : null;
   });
   const [size, setSize] = useState({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+  const [minimized, setMinimized] = useState(false);
+  const [maximized, setMaximized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const resizeStartRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
+  const resizeStartRef = useRef<{ x: number; y: number; top: number; left: number; width: number; height: number; dir: ResizeDir } | null>(null);
+  const preMaximizeRef = useRef<{ top: number; left: number; width: number; height: number } | null>(null);
 
-  const handleResizeStart = (e: React.PointerEvent<HTMLDivElement>) => {
+  // Place the panel above the floating button the first time it's opened.
+  useEffect(() => {
+    if (open && position === null) {
+      setPosition({
+        left: window.innerWidth - RIGHT_MARGIN - DEFAULT_WIDTH,
+        top: window.innerHeight - BOTTOM_ANCHOR - DEFAULT_HEIGHT,
+      });
+    }
+  }, [open, position]);
+
+  const startResize = (dir: ResizeDir) => (e: React.PointerEvent<HTMLDivElement>) => {
+    if (maximized || minimized || !position) return;
     e.preventDefault();
-    resizeStartRef.current = { x: e.clientX, y: e.clientY, width: size.width, height: size.height };
+    e.stopPropagation();
+    resizeStartRef.current = { x: e.clientX, y: e.clientY, top: position.top, left: position.left, width: size.width, height: size.height, dir };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
-  const handleResizeMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  const onResizeMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const start = resizeStartRef.current;
     if (!start) return;
-    // Dragging the top-left handle left/up should grow the panel (it's anchored bottom-right).
-    const nextWidth = Math.max(MIN_WIDTH, start.width - (e.clientX - start.x));
-    const nextHeight = Math.max(MIN_HEIGHT, start.height - (e.clientY - start.y));
-    setSize({ width: nextWidth, height: nextHeight });
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    let { top, left, width, height } = start;
+
+    const maxWidth = window.innerWidth - 16;
+    const maxHeight = window.innerHeight - 16;
+
+    if (start.dir.includes("e")) width = Math.min(maxWidth, Math.max(MIN_WIDTH, start.width + dx));
+    if (start.dir.includes("s")) height = Math.min(maxHeight, Math.max(MIN_HEIGHT, start.height + dy));
+    if (start.dir.includes("w")) {
+      width = Math.min(maxWidth, Math.max(MIN_WIDTH, start.width - dx));
+      left = start.left + (start.width - width);
+    }
+    if (start.dir.includes("n")) {
+      height = Math.min(maxHeight, Math.max(MIN_HEIGHT, start.height - dy));
+      top = start.top + (start.height - height);
+    }
+
+    setSize({ width, height });
+    setPosition({ top: Math.max(8, top), left: Math.max(8, left) });
   };
 
-  const handleResizeEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+  const endResize = (e: React.PointerEvent<HTMLDivElement>) => {
     resizeStartRef.current = null;
     e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
+  const toggleMaximize = () => {
+    if (!maximized) {
+      if (position) preMaximizeRef.current = { ...position, ...size };
+      setMaximized(true);
+      setMinimized(false);
+    } else {
+      if (preMaximizeRef.current) {
+        const { top, left, width, height } = preMaximizeRef.current;
+        setPosition({ top, left });
+        setSize({ width, height });
+      }
+      setMaximized(false);
+    }
   };
 
   const pickBot = (bot: "botema" | "chataki") => {
@@ -180,26 +232,59 @@ const AICoachWidget = () => {
 
   if (!user) return null;
 
+  const resizable = !maximized && !minimized && position;
+
+  const panelStyle: React.CSSProperties = maximized
+    ? { top: MAXIMIZE_MARGIN, left: MAXIMIZE_MARGIN, right: MAXIMIZE_MARGIN, bottom: MAXIMIZE_MARGIN, width: "auto", height: "auto" }
+    : {
+        top: position?.top ?? 0,
+        left: position?.left ?? 0,
+        width: size.width,
+        height: minimized ? "auto" : size.height,
+      };
+
+  const edgeHandles: Array<{ dir: ResizeDir; className: string; cursor: string }> = [
+    { dir: "n", className: "top-0 left-2 right-2 h-1.5", cursor: "cursor-ns-resize" },
+    { dir: "s", className: "bottom-0 left-2 right-2 h-1.5", cursor: "cursor-ns-resize" },
+    { dir: "w", className: "top-2 bottom-2 left-0 w-1.5", cursor: "cursor-ew-resize" },
+    { dir: "e", className: "top-2 bottom-2 right-0 w-1.5", cursor: "cursor-ew-resize" },
+  ];
+  const cornerHandles: Array<{ dir: ResizeDir; className: string; cursor: string }> = [
+    { dir: "nw", className: "top-0 left-0 w-3 h-3", cursor: "cursor-nwse-resize" },
+    { dir: "ne", className: "top-0 right-0 w-3 h-3", cursor: "cursor-nesw-resize" },
+    { dir: "sw", className: "bottom-0 left-0 w-3 h-3", cursor: "cursor-nesw-resize" },
+    { dir: "se", className: "bottom-0 right-0 w-3 h-3", cursor: "cursor-nwse-resize" },
+  ];
+
   return (
     <>
       {open && (
         <div
-          className="fixed bottom-40 right-6 z-50 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-12rem)] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
-          style={{ width: size.width, height: size.height }}
+          className="fixed z-50 bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+          style={panelStyle}
         >
-          {/* Resize handle — top-left corner, since the panel is anchored bottom-right */}
-          <div
-            onPointerDown={handleResizeStart}
-            onPointerMove={handleResizeMove}
-            onPointerUp={handleResizeEnd}
-            className="absolute top-0 left-0 w-5 h-5 cursor-nwse-resize z-10 touch-none flex items-start justify-start p-1 opacity-40 hover:opacity-80 transition-opacity"
-            title="Resize"
-          >
-            <svg width="10" height="10" viewBox="0 0 10 10" className="text-muted-foreground">
-              <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="9" y1="5" x2="5" y2="9" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-          </div>
+          {resizable && (
+            <>
+              {edgeHandles.map(({ dir, className, cursor }) => (
+                <div
+                  key={dir}
+                  onPointerDown={startResize(dir)}
+                  onPointerMove={onResizeMove}
+                  onPointerUp={endResize}
+                  className={`absolute ${className} ${cursor} z-20 touch-none`}
+                />
+              ))}
+              {cornerHandles.map(({ dir, className, cursor }) => (
+                <div
+                  key={dir}
+                  onPointerDown={startResize(dir)}
+                  onPointerMove={onResizeMove}
+                  onPointerUp={endResize}
+                  className={`absolute ${className} ${cursor} z-30 touch-none`}
+                />
+              ))}
+            </>
+          )}
 
           {/* Header */}
           <div className="p-3 border-b border-border flex items-center gap-2 bg-primary text-primary-foreground">
@@ -237,11 +322,30 @@ const AICoachWidget = () => {
               )}
             </div>
 
+            <button
+              onClick={() => {
+                setMinimized((v) => !v);
+                setMaximized(false);
+              }}
+              className="p-1 hover:bg-primary-foreground/10 rounded-md transition-colors"
+              title={minimized ? "Restore" : "Minimize"}
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <button
+              onClick={toggleMaximize}
+              className="p-1 hover:bg-primary-foreground/10 rounded-md transition-colors"
+              title={maximized ? "Restore" : "Maximize"}
+            >
+              <Square className="h-3.5 w-3.5" />
+            </button>
             <button onClick={() => setOpen(false)} className="p-1 hover:bg-primary-foreground/10 rounded-md transition-colors" title="Close">
               <X className="h-4 w-4" />
             </button>
           </div>
 
+          {!minimized && (
+          <>
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3">
             {messages.length === 0 && (
@@ -288,6 +392,8 @@ const AICoachWidget = () => {
               <Send className="h-4 w-4" />
             </Button>
           </div>
+          </>
+          )}
         </div>
       )}
 

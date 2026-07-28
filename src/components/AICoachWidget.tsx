@@ -27,6 +27,7 @@ const DEFAULT_HEIGHT = 512;
 const RIGHT_MARGIN = 24;
 const BOTTOM_ANCHOR = 160;
 const MAXIMIZE_MARGIN = 16;
+const HEADER_HEIGHT = 56;
 
 type ResizeDir = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
 
@@ -118,10 +119,12 @@ const AICoachWidget = () => {
   const toggleMinimize = () => {
     if (!minimized) {
       if (position) preMinimizeRef.current = { ...position, ...size };
-      // Snap back to the original default spot next to the floating button.
+      // Snap back to the original default spot next to the floating button —
+      // anchored using the collapsed header's height, not the full panel height,
+      // since only the header renders while minimized.
       setPosition({
-        left: window.innerWidth - RIGHT_MARGIN - DEFAULT_WIDTH,
-        top: window.innerHeight - BOTTOM_ANCHOR - DEFAULT_HEIGHT,
+        left: Math.max(8, window.innerWidth - RIGHT_MARGIN - DEFAULT_WIDTH),
+        top: Math.max(8, window.innerHeight - BOTTOM_ANCHOR - HEADER_HEIGHT),
       });
       setSize({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
       setMinimized(true);

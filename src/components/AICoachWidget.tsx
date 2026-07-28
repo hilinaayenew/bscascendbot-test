@@ -265,7 +265,7 @@ const AICoachWidget = () => {
         top: position?.top ?? 0,
         left: position?.left ?? 0,
         width: size.width,
-        height: minimized ? "auto" : size.height,
+        height: size.height,
       };
 
   const edgeHandles: Array<{ dir: ResizeDir; className: string; cursor: string }> = [
@@ -366,8 +366,6 @@ const AICoachWidget = () => {
             </button>
           </div>
 
-          {!minimized && (
-          <>
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3">
             {messages.length === 0 && (
@@ -414,8 +412,6 @@ const AICoachWidget = () => {
               <Send className="h-4 w-4" />
             </Button>
           </div>
-          </>
-          )}
         </div>
       )}
 

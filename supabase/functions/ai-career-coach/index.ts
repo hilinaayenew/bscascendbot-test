@@ -158,7 +158,7 @@ Deno.serve(async (req) => {
 
     if (isBroadStartingAsk(message)) {
       fnName = "inviteUserContext";
-      fnArgs = {};
+      fnArgs = { forceAreaQuestion: true };
       routingDebug = "deterministic: broad_starting_ask";
     } else {
       ({ fnName, fnArgs, debug: routingDebug } = await routeWithAI(

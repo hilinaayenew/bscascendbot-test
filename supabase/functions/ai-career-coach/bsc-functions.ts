@@ -287,12 +287,14 @@ export class InviteUserContext extends EngageFunction {
     return "Call this when the user's message is vague, they haven't shared any context yet, or you want to invite them to share more about their situation so you can give better advice.";
   }
 
-  getEngagementPrompt(): string {
+  getEngagementPrompt(args: Record<string, unknown> = {}): string {
     const profile = this.converser.context.userProfile;
     const currentTopic = this.converser.context.currentEntities[0];
 
-    if (!profile.career_stage && !profile.current_background && !currentTopic) {
-      // Fresh start — one focused question, not a broad answer.
+    // The message itself was a broad "help me learn/get into tech" ask (set by
+    // index.ts's deterministic bypass) — always ask which area, regardless of
+    // what happens to be saved in the profile from unrelated past questions.
+    if (args.forceAreaQuestion || (!profile.career_stage && !profile.current_background && !currentTopic)) {
       return withChoices("Happy to help — what area of tech interests you most?", [
         "Web/software development",
         "Data & AI/Machine Learning",

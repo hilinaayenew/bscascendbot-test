@@ -141,11 +141,11 @@ class BotemaInvite extends EngageFunction {
   get name() { return "inviteUserContext"; }
   get description() { return "Call when the user's message is vague or you need more context."; }
 
-  getEngagementPrompt(): string {
+  getEngagementPrompt(args: Record<string, unknown> = {}): string {
     const profile = this.converser.context.userProfile;
     const currentTopic = this.converser.context.currentEntities[0];
 
-    if (!profile.career_stage && !profile.current_background && !currentTopic) {
+    if (args.forceAreaQuestion || (!profile.career_stage && !profile.current_background && !currentTopic)) {
       return withChoices("Happy to help — what area of tech interests you most?", [
         "Web/software development",
         "Data & AI/Machine Learning",

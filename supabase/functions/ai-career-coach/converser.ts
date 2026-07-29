@@ -198,10 +198,10 @@ export abstract class EngageFunction extends ChatFunction {
     super();
   }
 
-  abstract getEngagementPrompt(): string;
+  abstract getEngagementPrompt(args: Record<string, unknown>): string;
 
-  async call(_args: Record<string, unknown>, _question: string): Promise<string> {
-    return this.getEngagementPrompt();
+  async call(args: Record<string, unknown>, _question: string): Promise<string> {
+    return this.getEngagementPrompt(args);
   }
 }
 

@@ -146,18 +146,14 @@ class BotemaInvite extends EngageFunction {
     const currentTopic = this.converser.context.currentEntities[0];
 
     if (!profile.career_stage && !profile.current_background && !currentTopic) {
-      return `I'm glad you're here. To give you advice that's actually relevant to where you are, it helps me to know a little about your situation.
-
-What's your starting point — are you completely new to tech, switching from another career, or already in the field and looking to grow? And what's the one thing you most want to figure out right now?`;
+      return `Happy to help — what area of tech interests you most: development, data/AI, UX design, cybersecurity, or something else?`;
     }
 
     if (currentTopic && !profile.career_stage) {
-      return `That's a good area to focus on. Before I give you specific advice, tell me a bit more about yourself.
-
-What's your background — what do you do now, or what were you doing before you started thinking about tech? And what are you aiming for?`;
+      return `Good focus. Quick one first — are you completely new to tech, switching careers, or already in the field?`;
     }
 
-    return `What would be most useful to work through right now? Tell me what's on your mind and we'll go from there.`;
+    return `What would be most useful right now — your CV, interview prep, a specific decision, or something else?`;
   }
 }
 
@@ -195,7 +191,7 @@ ROUTING RULES — always call exactly one function, never respond directly:
 
 4. GREETING — user says hello, hi, asks what you can do, or sends their very first message with no topic → call howCoachWorks.
 
-5. VAGUE — message has fewer than 5 words and no topic can be determined → call inviteUserContext.
+5. NEEDS NARROWING — the message is a broad, open-ended ask ("help me learn tech", "I want to get into tech in [country]", "how do I start a career in tech") that could go in several directions, AND the profile above shows "No profile captured yet" (we don't yet know their background or what specifically they want) → call inviteUserContext to ask ONE focused question narrowing down what they want to focus on, instead of answering broadly. Do NOT use this if the message already names a specific skill, role, field, or challenge (e.g. "how do I learn Python", "CV help", "salary negotiation") — those go to rule 6 even if short. Also skip this if the profile already has real detail captured — answer directly instead.
 
 6. TOPIC/QUESTION (DEFAULT) — anything else: a career question, a topic, a skill, a field, a request for advice, even short messages like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer.
 

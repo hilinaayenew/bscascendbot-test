@@ -291,29 +291,21 @@ export class InviteUserContext extends EngageFunction {
     const currentTopic = this.converser.context.currentEntities[0];
 
     if (!profile.career_stage && !profile.current_background && !currentTopic) {
-      // Fresh start — invite context from scratch
-      return `I'm glad you're here. To give you advice that's actually relevant to where you are, it helps me to know a little about your situation.
-
-What's your starting point — are you completely new to tech, switching from another career, or already working in the field and looking to grow?
-
-And what's the thing you most want to figure out right now?`;
+      // Fresh start — one focused question, not a broad answer.
+      return `Happy to help — what area of tech interests you most: development, data/AI, UX design, cybersecurity, or something else?`;
     }
 
     if (currentTopic && !profile.career_stage) {
       // They mentioned a topic but we don't know their background
-      return `That's a good area to focus on. Before I give you specific advice, it helps to know a bit more about you.
-
-What's your current background — what do you do now, or what were you doing before you started thinking about tech? And what are you aiming for?`;
+      return `Good focus. Quick one first — are you completely new to tech, switching careers, or already working in the field?`;
     }
 
     if (profile.current_background && !profile.target_role) {
       // We know background but not direction
-      return `Thanks for sharing that. Knowing your background helps me give you more relevant advice.
-
-What kind of tech role or area are you aiming for? Even a rough direction — data, design, development, management — helps me point you somewhere specific.`;
+      return `What kind of tech role or area are you aiming for — data, design, development, or something else?`;
     }
 
     // Generic re-engagement
-    return `What would be most useful to talk through right now? We could work on something specific — your CV, interview prep, a career decision — or if you're not sure where to start, tell me what's feeling most uncertain and we'll go from there.`;
+    return `What would be most useful right now — your CV, interview prep, a specific career decision, or something else?`;
   }
 }

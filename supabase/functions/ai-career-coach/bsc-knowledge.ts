@@ -177,10 +177,11 @@ export function classifyTopic(topic: string): string {
   return "general";
 }
 
-// Deterministically detects a broad, first-message "help me get into tech"
-// style ask, so it can be routed to inviteUserContext WITHOUT going through
-// the AI router at all — guaranteeing the clarifying-question path for these,
-// rather than depending on the model to reliably choose it every time.
+// Deterministically detects a broad "help me get into tech" style ask
+// (from any user, regardless of profile state), so it can be routed to
+// inviteUserContext WITHOUT going through the AI router at all —
+// guaranteeing the clarifying-question path for these, rather than
+// depending on the model to reliably choose it every time.
 // Only named/specific skills, roles, or challenges disqualify a message —
 // generic openness words ("start", "new", "begin") do NOT, since those are
 // exactly what makes an ask broad in the first place.

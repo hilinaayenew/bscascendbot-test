@@ -148,15 +148,15 @@ Deno.serve(async (req) => {
       : new BSCCoach(context, supabase, sender_id, azureConfig);
 
     // ── 4. Routing — deterministic bypass first, then the AI router ──
-    // Broad first-asks ("help me get into tech") always get the clarifying
+    // Broad asks ("help me get into tech") always get the clarifying
     // question, guaranteed by plain code rather than hoping the model
-    // reliably chooses inviteUserContext over answering directly.
-    const hasProfile = !!(userProfile.career_stage || userProfile.current_background || userProfile.target_role);
+    // reliably chooses inviteUserContext over answering directly — for
+    // every user, not just ones with no profile captured yet.
     let fnName: string;
     let fnArgs: Record<string, unknown>;
     let routingDebug: string | undefined;
 
-    if (!hasProfile && isBroadStartingAsk(message)) {
+    if (isBroadStartingAsk(message)) {
       fnName = "inviteUserContext";
       fnArgs = {};
       routingDebug = "deterministic: broad_starting_ask";

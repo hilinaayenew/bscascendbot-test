@@ -12,6 +12,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { BSCCoach } from "./bsc-coach.ts";
 import { BotemaCoach } from "./botema-coach.ts";
+import { isBroadStartingAsk } from "./bsc-knowledge.ts";
 import type { UserProfile, ConverserContext, AzureConfig, AzureToolSchema, OAIMessage } from "./converser.ts";
 
 const corsHeaders = {
@@ -146,14 +147,28 @@ Deno.serve(async (req) => {
       ? new BotemaCoach(context, supabase, sender_id, azureConfig)
       : new BSCCoach(context, supabase, sender_id, azureConfig);
 
-    // ── 4. AI routing call — model selects the function via tool_choice ──
-    const { fnName, fnArgs, debug: routingDebug } = await routeWithAI(
-      coach.instructions,
-      coach.functionSchemas,
-      conversationHistory,
-      message,
-      azureConfig
-    );
+    // ── 4. Routing — deterministic bypass first, then the AI router ──
+    // Broad first-asks ("help me get into tech") always get the clarifying
+    // question, guaranteed by plain code rather than hoping the model
+    // reliably chooses inviteUserContext over answering directly.
+    const hasProfile = !!(userProfile.career_stage || userProfile.current_background || userProfile.target_role);
+    let fnName: string;
+    let fnArgs: Record<string, unknown>;
+    let routingDebug: string | undefined;
+
+    if (!hasProfile && isBroadStartingAsk(message)) {
+      fnName = "inviteUserContext";
+      fnArgs = {};
+      routingDebug = "deterministic: broad_starting_ask";
+    } else {
+      ({ fnName, fnArgs, debug: routingDebug } = await routeWithAI(
+        coach.instructions,
+        coach.functionSchemas,
+        conversationHistory,
+        message,
+        azureConfig
+      ));
+    }
     console.log(`[Converser] Routing → ${fnName}`, fnArgs, routingDebug ? `(${routingDebug})` : "");
 
     // ── 5. Execute the selected function ──────────────────────────────

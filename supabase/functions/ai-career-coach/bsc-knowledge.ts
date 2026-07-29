@@ -176,3 +176,21 @@ export function classifyTopic(topic: string): string {
   // Default: no specific guide fits — use the general fallback, not an unrelated one.
   return "general";
 }
+
+// Deterministically detects a broad, first-message "help me get into tech"
+// style ask, so it can be routed to inviteUserContext WITHOUT going through
+// the AI router at all — guaranteeing the clarifying-question path for these,
+// rather than depending on the model to reliably choose it every time.
+// Only named/specific skills, roles, or challenges disqualify a message —
+// generic openness words ("start", "new", "begin") do NOT, since those are
+// exactly what makes an ask broad in the first place.
+const SPECIFIC_TOPIC_HINTS = /python|javascript|typescript|\bjava\b|c\+\+|\bsql\b|\bhtml\b|\bcss\b|\breact\b|\bnode\b|django|\bcv\b|resume|linkedin|job search|\binterview|salary|negotiat|pay rise|imposter|confidence|burnout|belong|motivat|anxious|anxiety|overwhelm|\bbalance\b|boundary|flexible|wellbeing|\bmentor|\bsponsor|master'?s|certification|\bcert\b|scholarship|bootcamp|\bdegree\b|data science|machine learning|\bml\b|\bai\b|\bcloud\b|devops|\baws\b|azure|\bgcp\b|\bux\b|\bui\b|\bdesign\b|product manager|\bpm\b|cybersecurity|security|frontend|front-end|backend|back-end|full.?stack|\bmobile\b|android|\bios\b|freelanc/i;
+
+const BROAD_INTENT = /\b(help me|how do i (start|begin|get into|learn)|i want to (start|begin|get into|learn)|i am trying to (start|begin|get into|learn)|i'm trying to (start|begin|get into|learn)|guide me|where do i (start|begin)|how (can|do) i (get into|break into))\b/i;
+
+export function isBroadStartingAsk(message: string): boolean {
+  const m = message.toLowerCase();
+  if (!/\btech(nology)?\b/.test(m)) return false;
+  if (!BROAD_INTENT.test(m)) return false;
+  return !SPECIFIC_TOPIC_HINTS.test(m);
+}

@@ -177,21 +177,25 @@ export function classifyTopic(topic: string): string {
   return "general";
 }
 
-// Deterministically detects a broad "help me get into tech" style ask
-// (from any user, regardless of profile state), so it can be routed to
-// inviteUserContext WITHOUT going through the AI router at all —
-// guaranteeing the clarifying-question path for these, rather than
-// depending on the model to reliably choose it every time.
-// Only named/specific skills, roles, or challenges disqualify a message —
-// generic openness words ("start", "new", "begin") do NOT, since those are
-// exactly what makes an ask broad in the first place.
+// Deterministically detects a broad, unspecific tech/career ask, so it can be
+// routed to inviteUserContext WITHOUT going through the AI router at all —
+// guaranteeing the clarifying-question path for these, rather than depending
+// on the model to reliably choose it every time.
+//
+// Deliberately aggressive: ANY message that mentions tech/career generically
+// but names no specific skill, role, or challenge counts as broad, regardless
+// of exact phrasing — catching typos, dropped pronouns, and phrasings we
+// didn't anticipate, not just a fixed list of "help me / how do I start"
+// templates. The AI router's own NEEDS NARROWING judgment (see the routing
+// instructions) still runs as a second layer for anything that slips past
+// this — e.g. a message that names one specific thing but the model itself
+// decides still isn't enough to answer precisely.
 const SPECIFIC_TOPIC_HINTS = /python|javascript|typescript|\bjava\b|c\+\+|\bsql\b|\bhtml\b|\bcss\b|\breact\b|\bnode\b|django|\bcv\b|resume|linkedin|job search|\binterview|salary|negotiat|pay rise|imposter|confidence|burnout|belong|motivat|anxious|anxiety|overwhelm|\bbalance\b|boundary|flexible|wellbeing|\bmentor|\bsponsor|master'?s|certification|\bcert\b|scholarship|bootcamp|\bdegree\b|data science|machine learning|\bml\b|\bai\b|\bcloud\b|devops|\baws\b|azure|\bgcp\b|\bux\b|\bui\b|\bdesign\b|product manager|\bpm\b|cybersecurity|security|frontend|front-end|backend|back-end|full.?stack|\bmobile\b|android|\bios\b|freelanc/i;
 
-const BROAD_INTENT = /\b(help me|how do i (start|begin|get into|learn)|i want to (start|begin|get into|learn)|(i'?m|i am) (currently )?(trying to (start|begin|get into|learn)|learning)|guide me|where do i (start|begin)|how (can|do) i (get into|break into)|what (materials|resources|courses|skills) (should|do) i (use|need|learn|study)|what should i (learn|study|focus on))\b/i;
+const TECH_OR_CAREER_MENTION = /\btech(nology)?\b|\bcareer\b|\bjob\b|\bcoding\b|\bprogramming\b/i;
 
 export function isBroadStartingAsk(message: string): boolean {
   const m = message.toLowerCase();
-  if (!/\btech(nology)?\b/.test(m)) return false;
-  if (!BROAD_INTENT.test(m)) return false;
+  if (!TECH_OR_CAREER_MENTION.test(m)) return false;
   return !SPECIFIC_TOPIC_HINTS.test(m);
 }

@@ -7,25 +7,49 @@ import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./b
 import { KNOWLEDGE_BASE, classifyTopic, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT } from "./botema-examples.ts";
 
+// Single Azure OpenAI chat-completions call. Returns null content (not a
+// thrown error) if the API responded OK but with no visible text — that
+// happens when gpt-5-nano, a reasoning model, spends its whole token budget
+// on hidden reasoning (see README §6). A thrown error means the API call
+// itself failed (bad request, auth, etc.), a real problem callAzure() below
+// won't paper over.
+async function callAzureOnce(
+  azure: AzureConfig,
+  messages: OAIMessage[],
+  maxTokens: number
+): Promise<{ content: string | null; finishReason?: string }> {
+  const url = `${azure.endpoint}openai/deployments/${azure.deployment}/chat/completions?api-version=${azure.apiVersion}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "api-key": azure.apiKey },
+    body: JSON.stringify({ messages, max_completion_tokens: maxTokens }),
+  });
+  const data = await res.json();
+  if (!res.ok) { console.error("Azure OpenAI error:", data); throw new Error("Azure OpenAI call failed"); }
+  return { content: data.choices?.[0]?.message?.content || null, finishReason: data.choices?.[0]?.finish_reason };
+}
+
+// Helper: call Azure OpenAI chat completions, with one automatic retry at
+// double the token budget if the first attempt comes back empty — quietly
+// recovering from the reasoning-token-starvation gotcha instead of showing
+// the user a dead end that makes them retype their message.
 async function callAzure(
   azure: AzureConfig,
   messages: OAIMessage[],
   opts: { maxTokens?: number } = {}
 ): Promise<string> {
-  const url = `${azure.endpoint}openai/deployments/${azure.deployment}/chat/completions?api-version=${azure.apiVersion}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "api-key": azure.apiKey },
-    body: JSON.stringify({
-      messages,
-      max_completion_tokens: opts.maxTokens ?? 2000,
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok) { console.error("Azure OpenAI error:", data); throw new Error("Azure OpenAI call failed"); }
-  const content = data.choices?.[0]?.message?.content;
-  if (!content) console.error("Azure OpenAI returned empty content, finish_reason:", data.choices?.[0]?.finish_reason);
-  return content || "I wasn't able to generate a response. Please try again.";
+  const baseTokens = opts.maxTokens ?? 2000;
+
+  let result = await callAzureOnce(azure, messages, baseTokens);
+  if (!result.content) {
+    console.error(`Azure OpenAI returned empty content (finish_reason: ${result.finishReason}) — retrying with a larger token budget.`);
+    result = await callAzureOnce(azure, messages, baseTokens * 2);
+    if (!result.content) {
+      console.error(`Azure OpenAI still returned empty content after retry (finish_reason: ${result.finishReason}).`);
+    }
+  }
+
+  return result.content || "I wasn't able to generate a response. Please try again.";
 }
 
 // ── WORDALISE 1: Botema career advice ──────────────────────────────────────

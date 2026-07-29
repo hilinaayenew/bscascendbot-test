@@ -63,6 +63,17 @@ const AICoachWidget = () => {
     }
   }, [open, position]);
 
+  // Forget any resizing/dragging/minimize/maximize once closed, so it always
+  // reopens at the default spot and size rather than wherever it was left.
+  useEffect(() => {
+    if (!open) {
+      setPosition(null);
+      setSize({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
+      setMinimized(false);
+      setMaximized(false);
+    }
+  }, [open]);
+
   const startResize = (dir: ResizeDir) => (e: React.PointerEvent<HTMLDivElement>) => {
     if (maximized || minimized || !position) return;
     e.preventDefault();

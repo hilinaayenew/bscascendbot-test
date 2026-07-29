@@ -19,6 +19,7 @@ import {
   Converser,
   AzureConfig,
   OAIMessage,
+  withChoices,
 } from "./converser.ts";
 import { KNOWLEDGE_BASE, classifyTopic, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 
@@ -292,20 +293,42 @@ export class InviteUserContext extends EngageFunction {
 
     if (!profile.career_stage && !profile.current_background && !currentTopic) {
       // Fresh start — one focused question, not a broad answer.
-      return `Happy to help — what area of tech interests you most: development, data/AI, UX design, cybersecurity, or something else?`;
+      return withChoices("Happy to help — what area of tech interests you most?", [
+        "Web/software development",
+        "Data & AI/Machine Learning",
+        "UX design",
+        "Cybersecurity",
+        "IT support / networking",
+        "Not sure yet — need guidance",
+      ]);
     }
 
     if (currentTopic && !profile.career_stage) {
       // They mentioned a topic but we don't know their background
-      return `Good focus. Quick one first — are you completely new to tech, switching careers, or already working in the field?`;
+      return withChoices("Good focus. Quick one first — where are you starting from?", [
+        "Completely new to tech",
+        "Switching from another career",
+        "Already working in the field",
+      ]);
     }
 
     if (profile.current_background && !profile.target_role) {
       // We know background but not direction
-      return `What kind of tech role or area are you aiming for — data, design, development, or something else?`;
+      return withChoices("What kind of tech role or area are you aiming for?", [
+        "Software development",
+        "Data & AI",
+        "Design",
+        "Management",
+        "Not sure yet",
+      ]);
     }
 
     // Generic re-engagement
-    return `What would be most useful right now — your CV, interview prep, a specific career decision, or something else?`;
+    return withChoices("What would be most useful right now?", [
+      "My CV",
+      "Interview prep",
+      "A specific career decision",
+      "Something else",
+    ]);
   }
 }

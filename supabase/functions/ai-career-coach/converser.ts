@@ -9,6 +9,16 @@ export enum FunctionType {
   ENGAGE = "engage",
 }
 
+// Appends a parseable marker the frontend uses to render clickable option
+// buttons under a message, without needing a DB schema change — it's just
+// plain text in the same `messages.content` column. Fixed option sets only
+// (no extra AI call to generate them), so these responses stay instant.
+export const CHOICES_MARKER = "%%CHOICES%%";
+
+export function withChoices(text: string, choices: string[]): string {
+  return choices.length ? `${text}\n${CHOICES_MARKER}${JSON.stringify(choices)}` : text;
+}
+
 // Azure OpenAI config — passed through from index.ts (loaded from Supabase secrets)
 export interface AzureConfig {
   endpoint: string;

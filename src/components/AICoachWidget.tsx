@@ -20,6 +20,23 @@ function formatMessageTime(dateString: string): string {
   return new Date(dateString).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
 
+const CHOICES_MARKER = "%%CHOICES%%";
+
+// Splits a coach reply into its display text and an optional set of
+// clickable option labels, encoded as plain text so no DB schema change
+// is needed (see withChoices() in the edge function's converser.ts).
+function parseChoices(content: string): { text: string; choices: string[] | null } {
+  const idx = content.indexOf(CHOICES_MARKER);
+  if (idx === -1) return { text: content, choices: null };
+  const text = content.slice(0, idx).trim();
+  try {
+    const choices = JSON.parse(content.slice(idx + CHOICES_MARKER.length));
+    return { text, choices: Array.isArray(choices) ? choices : null };
+  } catch {
+    return { text, choices: null };
+  }
+}
+
 const MIN_WIDTH = 280;
 const MIN_HEIGHT = 360;
 const DEFAULT_WIDTH = 352;
@@ -218,7 +235,7 @@ const AICoachWidget = () => {
 
   useEffect(() => {
     if (open) messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open]);
+  }, [messages, open, sending]);
 
   // Auto-grow the textarea with content, up to a max height, then scroll internally.
   useEffect(() => {
@@ -228,9 +245,9 @@ const AICoachWidget = () => {
     el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   }, [newMessage]);
 
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !user || sending) return;
-    const msgText = newMessage.trim();
+  const sendMessage = async (overrideText?: string) => {
+    const msgText = (overrideText ?? newMessage).trim();
+    if (!msgText || !user || sending) return;
     setNewMessage("");
     setSending(true);
 
@@ -381,22 +398,48 @@ const AICoachWidget = () => {
                 Ask me anything about your tech career — getting started, CVs, interviews, mentorship, or working through a tough moment.
               </p>
             )}
-            {messages.map((m) => (
-              <div key={m.id} className={`flex ${m.sender_id === user.id ? "justify-end" : "justify-start"}`}>
-                <div className="max-w-[85%] flex flex-col">
-                  <div
-                    className={`rounded-lg px-3 py-2 font-body text-sm whitespace-pre-line ${
-                      m.sender_id === user.id ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
-                    }`}
-                  >
-                    {m.content}
+            {messages.map((m, i) => {
+              const { text, choices } = parseChoices(m.content);
+              const isLast = i === messages.length - 1;
+              return (
+                <div key={m.id} className={`flex ${m.sender_id === user.id ? "justify-end" : "justify-start"}`}>
+                  <div className="max-w-[85%] flex flex-col">
+                    <div
+                      className={`rounded-lg px-3 py-2 font-body text-sm whitespace-pre-line ${
+                        m.sender_id === user.id ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+                      }`}
+                    >
+                      {text}
+                    </div>
+                    {choices && isLast && !sending && (
+                      <div className="flex flex-col gap-1.5 mt-2">
+                        {choices.map((choice) => (
+                          <button
+                            key={choice}
+                            onClick={() => sendMessage(choice)}
+                            className="text-left font-body text-sm px-3 py-2 rounded-lg border border-border bg-card hover:border-primary hover:bg-muted transition-colors"
+                          >
+                            {choice}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <span className={`font-body text-[10px] text-muted-foreground mt-1 ${m.sender_id === user.id ? "text-right" : "text-left"}`}>
+                      {formatMessageTime(m.created_at)}
+                    </span>
                   </div>
-                  <span className={`font-body text-[10px] text-muted-foreground mt-1 ${m.sender_id === user.id ? "text-right" : "text-left"}`}>
-                    {formatMessageTime(m.created_at)}
-                  </span>
+                </div>
+              );
+            })}
+            {sending && (
+              <div className="flex justify-start">
+                <div className="rounded-lg px-3 py-2 bg-muted text-foreground flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:-0.3s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:-0.15s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 animate-bounce" />
                 </div>
               </div>
-            ))}
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -416,7 +459,7 @@ const AICoachWidget = () => {
               rows={1}
               className="font-body min-h-[40px] max-h-[120px] resize-none py-2"
             />
-            <Button size="icon" onClick={sendMessage} disabled={sending} className="shrink-0">
+            <Button size="icon" onClick={() => sendMessage()} disabled={sending} className="shrink-0">
               <Send className="h-4 w-4" />
             </Button>
           </div>

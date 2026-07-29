@@ -2,7 +2,7 @@
 // Botema — Career Coach persona
 // Direct, personal, African-context aware. Uses Otema's Q&A examples as few-shot data.
 
-import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType } from "./converser.ts";
+import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices } from "./converser.ts";
 import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./bsc-functions.ts";
 import { KNOWLEDGE_BASE, classifyTopic, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT } from "./botema-examples.ts";
@@ -146,14 +146,30 @@ class BotemaInvite extends EngageFunction {
     const currentTopic = this.converser.context.currentEntities[0];
 
     if (!profile.career_stage && !profile.current_background && !currentTopic) {
-      return `Happy to help — what area of tech interests you most: development, data/AI, UX design, cybersecurity, or something else?`;
+      return withChoices("Happy to help — what area of tech interests you most?", [
+        "Web/software development",
+        "Data & AI/Machine Learning",
+        "UX design",
+        "Cybersecurity",
+        "IT support / networking",
+        "Not sure yet — need guidance",
+      ]);
     }
 
     if (currentTopic && !profile.career_stage) {
-      return `Good focus. Quick one first — are you completely new to tech, switching careers, or already in the field?`;
+      return withChoices("Good focus. Quick one first — where are you starting from?", [
+        "Completely new to tech",
+        "Switching from another career",
+        "Already in the field",
+      ]);
     }
 
-    return `What would be most useful right now — your CV, interview prep, a specific decision, or something else?`;
+    return withChoices("What would be most useful right now?", [
+      "My CV",
+      "Interview prep",
+      "A specific decision",
+      "Something else",
+    ]);
   }
 }
 

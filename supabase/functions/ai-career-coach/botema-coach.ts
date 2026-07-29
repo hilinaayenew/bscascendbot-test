@@ -141,20 +141,50 @@ class BotemaInvite extends EngageFunction {
   get name() { return "inviteUserContext"; }
   get description() { return "Call when the user's message is vague or you need more context."; }
 
+  get parameters() {
+    return {
+      type: "object",
+      properties: {
+        question: {
+          type: "string",
+          description: "A short, one-sentence question narrowing down what the user wants, tailored to their message (e.g. \"What area of tech interests you most?\"). Keep it brief — no preamble.",
+        },
+        options: {
+          type: "array",
+          items: { type: "string" },
+          description: "3-5 short, mutually exclusive answer options for the question above (each under 6 words), tailored to what the user actually asked — not generic filler.",
+        },
+      },
+      required: ["question", "options"],
+    };
+  }
+
+  getAreaQuestion(): string {
+    return withChoices("Happy to help — what area of tech interests you most?", [
+      "Web/software development",
+      "Data & AI/Machine Learning",
+      "UX design",
+      "Cybersecurity",
+      "IT support / networking",
+      "Not sure yet — need guidance",
+    ]);
+  }
+
   getEngagementPrompt(args: Record<string, unknown> = {}): string {
     const profile = this.converser.context.userProfile;
     const currentTopic = this.converser.context.currentEntities[0];
 
-    if (args.forceAreaQuestion || (!profile.career_stage && !profile.current_background && !currentTopic)) {
-      return withChoices("Happy to help — what area of tech interests you most?", [
-        "Web/software development",
-        "Data & AI/Machine Learning",
-        "UX design",
-        "Cybersecurity",
-        "IT support / networking",
-        "Not sure yet — need guidance",
-      ]);
+    if (args.forceAreaQuestion) return this.getAreaQuestion();
+
+    const aiQuestion = typeof args.question === "string" ? args.question.trim() : "";
+    const aiOptions = Array.isArray(args.options)
+      ? args.options.filter((o): o is string => typeof o === "string" && o.trim().length > 0)
+      : [];
+    if (aiQuestion && aiOptions.length > 0) {
+      return withChoices(aiQuestion, aiOptions);
     }
+
+    if (!profile.career_stage && !profile.current_background && !currentTopic) return this.getAreaQuestion();
 
     if (currentTopic && !profile.career_stage) {
       return withChoices("Good focus. Quick one first — where are you starting from?", [
@@ -207,7 +237,7 @@ ROUTING RULES — always call exactly one function, never respond directly:
 
 4. GREETING — user says hello, hi, asks what you can do, or sends their very first message with no topic → call howCoachWorks.
 
-5. NEEDS NARROWING — the message is a broad, open-ended ask ("help me learn tech", "I want to get into tech in [country]", "how do I start a career in tech") that could go in several directions, AND the profile above shows "No profile captured yet" (we don't yet know their background or what specifically they want) → call inviteUserContext to ask ONE focused question narrowing down what they want to focus on, instead of answering broadly. Do NOT use this if the message already names a specific skill, role, field, or challenge (e.g. "how do I learn Python", "CV help", "salary negotiation") — those go to rule 6 even if short. Also skip this if the profile already has real detail captured — answer directly instead.
+5. NEEDS NARROWING — the message is a broad, open-ended ask ("help me learn tech", "I want to get into tech in [country]", "how do I start a career in tech") that could go in several directions, AND the profile above shows "No profile captured yet" (we don't yet know their background or what specifically they want) → call inviteUserContext to ask ONE focused question narrowing down what they want to focus on, instead of answering broadly. Do NOT use this if the message already names a specific skill, role, field, or challenge (e.g. "how do I learn Python", "CV help", "salary negotiation") — those go to rule 6 even if short. Also skip this if the profile already has real detail captured — answer directly instead. When you call inviteUserContext, always also fill in its "question" and "options" arguments yourself — a short question and 3-5 answer options tailored specifically to what THIS user asked, not generic ones.
 
 6. TOPIC/QUESTION (DEFAULT) — anything else: a career question, a topic, a skill, a field, a request for advice, even short messages like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer.
 

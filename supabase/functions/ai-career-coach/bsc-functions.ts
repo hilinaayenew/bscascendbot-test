@@ -287,6 +287,35 @@ export class InviteUserContext extends EngageFunction {
     return "Call this when the user's message is vague, they haven't shared any context yet, or you want to invite them to share more about their situation so you can give better advice.";
   }
 
+  get parameters() {
+    return {
+      type: "object",
+      properties: {
+        question: {
+          type: "string",
+          description: "A short, one-sentence question narrowing down what the user wants, tailored to their message (e.g. \"What area of tech interests you most?\"). Keep it brief — no preamble.",
+        },
+        options: {
+          type: "array",
+          items: { type: "string" },
+          description: "3-5 short, mutually exclusive answer options for the question above (each under 6 words), tailored to what the user actually asked — not generic filler.",
+        },
+      },
+      required: ["question", "options"],
+    };
+  }
+
+  getAreaQuestion(): string {
+    return withChoices("Happy to help — what area of tech interests you most?", [
+      "Web/software development",
+      "Data & AI/Machine Learning",
+      "UX design",
+      "Cybersecurity",
+      "IT support / networking",
+      "Not sure yet — need guidance",
+    ]);
+  }
+
   getEngagementPrompt(args: Record<string, unknown> = {}): string {
     const profile = this.converser.context.userProfile;
     const currentTopic = this.converser.context.currentEntities[0];
@@ -294,16 +323,21 @@ export class InviteUserContext extends EngageFunction {
     // The message itself was a broad "help me learn/get into tech" ask (set by
     // index.ts's deterministic bypass) — always ask which area, regardless of
     // what happens to be saved in the profile from unrelated past questions.
-    if (args.forceAreaQuestion || (!profile.career_stage && !profile.current_background && !currentTopic)) {
-      return withChoices("Happy to help — what area of tech interests you most?", [
-        "Web/software development",
-        "Data & AI/Machine Learning",
-        "UX design",
-        "Cybersecurity",
-        "IT support / networking",
-        "Not sure yet — need guidance",
-      ]);
+    if (args.forceAreaQuestion) return this.getAreaQuestion();
+
+    // The AI router itself decided this needed narrowing and supplied a
+    // tailored question + options as part of the SAME tool call — no extra
+    // AI call needed. Falls through to the fixed profile-based questions
+    // below only if the model didn't populate these.
+    const aiQuestion = typeof args.question === "string" ? args.question.trim() : "";
+    const aiOptions = Array.isArray(args.options)
+      ? args.options.filter((o): o is string => typeof o === "string" && o.trim().length > 0)
+      : [];
+    if (aiQuestion && aiOptions.length > 0) {
+      return withChoices(aiQuestion, aiOptions);
     }
+
+    if (!profile.career_stage && !profile.current_background && !currentTopic) return this.getAreaQuestion();
 
     if (currentTopic && !profile.career_stage) {
       // They mentioned a topic but we don't know their background

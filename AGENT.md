@@ -1,0 +1,68 @@
+# AGENT.md
+
+Practical, project-specific notes for any agent working on this repo. Written from what was actually learned working on it — not generic advice.
+
+## What this is
+
+"Ascendency" — a mentorship platform (Because She Can / BSC) connecting African women with tech mentors. Vite + React + TypeScript frontend, Supabase backend (Postgres, Auth, Storage, Realtime, Edge Functions), deployed to Vercel. Includes an AI Career Coach chatbot feature (two personas: Chataki and Botema) as a floating widget on dashboard pages.
+
+## Git remotes — read this before pushing anything
+
+```
+origin  https://github.com/hilinaayenew/bscascendbot-test   ← push here
+second  git@github-vivid:Vivid-Insights/BSCASCENDBOT-TEST.git ← do NOT push here unless explicitly asked
+```
+
+Always push with `git push origin main` explicitly, never a bare `git push`.
+
+**Security — do not touch or commit these files if you see them in the repo root:**
+`hilinagithub` (an OpenSSH *private key*), `hilinagithub.pub`, `git` (empty file). These are credential material, not project files. Never `git add -A` in this repo for that reason — stage files explicitly by path.
+
+## Supabase project
+
+- Project ref: `uylxkbcaibhjqcsehcuk` (this repo's own project — there are sibling forks of this app on other Supabase projects; don't confuse them).
+- Link with `npx supabase link --project-ref uylxkbcaibhjqcsehcuk` if a fresh session shows "not linked."
+- **Ask before running `supabase db push` against the live database** — it's a real, shared production-ish database. Same caution applies to any direct SQL via `supabase db query`.
+- As of the last migration push, all local migrations are applied (0 pending) — check with `npx supabase migration list --linked` before assuming otherwise.
+
+## Environment quirks in this sandbox (not project bugs)
+
+- **`github.com` intermittently fails to connect** ("Failed to connect to github.com port 443") while `supabase.com` and other hosts work fine. It's transient — retry the same `git push`/`git fetch` once or twice before treating it as a real problem. Don't spiral into deeper diagnosis over this specific symptom.
+- **Direct Postgres connections time out** (`supabase db query`, `supabase migration list` sometimes hang or fail with `PgClient: Connection timed out`) even though `supabase functions deploy/list`, `secrets list`, and `db push` (HTTPS-based) work fine. If a direct DB query keeps failing, either retry once more or ask the user to run the SQL themselves via the Supabase Dashboard → SQL Editor — don't loop retrying indefinitely.
+- **No Deno CLI, no Docker available.** Can't run `supabase functions serve` locally or `deno test`. Edge function correctness relies on: ESLint (it parses/catches real syntax errors even in files with `// @ts-nocheck` — type-checking is suppressed, parsing is not), careful manual review, and the Vitest suite for anything that's pure logic with no Deno-specific imports (see Testing below).
+
+## Deploying changes
+
+**Frontend:** `git push origin main` — that's it (Vercel auto-deploys from the repo, per `vercel.json`).
+
+**AI Coach edge function** (anything under `supabase/functions/ai-career-coach/`): after pushing to git, also run:
+```bash
+npx supabase functions deploy ai-career-coach
+```
+Git push and Supabase deploy are independent — pushing code does not deploy the edge function, and deploying does not push to git. Do both.
+
+**Before deploying a routing/logic change to the AI Coach**, run the test suite (see below) and ideally verify it via a separate Agent-tool subagent (not just self-reported), per the workflow the user asked for explicitly. Only deploy once that comes back green.
+
+## Testing
+
+`npm test` runs Vitest. It's configured (`vitest.config.ts`) to pick up `src/**/*.{test,spec}.{ts,tsx}` **and** `supabase/functions/**/*.{test,spec}.ts` — the latter was added specifically so the AI Coach's routing logic could get real tests despite living in a Deno-targeted folder.
+
+- `supabase/functions/ai-career-coach/bsc-knowledge.test.ts` — the actual test suite for `isBroadStartingAsk()` and `classifyTopic()`. Extend this file when changing that routing logic; don't just eyeball it or run one-off `node -e` scripts.
+- This only works because `bsc-knowledge.ts` has zero Deno-specific imports (no `Deno.*`, no `npm:` specifiers) — Vite/Vitest can import it directly. Files that *do* use Deno-specific APIs (`index.ts`, anything calling `Deno.serve`/`Deno.env.get`) can't be unit-tested this way; they need manual review + actual deployment to verify.
+
+## AI Career Coach architecture — key things learned the hard way
+
+Full design doc: `supabase/functions/ai-career-coach/README.md` (keep it updated when the architecture changes — it drifted out of date once already this project and caused confusion).
+
+- **Two-layer routing, not one:**
+  1. `isBroadStartingAsk()` in `bsc-knowledge.ts` — a deterministic, phrasing-independent regex check run *before* any AI call. If a message mentions tech/career/job/coding/programming and names no specific skill/role/challenge, it's forced to `inviteUserContext` with a fixed set of clickable options — guaranteed, free, instant. This exists because relying on the AI router alone to reliably choose "ask a clarifying question" was demonstrably unreliable (`gpt-5-nano` doesn't follow "always ask first" instructions consistently).
+  2. The AI router itself, for anything layer 1 doesn't catch. `inviteUserContext`'s tool schema has `question`/`options` parameters the model can fill in as part of the *same* routing tool-call (no extra AI call, no extra latency) when it decides on its own that a message needs narrowing.
+- **`gpt-5-nano` is a reasoning model.** It can spend its entire `max_completion_tokens` budget on hidden reasoning and return empty visible content with a normal 200 OK — no thrown error. `callAzure()` in both `bsc-functions.ts` and `botema-coach.ts` auto-retries once at double the token budget before falling back to an error string. If you see "I wasn't able to generate a response," check the logs for `finish_reason` before assuming it's a routing bug.
+- **Conversation history window is 6 messages** (`history.slice(-6)`), fetched from a pool of the last 10 DB rows. Anything older is gone from context except what's persisted in `coach_user_profiles` (career_stage/background/target_role/goals).
+- **Choice buttons are plain text, not a schema change.** `withChoices()` in `converser.ts` appends a `%%CHOICES%%[...]` JSON marker to the message content string; the frontend (`AICoachWidget.tsx`) parses it back out. No new DB column, works with the existing `messages.content` text field.
+- Both personas (`bsc-*.ts` files = Chataki, `botema-*.ts` files = Botema) have near-identical structure and need corresponding changes when one is updated — check both, it's easy to fix one and forget the other (happened multiple times this session).
+
+## Collaboration notes
+
+- Deploys (git push + `supabase functions deploy`) happen without re-asking each time once a change is made and verified — the user has established this as the working pattern. Migrations and other schema-affecting DB operations still require asking first.
+- The user wants routing/logic changes tested (via the Vitest suite + a separate verification agent) *before* deployment, not after.

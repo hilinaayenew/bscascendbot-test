@@ -21,7 +21,7 @@ import {
   OAIMessage,
   withChoices,
 } from "./converser.ts";
-import { KNOWLEDGE_BASE, classifyTopic, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
+import { KNOWLEDGE_BASE, TOPIC_CATEGORIES, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 
 // Single Azure OpenAI chat-completions call. Returns null content (not a
 // thrown error) if the API responded OK but with no visible text — that
@@ -84,7 +84,8 @@ export class UpdateCareerTopic extends ChangeContextFunction {
       properties: {
         topic: {
           type: "string",
-          description: "The career topic, role, or skill area mentioned by the user",
+          enum: TOPIC_CATEGORIES,
+          description: "Classify the user's message into exactly one category: getting_started (no background yet, how to begin, beginner languages, free learning resources), career_paths (roadmap for a specific role — software dev, data science, UX, cybersecurity, product management, cloud/DevOps), further_education (master's degrees, certifications, scholarships, studying while working), mentorship (finding or using a mentor/sponsor, the BSC programme), wellbeing (boundaries, burnout, work-life balance, family responsibilities, flexible working), cv_job_search (CV writing, job search strategy, LinkedIn, getting a job without experience), salary (pay, negotiation, benefits, raises), interview_prep (preparing for a technical interview), ai_impact (AI replacing jobs, using AI tools like ChatGPT/Copilot, AI ethics), mindset (imposter syndrome, confidence, belonging, motivation), or general if none of these clearly fit.",
         },
       },
       required: ["topic"],
@@ -92,7 +93,7 @@ export class UpdateCareerTopic extends ChangeContextFunction {
   }
 
   async updateContext(args: Record<string, unknown>): Promise<void> {
-    const topic = classifyTopic(String(args.topic || ""));
+    const topic = (args.topic as string) || "general";
     this.converser.context.currentEntities = [topic];
   }
 

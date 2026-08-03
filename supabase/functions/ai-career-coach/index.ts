@@ -27,16 +27,32 @@ const AI_COACH_ID = "00000000-0000-0000-0000-000000000002";
 // Azure OpenAI function calling (tool_choice: required), using the
 // coach's own routing instructions and function schemas.
 // ============================================================
+// Appended to the routing instructions only for messages the deterministic
+// keyword check (isBroadStartingAsk) already flagged as broad. The keyword
+// check can't tell context from contradiction — e.g. it matches "tech" in
+// "a field that is not related to tech" just as readily as in "help me get
+// into tech". Rather than forcing inviteUserContext's fixed fallback question
+// blindly, this lets the AI confirm the flag against what the user actually
+// said, in the SAME routing call (no extra API call) — defaulting to honoring
+// the flag, since it's usually right, but able to override it when the
+// message clearly means something else.
+const BROAD_ASK_HINT = `
+
+ROUTING NOTE: A preliminary keyword check flagged this message as a possible broad, unspecific tech/career request (it mentions tech/career/job/coding/programming but named no specific skill, role, or challenge). In most cases this is correct — call inviteUserContext and write your own short "question" and "options" tailored to exactly what the user said. But check the actual message before following that default: if the user is clearly asking for something the keyword check couldn't see — for example, explicitly saying they want a field or job unrelated to tech — respond to what they actually said instead of asking a generic tech-area question. Either ask a properly tailored clarifying question about what they DO want, or call the function that actually fits (e.g. answerOutOfScope if it's genuinely outside tech career coaching).`;
+
 async function routeWithAI(
   instructions: string,
   functionSchemas: AzureToolSchema[],
   history: OAIMessage[],
   message: string,
-  azureConfig: AzureConfig
+  azureConfig: AzureConfig,
+  opts: { broadAskHint?: boolean } = {}
 ): Promise<{ fnName: string; fnArgs: Record<string, unknown>; debug?: string }> {
   // If routing fails outright, decline rather than silently guessing a topic —
   // answering the wrong domain in-voice is worse than asking the user to retry.
   const fallback = { fnName: "answerOutOfScope", fnArgs: {} };
+
+  const systemContent = opts.broadAskHint ? instructions + BROAD_ASK_HINT : instructions;
 
   const url = `${azureConfig.endpoint}openai/deployments/${azureConfig.deployment}/chat/completions?api-version=${azureConfig.apiVersion}`;
   const res = await fetch(url, {
@@ -44,7 +60,7 @@ async function routeWithAI(
     headers: { "Content-Type": "application/json", "api-key": azureConfig.apiKey },
     body: JSON.stringify({
       messages: [
-        { role: "system", content: instructions },
+        { role: "system", content: systemContent },
         ...history.slice(-6),
         { role: "user", content: message },
       ],
@@ -147,28 +163,26 @@ Deno.serve(async (req) => {
       ? new BotemaCoach(context, supabase, sender_id, azureConfig)
       : new BSCCoach(context, supabase, sender_id, azureConfig);
 
-    // ── 4. Routing — deterministic bypass first, then the AI router ──
-    // Broad asks ("help me get into tech") always get the clarifying
-    // question, guaranteed by plain code rather than hoping the model
-    // reliably chooses inviteUserContext over answering directly — for
-    // every user, not just ones with no profile captured yet.
-    let fnName: string;
-    let fnArgs: Record<string, unknown>;
-    let routingDebug: string | undefined;
-
-    if (isBroadStartingAsk(message)) {
-      fnName = "inviteUserContext";
-      fnArgs = { forceAreaQuestion: true };
-      routingDebug = "deterministic: broad_starting_ask";
-    } else {
-      ({ fnName, fnArgs, debug: routingDebug } = await routeWithAI(
-        coach.instructions,
-        coach.functionSchemas,
-        conversationHistory,
-        message,
-        azureConfig
-      ));
-    }
+    // ── 4. Routing — deterministic keyword flag, confirmed by the AI ──
+    // Broad asks ("help me get into tech") are flagged by plain code rather
+    // than hoping the model reliably notices them on its own — but the
+    // keyword flag itself can misfire on context it can't see (negation,
+    // e.g. "a field that is not related to tech"). So the flag doesn't skip
+    // the AI call outright; it rides along as a strong default in the SAME
+    // routing call, which the AI can confirm or override against the actual
+    // message (see BROAD_ASK_HINT above).
+    const broadAskFlagged = isBroadStartingAsk(message);
+    const { fnName, fnArgs, debug: rawRoutingDebug } = await routeWithAI(
+      coach.instructions,
+      coach.functionSchemas,
+      conversationHistory,
+      message,
+      azureConfig,
+      { broadAskHint: broadAskFlagged }
+    );
+    const routingDebug = broadAskFlagged
+      ? `ai_confirmed_broad_starting_ask${rawRoutingDebug ? ` (${rawRoutingDebug})` : ""}`
+      : rawRoutingDebug;
     console.log(`[Converser] Routing → ${fnName}`, fnArgs, routingDebug ? `(${routingDebug})` : "");
 
     // ── 5. Execute the selected function ──────────────────────────────

@@ -4,7 +4,7 @@
 
 import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices } from "./converser.ts";
 import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./bsc-functions.ts";
-import { KNOWLEDGE_BASE, classifyTopic, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
+import { KNOWLEDGE_BASE, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT } from "./botema-examples.ts";
 
 // Single Azure OpenAI chat-completions call. Returns null content (not a

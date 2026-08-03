@@ -158,38 +158,39 @@ export const GENERAL_FALLBACK = `
 No specific BSC guide covers this topic directly. Answer using your own general knowledge, keeping the answer relevant to a tech career context (job market, day-to-day work, remote opportunities, skills in demand, etc. — whatever fits the question). Keep it brief and honest that it's general knowledge rather than a BSC-specific guide, then ask a clarifying question about which specific angle they'd like to go deeper on.
 `.trim();
 
-// Maps a topic string from the routing call to a knowledge base key
-export function classifyTopic(topic: string): string {
-  const t = topic.toLowerCase();
+// The set of valid knowledge-base categories the AI can classify a career
+// topic into (see UpdateCareerTopic.parameters in bsc-functions.ts, which
+// exposes this same list as an enum). "general" isn't a KNOWLEDGE_BASE key —
+// it deliberately falls through to GENERAL_FALLBACK.
+export const TOPIC_CATEGORIES = [
+  "getting_started",
+  "career_paths",
+  "further_education",
+  "mentorship",
+  "wellbeing",
+  "cv_job_search",
+  "salary",
+  "interview_prep",
+  "ai_impact",
+  "mindset",
+  "general",
+] as const;
 
-  if (/start|begin|new|background|bootcamp|degree|language|python|javascript|free resource/.test(t)) return "getting_started";
-  if (/cv|resume|job search|linkedin|application|apply|portfolio/.test(t)) return "cv_job_search";
-  if (/interview|technical test|coding test|leetcode|system design|behavioural/.test(t)) return "interview_prep";
-  if (/salary|pay|negotiat|raise|compensation|benefit|offer/.test(t)) return "salary";
-  if (/imposter|confidence|belong|self.doubt|motivat|burnout|mental|overwhelm|slow|stuck/.test(t)) return "mindset";
-  if (/balance|family|boundary|flexible|wellbeing|health|exhausted|rest/.test(t)) return "wellbeing";
-  if (/mentor|sponsor|coach|advisor|pairing/.test(t)) return "mentorship";
-  if (/master|degree|certification|cert|study|education|scholarship|qualification/.test(t)) return "further_education";
-  if (/replac|obsolete|future.?proof|automat|ethic|ai tool|copilot|chatgpt|ai.{0,15}(job|career|hiring|recruit)|hiring.{0,15}ai/.test(t)) return "ai_impact";
-  if (/data science|machine learning|ml|ai|cloud|devops|ux|product manager|pm|cybersecurity|security|software|frontend|backend|full.?stack|mobile/.test(t)) return "career_paths";
-
-  // Default: no specific guide fits — use the general fallback, not an unrelated one.
-  return "general";
-}
-
-// Deterministically detects a broad, unspecific tech/career ask, so it can be
-// routed to inviteUserContext WITHOUT going through the AI router at all —
-// guaranteeing the clarifying-question path for these, rather than depending
-// on the model to reliably choose it every time.
+// Deterministically FLAGS a broad, unspecific tech/career ask — it doesn't
+// decide the outcome by itself. index.ts sends flagged messages through the
+// AI router with an added note (BROAD_ASK_HINT) confirming the flag against
+// the actual message, in the same routing call, rather than skipping the AI
+// call and forcing a fixed answer. This keeps the guarantee that these
+// messages get real attention (the model can't just quietly answer them
+// broadly without at least considering narrowing) while letting the AI use
+// context this regex can't see — negation, contradiction, anything phrased
+// in a way this pattern didn't anticipate.
 //
 // Deliberately aggressive: ANY message that mentions tech/career generically
 // but names no specific skill, role, or challenge counts as broad, regardless
 // of exact phrasing — catching typos, dropped pronouns, and phrasings we
 // didn't anticipate, not just a fixed list of "help me / how do I start"
-// templates. The AI router's own NEEDS NARROWING judgment (see the routing
-// instructions) still runs as a second layer for anything that slips past
-// this — e.g. a message that names one specific thing but the model itself
-// decides still isn't enough to answer precisely.
+// templates.
 const SPECIFIC_TOPIC_HINTS = /python|javascript|typescript|\bjava\b|c\+\+|\bsql\b|\bhtml\b|\bcss\b|\breact\b|\bnode\b|django|\bcv\b|resume|linkedin|job search|\binterview|salary|negotiat|pay rise|imposter|confidence|burnout|belong|motivat|anxious|anxiety|overwhelm|\bbalance\b|boundary|flexible|wellbeing|\bmentor|\bsponsor|master'?s|certification|\bcert\b|scholarship|bootcamp|\bdegree\b|data science|machine learning|\bml\b|\bai\b|\bcloud\b|devops|\baws\b|azure|\bgcp\b|\bux\b|\bui\b|\bdesign\b|product manager|\bpm\b|cybersecurity|security|frontend|front-end|backend|back-end|full.?stack|\bmobile\b|android|\bios\b|freelanc/i;
 
 const TECH_OR_CAREER_MENTION = /\btech(nology)?\b|\bcareer\b|\bjob\b|\bcoding\b|\bprogramming\b/i;

@@ -78,7 +78,7 @@ prompt    = buildFewShotPrompt(question, knowledge, examples)
 reply     = generateResponse(prompt, question)  // → sends to Azure OpenAI
 ```
 
-- **Domain knowledge** lives in `bsc-knowledge.ts` as a `KNOWLEDGE_BASE` object keyed by topic (`getting_started`, `cv_job_search`, `mindset`, `salary`, etc.). `classifyTopic()` maps whatever topic string the router extracted onto one of these keys.
+- **Domain knowledge** lives in `bsc-knowledge.ts` as a `KNOWLEDGE_BASE` object keyed by topic (`getting_started`, `cv_job_search`, `mindset`, `salary`, etc.). `UpdateCareerTopic`'s `topic` parameter (in `bsc-functions.ts`) is an `enum` over `TOPIC_CATEGORIES` with a description of each category — the AI classifies the topic itself as part of routing, rather than a keyword regex doing it after the fact.
 - **Few-shot examples** teach the AI *how to sound*, not what to say — they're example answers in the coach's own voice, injected into the prompt so the AI copies the style. This is the "wordalisation" concept — turning structured knowledge into a spoken, personal-sounding answer, in this persona's specific voice.
 - The final message sent to Azure is: a system prompt (persona identity/tone) + last 6 messages of conversation history + the few-shot prompt (examples + domain knowledge + the user's question).
 
@@ -122,7 +122,7 @@ Config comes from Supabase secrets (`AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_API_K
 
 ## 9. How to extend this
 
-**Add a new topic to the knowledge base:** add an entry to `KNOWLEDGE_BASE` in `bsc-knowledge.ts`, and add a matching pattern in `classifyTopic()` so the router can reach it.
+**Add a new topic to the knowledge base:** add an entry to `KNOWLEDGE_BASE` in `bsc-knowledge.ts`, then add it to `TOPIC_CATEGORIES` (same file) and describe it in the `topic` enum on `UpdateCareerTopic` in `bsc-functions.ts` so the AI knows when to classify a message into it.
 
 **Add a new function (new type of thing the coach can do):** create a class extending the right base (`WordaliseFunction` if it needs to generate free text, `InstructionsFunction`/`EngageFunction` for fixed responses, `ChangeContextFunction` if it needs to update state first), add it to both personas' `initializeFunctions()` if it should exist in both, and add a routing rule for it in that persona's `instructions` getter (in `bsc-coach.ts`/`botema-coach.ts`) so the AI router knows when to call it.
 

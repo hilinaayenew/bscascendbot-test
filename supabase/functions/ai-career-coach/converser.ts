@@ -27,7 +27,7 @@ export function withChoices(text: string, choices: string[]): string {
 // writing the hedged multi-direction answer — resolveNarrowOrAnswer() turns
 // that into the same tappable-button format inviteUserContext uses, or
 // passes the text through unchanged if the model just answered normally.
-export const NARROW_SELF_CHECK = `Self-check before you answer: if giving one specific answer would require you to first ask which direction/track/option the user wants (e.g. you'd need to ask "which track are you most drawn to" before you know what to recommend), the question was still too broad for a direct answer. In that case, do not write any advice text — output ONLY these two lines, exactly, and nothing else:
+export const NARROW_SELF_CHECK = `Self-check before you answer — read this carefully: if your answer would name more than one distinct direction/track/option side by side (e.g. "for web development, do A; for data, do B; for IT, do C"), that is ALWAYS wrong — even if you also end with a clarifying question. Listing every track "to be safe" instead of asking which one FIRST is exactly the mistake to avoid; ending with a question does not excuse it. The moment you notice yourself about to name a second distinct track/option in the same answer, stop — do not send that answer. Output ONLY these two lines instead, exactly, and nothing else:
 NARROW_QUESTION: <a short question tailored to what they asked>
 NARROW_OPTIONS: <option 1> | <option 2> | <option 3>
 (3-5 short options tailored to their message, each under 6 words, separated by " | ")`;

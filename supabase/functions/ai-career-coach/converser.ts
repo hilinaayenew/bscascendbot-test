@@ -34,12 +34,48 @@ NARROW_OPTIONS: <option 1> | <option 2> | <option 3>
 
 const NARROW_OUTPUT_PATTERN = /^\s*NARROW_QUESTION:\s*(.+?)\s*\n+\s*NARROW_OPTIONS:\s*(.+?)\s*$/is;
 
+// Fallback safety net for when the model hedges across multiple tracks
+// anyway, without self-reporting via NARROW_QUESTION/NARROW_OPTIONS above
+// (observed repeatedly in practice — the instruction alone isn't fully
+// reliable). This checks the model's OWN generated answer for a generic
+// structural tell — a comma-separated list of 3+ short items ending in
+// "or <item>" (e.g. "web, data, or IT?", "CV, networking, or interview
+// prep?") — not a guess at the user's intent from their input wording.
+// Deliberately requires 2+ comma-joined items before the "or" so it doesn't
+// fire on ordinary two-item questions ("time or money?"), which are a
+// normal, legitimate way to end an already-focused answer.
+const ENUMERATED_LIST_PATTERN = /\b([A-Za-z][A-Za-z0-9&/]*(?:\s[A-Za-z][A-Za-z0-9&/]*){0,2}(?:,\s*[A-Za-z][A-Za-z0-9&/]*(?:\s[A-Za-z][A-Za-z0-9&/]*){0,2})+,?\s+or\s+[A-Za-z][A-Za-z0-9&/]*(?:\s[A-Za-z][A-Za-z0-9&/]*){0,2})\b/;
+
+function extractEnumeratedOptions(text: string): string[] | null {
+  const match = text.match(ENUMERATED_LIST_PATTERN);
+  if (!match) return null;
+  // Normalize the trailing ", or X" / " or X" into a plain ", X" first — a
+  // combined split on /,|\bor\b/ would let the comma-branch greedily eat the
+  // space before "or", fusing it onto the next word ("or interview prep").
+  const normalized = match[1].replace(/,?\s+or\s+/i, ", ");
+  const options = normalized
+    .split(/,\s*/)
+    .map((o) => o.trim())
+    .filter((o) => o.length > 0 && o.length <= 40)
+    .map((o) => o.charAt(0).toUpperCase() + o.slice(1));
+  const unique = [...new Set(options)];
+  return unique.length >= 2 ? unique.slice(0, 5) : null;
+}
+
 export function resolveNarrowOrAnswer(raw: string): string {
-  const match = raw.match(NARROW_OUTPUT_PATTERN);
-  if (!match) return raw;
-  const question = match[1].trim();
-  const options = match[2].split("|").map((o) => o.trim()).filter(Boolean);
-  return question && options.length >= 2 ? withChoices(question, options) : raw;
+  const selfReported = raw.match(NARROW_OUTPUT_PATTERN);
+  if (selfReported) {
+    const question = selfReported[1].trim();
+    const options = selfReported[2].split("|").map((o) => o.trim()).filter(Boolean);
+    if (question && options.length >= 2) return withChoices(question, options);
+  }
+
+  const enumeratedOptions = extractEnumeratedOptions(raw);
+  if (enumeratedOptions) {
+    return withChoices("Which one would you like to focus on?", enumeratedOptions);
+  }
+
+  return raw;
 }
 
 // Azure OpenAI config — passed through from index.ts (loaded from Supabase secrets)

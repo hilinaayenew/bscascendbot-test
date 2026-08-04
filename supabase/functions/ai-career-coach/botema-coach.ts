@@ -2,7 +2,7 @@
 // Botema — Career Coach persona
 // Direct, personal, African-context aware. Uses Otema's Q&A examples as few-shot data.
 
-import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices } from "./converser.ts";
+import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices, NARROW_SELF_CHECK, resolveNarrowOrAnswer } from "./converser.ts";
 import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./bsc-functions.ts";
 import { KNOWLEDGE_BASE, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT } from "./botema-examples.ts";
@@ -85,12 +85,13 @@ class BotemaAdvise extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: BOTEMA_SYSTEM_PROMPT + " The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.",
+        content: BOTEMA_SYSTEM_PROMPT + ` Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} Otherwise, if the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.`,
       },
       ...history,
       { role: "user", content: prompt },
     ];
-    return callAzure(this.converser.azureConfig, messages);
+    const raw = await callAzure(this.converser.azureConfig, messages);
+    return resolveNarrowOrAnswer(raw);
   }
 }
 

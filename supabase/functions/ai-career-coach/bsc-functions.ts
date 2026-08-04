@@ -20,8 +20,12 @@ import {
   AzureConfig,
   OAIMessage,
   withChoices,
+  NARROW_SELF_CHECK,
+  resolveNarrowOrAnswer,
 } from "./converser.ts";
 import { KNOWLEDGE_BASE, TOPIC_CATEGORIES, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
+
+const ADVISE_SYSTEM_PROMPT = `You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. Default to a short, direct answer — a sentence or two, or a short paragraph at most. The knowledge below may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} Otherwise, only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper. Always end with a question that invites the user to share more about their situation. If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.`;
 
 // Single Azure OpenAI chat-completions call. Returns null content (not a
 // thrown error) if the API responded OK but with no visible text — that
@@ -204,12 +208,13 @@ export class AdviseOnCareerTopic extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: "You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Default to a short, direct answer — a sentence or two, or a short paragraph at most. The knowledge below may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. Only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper. Always end with a question that invites the user to share more about their situation. If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.",
+        content: ADVISE_SYSTEM_PROMPT,
       },
       ...history,
       { role: "user", content: prompt },
     ];
-    return callAzure(this.converser.azureConfig, messages, { temperature: 0.7 });
+    const raw = await callAzure(this.converser.azureConfig, messages, { temperature: 0.7 });
+    return resolveNarrowOrAnswer(raw);
   }
 }
 

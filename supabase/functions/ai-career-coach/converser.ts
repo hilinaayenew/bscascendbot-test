@@ -19,6 +19,29 @@ export function withChoices(text: string, choices: string[]): string {
   return choices.length ? `${text}\n${CHOICES_MARKER}${JSON.stringify(choices)}` : text;
 }
 
+// A WORDALISE function sometimes only realizes mid-answer that the request
+// was still too broad to answer in one direction (e.g. it would need to
+// write "which track are you most drawn to" before it can recommend
+// anything specific). Rather than a second AI call to re-route, it signals
+// this in its own output using this fixed, code-parseable format instead of
+// writing the hedged multi-direction answer — resolveNarrowOrAnswer() turns
+// that into the same tappable-button format inviteUserContext uses, or
+// passes the text through unchanged if the model just answered normally.
+export const NARROW_SELF_CHECK = `Self-check before you answer: if giving one specific answer would require you to first ask which direction/track/option the user wants (e.g. you'd need to ask "which track are you most drawn to" before you know what to recommend), the question was still too broad for a direct answer. In that case, do not write any advice text — output ONLY these two lines, exactly, and nothing else:
+NARROW_QUESTION: <a short question tailored to what they asked>
+NARROW_OPTIONS: <option 1> | <option 2> | <option 3>
+(3-5 short options tailored to their message, each under 6 words, separated by " | ")`;
+
+const NARROW_OUTPUT_PATTERN = /^\s*NARROW_QUESTION:\s*(.+?)\s*\n+\s*NARROW_OPTIONS:\s*(.+?)\s*$/is;
+
+export function resolveNarrowOrAnswer(raw: string): string {
+  const match = raw.match(NARROW_OUTPUT_PATTERN);
+  if (!match) return raw;
+  const question = match[1].trim();
+  const options = match[2].split("|").map((o) => o.trim()).filter(Boolean);
+  return question && options.length >= 2 ? withChoices(question, options) : raw;
+}
+
 // Azure OpenAI config — passed through from index.ts (loaded from Supabase secrets)
 export interface AzureConfig {
   endpoint: string;

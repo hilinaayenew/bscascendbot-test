@@ -85,7 +85,7 @@ class BotemaAdvise extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: BOTEMA_SYSTEM_PROMPT + " If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.",
+        content: BOTEMA_SYSTEM_PROMPT + " The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. If the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.",
       },
       ...history,
       { role: "user", content: prompt },
@@ -261,9 +261,9 @@ ROUTING RULES — always call exactly one function, never respond directly:
 
 4. GREETING — user says hello, hi, asks what you can do, or sends their very first message with no topic → call howCoachWorks.
 
-5. NEEDS NARROWING — the message is a broad, open-ended ask ("help me learn tech", "I want to get into tech in [country]", "how do I start a career in tech") that could go in several directions, AND the profile above shows "No profile captured yet" (we don't yet know their background or what specifically they want) → call inviteUserContext to ask ONE focused question narrowing down what they want to focus on, instead of answering broadly. Do NOT use this if the message already names a specific skill, role, field, or challenge (e.g. "how do I learn Python", "CV help", "salary negotiation") — those go to rule 6 even if short. Also skip this if the profile already has real detail captured — answer directly instead. When you call inviteUserContext, always also fill in its "question" and "options" arguments yourself — a short question and 3-5 answer options tailored specifically to what THIS user asked, not generic ones.
+5. NEEDS NARROWING — judge this from the message itself, not a fixed list: could you give ONE focused, specific answer right now, or would answering mean covering several genuinely different angles just to be safe? If it's the latter, call inviteUserContext to ask ONE short question narrowing down which angle to focus on, instead of covering all of them at once. This applies whether the message has no topic at all ("help me learn tech", "how do I start a career in tech") OR names a topic that still spans multiple distinct angles (e.g. "job search strategy" could mean CV, networking, the no-experience path, LinkedIn, or interview prep — which one?). Skip narrowing if the message already points to one specific, answerable facet ("how do I learn Python", "CV help", "salary negotiation"), or if the profile or conversation history already makes the intent clear. When you call inviteUserContext, always fill in its "question" and "options" arguments yourself — a short question and 3-5 answer options tailored specifically to what THIS user asked, not generic ones.
 
-6. TOPIC/QUESTION (DEFAULT) — anything else: a career question, a topic, a skill, a field, a request for advice, even short messages like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer.
+6. TOPIC/QUESTION (DEFAULT) — the message already points to one specific, answerable facet — a skill, a concrete question, a clearly single-angle request, even short ones like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer. The answer that follows should stay tightly focused on that one facet — don't pull in every related sub-topic just because they live in the same knowledge area. Keep it short: a few lines, not a comprehensive rundown of everything related.
 
 When in doubt between updateCareerTopic and answerOutOfScope, prefer updateCareerTopic unless the message is clearly unrelated to tech careers.
 

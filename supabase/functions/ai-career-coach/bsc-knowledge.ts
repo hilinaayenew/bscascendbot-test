@@ -176,27 +176,3 @@ export const TOPIC_CATEGORIES = [
   "general",
 ] as const;
 
-// Deterministically FLAGS a broad, unspecific tech/career ask — it doesn't
-// decide the outcome by itself. index.ts sends flagged messages through the
-// AI router with an added note (BROAD_ASK_HINT) confirming the flag against
-// the actual message, in the same routing call, rather than skipping the AI
-// call and forcing a fixed answer. This keeps the guarantee that these
-// messages get real attention (the model can't just quietly answer them
-// broadly without at least considering narrowing) while letting the AI use
-// context this regex can't see — negation, contradiction, anything phrased
-// in a way this pattern didn't anticipate.
-//
-// Deliberately aggressive: ANY message that mentions tech/career generically
-// but names no specific skill, role, or challenge counts as broad, regardless
-// of exact phrasing — catching typos, dropped pronouns, and phrasings we
-// didn't anticipate, not just a fixed list of "help me / how do I start"
-// templates.
-const SPECIFIC_TOPIC_HINTS = /python|javascript|typescript|\bjava\b|c\+\+|\bsql\b|\bhtml\b|\bcss\b|\breact\b|\bnode\b|django|\bcv\b|resume|linkedin|job search|\binterview|salary|negotiat|pay rise|imposter|confidence|burnout|belong|motivat|anxious|anxiety|overwhelm|\bbalance\b|boundary|flexible|wellbeing|\bmentor|\bsponsor|master'?s|certification|\bcert\b|scholarship|bootcamp|\bdegree\b|data science|machine learning|\bml\b|\bai\b|\bcloud\b|devops|\baws\b|azure|\bgcp\b|\bux\b|\bui\b|\bdesign\b|product manager|\bpm\b|cybersecurity|security|frontend|front-end|backend|back-end|full.?stack|\bmobile\b|android|\bios\b|freelanc/i;
-
-const TECH_OR_CAREER_MENTION = /\btech(nology)?\b|\bcareer\b|\bjob\b|\bcoding\b|\bprogramming\b/i;
-
-export function isBroadStartingAsk(message: string): boolean {
-  const m = message.toLowerCase();
-  if (!TECH_OR_CAREER_MENTION.test(m)) return false;
-  return !SPECIFIC_TOPIC_HINTS.test(m);
-}

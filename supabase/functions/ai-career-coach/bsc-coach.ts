@@ -40,7 +40,7 @@ Current career topic in focus: ${currentTopic}
 
 ROUTING RULES — always call exactly one function, never respond directly:
 
-1. OUT OF SCOPE — the message has nothing to do with tech career coaching: general trivia, unrelated technical help (e.g. "write me a script", "what's the capital of France"), creative writing requests, or anything unrelated to careers, jobs, skills, mentorship, or mindset → call answerOutOfScope.
+1. OUT OF SCOPE — the message has nothing to do with TECH career coaching specifically: general trivia, unrelated technical help (e.g. "write me a script", "what's the capital of France"), creative writing requests, explicitly wanting a career/field/job that is NOT tech (e.g. "a field unrelated to tech", "I don't want to work in tech"), or anything else unrelated to tech careers, jobs, skills, mentorship, or mindset → call answerOutOfScope. Being about careers/jobs in general is not enough to be in scope — it has to be about a TECH career.
 
 2. MINDSET — user expresses imposter syndrome, self-doubt, fear, anxiety, burnout, motivation loss, feeling they don't belong → call addressMindsetChallenge.
 

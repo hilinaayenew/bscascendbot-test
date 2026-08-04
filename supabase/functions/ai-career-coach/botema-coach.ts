@@ -85,7 +85,7 @@ class BotemaAdvise extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: BOTEMA_SYSTEM_PROMPT + ` Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} Otherwise, if the user's question has nothing to do with tech careers, jobs, skills, mentorship, or mindset (e.g. travel, general trivia, unrelated technical help), do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead.`,
+        content: BOTEMA_SYSTEM_PROMPT + ` Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} Otherwise, if the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.`,
       },
       ...history,
       { role: "user", content: prompt },
@@ -255,7 +255,7 @@ Current career topic in focus: ${currentTopic}
 
 ROUTING RULES — always call exactly one function, never respond directly:
 
-1. OUT OF SCOPE — the message has nothing to do with tech career coaching: general trivia, unrelated technical help (e.g. "write me a script", "what's the capital of France"), creative writing requests, or anything unrelated to careers, jobs, skills, mentorship, or mindset → call answerOutOfScope.
+1. OUT OF SCOPE — the message has nothing to do with TECH career coaching specifically: general trivia, unrelated technical help (e.g. "write me a script", "what's the capital of France"), creative writing requests, explicitly wanting a career/field/job that is NOT tech (e.g. "a field unrelated to tech", "I don't want to work in tech"), or anything else unrelated to tech careers, jobs, skills, mentorship, or mindset → call answerOutOfScope. Being about careers/jobs in general is not enough to be in scope — it has to be about a TECH career.
 
 2. MINDSET — user expresses fear, self-doubt, imposter syndrome, burnout, anxiety, motivation loss, feeling they don't belong → call addressMindsetChallenge.
 

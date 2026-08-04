@@ -62,6 +62,19 @@ function extractEnumeratedOptions(text: string): string[] | null {
   return unique.length >= 2 ? unique.slice(0, 5) : null;
 }
 
+// A different failure mode from hedging across tracks: the model stays on
+// one topic but writes it up as a multi-section rundown (e.g. "Foundations
+// to learn... / Beginner-friendly labs... / Security basics... / Tools...
+// / Certifications... / Free resources...") instead of a short answer, even
+// though it was told to. Rather than trust that instruction alone (it
+// repeatedly hasn't held), this keeps only the opening answer and the
+// closing question — a paragraph-count cap, not a content judgment.
+function capParagraphs(text: string, max = 2): string {
+  const paragraphs = text.split(/\n\s*\n+/).map((p) => p.trim()).filter(Boolean);
+  if (paragraphs.length <= max) return text;
+  return [paragraphs[0], paragraphs[paragraphs.length - 1]].join("\n\n");
+}
+
 export function resolveNarrowOrAnswer(raw: string): string {
   const selfReported = raw.match(NARROW_OUTPUT_PATTERN);
   if (selfReported) {
@@ -75,7 +88,7 @@ export function resolveNarrowOrAnswer(raw: string): string {
     return withChoices("Which one would you like to focus on?", enumeratedOptions);
   }
 
-  return raw;
+  return capParagraphs(raw);
 }
 
 // Azure OpenAI config — passed through from index.ts (loaded from Supabase secrets)

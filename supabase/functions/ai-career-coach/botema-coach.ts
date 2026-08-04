@@ -126,12 +126,13 @@ class BoteMindset extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: BOTEMA_SYSTEM_PROMPT + " When addressing a mindset challenge, lead with acknowledgement of what the user is feeling before offering any advice. Be warm and honest.",
+        content: BOTEMA_SYSTEM_PROMPT + ` Be warm and honest when addressing a mindset challenge, but never open with a stock acknowledgment phrase like "I hear you," "That sounds hard," or "Great question." Get straight into a helpful, specific response.`,
       },
       ...history,
       { role: "user", content: prompt },
     ];
-    return callAzure(this.converser.azureConfig, messages);
+    const raw = await callAzure(this.converser.azureConfig, messages);
+    return resolveNarrowOrAnswer(raw);
   }
 }
 

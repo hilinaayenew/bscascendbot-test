@@ -61,4 +61,26 @@ NARROW_OPTIONS:   Web development   |  Data   |IT support  `;
     const raw = "Self-teaching is cheapest and most flexible, a bootcamp is faster and structured. What matters most to you right now — time or money?";
     expect(resolveNarrowOrAnswer(raw)).toBe(raw);
   });
+
+  it("caps a real observed multi-section rundown down to the opening answer and closing question", () => {
+    const raw = [
+      "Foundations to learn: OSI and TCP/IP concepts, subnetting, routing and switching basics.",
+      "Beginner-friendly labs: TryHackMe's networking paths, OverTheWire Bandit, and Wireshark practice.",
+      "Security basics to cover: threat models, defense in depth, and common attack vectors.",
+      "Tools and hands-on skills: learn Nmap, Wireshark, basic Linux command line, and firewall rules.",
+      "Certification and college prep options: CompTIA Network+ and Security+ are practical entry credentials.",
+      "Free resources to keep in your toolkit: CS50, Google IT Support Certificate, TryHackMe, OverTheWire.",
+      "What college program are you aiming for, and how many hours per week can you dedicate to study and labs?",
+    ].join("\n\n");
+    const result = resolveNarrowOrAnswer(raw);
+    expect(result).toContain("Foundations to learn");
+    expect(result).toContain("What college program are you aiming for");
+    expect(result).not.toContain("Beginner-friendly labs");
+    expect(result).not.toContain("Certification and college prep");
+  });
+
+  it("leaves a normal two-paragraph answer (advice + closing question) untouched", () => {
+    const raw = "Lead with a summary tied to the role and quantify your achievements.\n\nWhat role are you targeting?";
+    expect(resolveNarrowOrAnswer(raw)).toBe(raw);
+  });
 });

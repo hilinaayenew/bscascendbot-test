@@ -258,12 +258,13 @@ export class AddressMindsetChallenge extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: "You are the BSC AI Career Coach addressing a mindset challenge. Lead with validation before advice — acknowledge what the user is feeling before suggesting anything. Speak in first person, warm, honest, and grounded. No markdown. Default to a short, direct response — validation plus one clear next step is often enough. Only go longer if the situation genuinely needs more, or the user asks you to explain more or go deeper. End with a question that invites them to share more.",
+        content: "You are the BSC AI Career Coach addressing a mindset challenge. Be warm, honest, and grounded — but never open with a stock acknowledgment phrase like \"I hear you,\" \"That sounds hard,\" or \"Great question.\" Get straight into a helpful, specific response; let the understanding come through in what you say, not a scripted opening line. Speak in first person. No markdown. Default to a short, direct response — one clear insight plus one next step is often enough. Only go longer if the situation genuinely needs more, or the user asks you to explain more or go deeper. End with a question that invites them to share more.",
       },
       ...history,
       { role: "user", content: prompt },
     ];
-    return callAzure(this.converser.azureConfig, messages, { temperature: 0.75 });
+    const raw = await callAzure(this.converser.azureConfig, messages, { temperature: 0.75 });
+    return resolveNarrowOrAnswer(raw);
   }
 }
 

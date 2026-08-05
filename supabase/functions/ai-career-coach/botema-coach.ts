@@ -2,7 +2,7 @@
 // Botema — Career Coach persona
 // Direct, personal, African-context aware. Uses Otema's Q&A examples as few-shot data.
 
-import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices, NARROW_SELF_CHECK, resolveNarrowOrAnswer } from "./converser.ts";
+import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices, NARROW_SELF_CHECK, resolveNarrowOrAnswer, pickRandom } from "./converser.ts";
 import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./bsc-functions.ts";
 import { KNOWLEDGE_BASE, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT } from "./botema-examples.ts";
@@ -76,7 +76,7 @@ class BotemaAdvise extends WordaliseFunction {
     const topic = this.converser.context.currentEntities[0];
     const pool = BOTEMA_EXAMPLES.adviseOnCareerTopic;
     const matched = topic ? pool.filter(ex => ex.topic === topic) : [];
-    const chosen = (matched.length > 0 ? matched : pool).slice(0, limit);
+    const chosen = pickRandom(matched.length > 0 ? matched : pool, limit);
     return chosen.map(ex => ({ question: ex.question, knowledge: "", answer: ex.answer }));
   }
 
@@ -117,7 +117,7 @@ class BoteMindset extends WordaliseFunction {
     const topic = args.challenge_type as string | undefined;
     const pool = BOTEMA_EXAMPLES.addressMindsetChallenge;
     const matched = topic ? pool.filter(ex => ex.topic === topic) : [];
-    const chosen = (matched.length > 0 ? matched : pool).slice(0, limit);
+    const chosen = pickRandom(matched.length > 0 ? matched : pool, limit);
     return chosen.map(ex => ({ question: ex.question, knowledge: "", answer: ex.answer }));
   }
 

@@ -158,6 +158,19 @@ export abstract class ChangeContextFunction extends ChatFunction {
   }
 }
 
+// Fisher-Yates shuffle, then take the first n — used so few-shot example
+// selection actually exercises the whole matched pool over time instead of
+// always showing the model the same fixed subset (e.g. always the first 3
+// in array order, or always the 3 most recently added rows).
+export function pickRandom<T>(pool: T[], n: number): T[] {
+  const arr = [...pool];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.slice(0, n);
+}
+
 // WORDALISE: fetches domain knowledge + loads few-shot examples + generates response
 export abstract class WordaliseFunction extends ChatFunction {
   get functionType(): FunctionType {
@@ -186,20 +199,16 @@ export abstract class WordaliseFunction extends ChatFunction {
           .from("coach_wordalisations")
           .select("question, knowledge, answer")
           .eq("function_name", this.name)
-          .eq("topic", topic)
-          .order("created_at", { ascending: false })
-          .limit(limit);
-        if (data && data.length > 0) return data;
+          .eq("topic", topic);
+        if (data && data.length > 0) return pickRandom(data, limit);
       }
 
-      // No topic match (or no topic given) — fall back to whatever's most recent for this function.
+      // No topic match (or no topic given) — sample from everything for this function.
       const { data } = await this.converser.supabase
         .from("coach_wordalisations")
         .select("question, knowledge, answer")
-        .eq("function_name", this.name)
-        .order("created_at", { ascending: false })
-        .limit(limit);
-      return data || [];
+        .eq("function_name", this.name);
+      return data ? pickRandom(data, limit) : [];
     } catch {
       return [];
     }

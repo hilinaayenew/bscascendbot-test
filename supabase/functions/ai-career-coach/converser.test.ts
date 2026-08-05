@@ -1,5 +1,48 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom } from "./converser.ts";
+
+describe("pickRandom", () => {
+  it("returns exactly n items when the pool is larger than n", () => {
+    const pool = [1, 2, 3, 4, 5, 6, 7, 8];
+    const picked = pickRandom(pool, 3);
+    expect(picked).toHaveLength(3);
+  });
+
+  it("never returns duplicates from a pool of unique items", () => {
+    const pool = ["a", "b", "c", "d", "e", "f"];
+    const picked = pickRandom(pool, 4);
+    expect(new Set(picked).size).toBe(picked.length);
+  });
+
+  it("only returns items that were actually in the pool", () => {
+    const pool = [10, 20, 30, 40, 50];
+    const picked = pickRandom(pool, 3);
+    picked.forEach((item) => expect(pool).toContain(item));
+  });
+
+  it("caps at the pool size when n exceeds it, without erroring", () => {
+    const pool = [1, 2, 3];
+    expect(pickRandom(pool, 10)).toHaveLength(3);
+  });
+
+  it("does not mutate the original pool", () => {
+    const pool = [1, 2, 3, 4, 5];
+    const copy = [...pool];
+    pickRandom(pool, 3);
+    expect(pool).toEqual(copy);
+  });
+
+  it("eventually surfaces items beyond the first n across repeated calls", () => {
+    const pool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const seen = new Set<number>();
+    for (let i = 0; i < 50; i++) {
+      pickRandom(pool, 3).forEach((item) => seen.add(item));
+    }
+    // With 50 draws of 3-from-10, it would be statistically absurd not to
+    // see items outside the first 3 — this is the whole point of the fix.
+    expect(seen.size).toBeGreaterThan(3);
+  });
+});
 
 describe("resolveNarrowOrAnswer", () => {
   it("converts a well-formed NARROW_QUESTION/NARROW_OPTIONS block into a choices message", () => {

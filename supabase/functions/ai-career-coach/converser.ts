@@ -89,6 +89,16 @@ function capParagraphs(text: string, max = 2): string {
   return [first, ...keptMiddle, last].join("\n\n");
 }
 
+// The bullet-shape check above still can't save a legitimately long
+// deliverable written as plain prose (a full cover-letter draft, an
+// explanation the user explicitly asked to go deeper on) — nothing marks
+// those paragraphs as "keep me" the way a bullet does. Same pattern as
+// NARROW_SELF_CHECK: give the model an explicit, code-parseable way to
+// say "this length is intentional" instead of guessing from shape alone.
+export const LONG_FORM_ESCAPE_HATCH = `If — and only if — the user explicitly asked for something that genuinely needs a longer, multi-paragraph answer (a full draft, a full rewrite, or they asked you to explain more or go deeper), start your reply with the exact marker LONG_FORM_OK alone on its own first line, then continue with your full answer as normal on the following lines. Do not include this marker for an ordinary short answer — it should be rare, not the default.`;
+
+const LONG_FORM_OK_PATTERN = /^\s*LONG_FORM_OK\s*\n+/i;
+
 export function resolveNarrowOrAnswer(raw: string): string {
   const selfReported = raw.match(NARROW_OUTPUT_PATTERN);
   if (selfReported) {
@@ -97,12 +107,17 @@ export function resolveNarrowOrAnswer(raw: string): string {
     if (question && options.length >= 2) return withChoices(question, options);
   }
 
-  const enumeratedOptions = extractEnumeratedOptions(raw);
+  const longFormMatch = raw.match(LONG_FORM_OK_PATTERN);
+  const body = longFormMatch ? raw.slice(longFormMatch[0].length) : raw;
+
+  // Hedging across tracks is still wrong even in a deliberately long
+  // answer, so this check runs regardless of the long-form marker.
+  const enumeratedOptions = extractEnumeratedOptions(body);
   if (enumeratedOptions) {
     return withChoices("Which one would you like to focus on?", enumeratedOptions);
   }
 
-  return capParagraphs(raw);
+  return longFormMatch ? body : capParagraphs(body);
 }
 
 // Azure OpenAI config — passed through from index.ts (loaded from Supabase secrets)

@@ -2,7 +2,7 @@
 // Botema — Career Coach persona
 // Direct, personal, African-context aware. Uses Otema's Q&A examples as few-shot data.
 
-import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices, NARROW_SELF_CHECK, resolveNarrowOrAnswer, pickRandom } from "./converser.ts";
+import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices, NARROW_SELF_CHECK, LONG_FORM_ESCAPE_HATCH, resolveNarrowOrAnswer, pickRandom } from "./converser.ts";
 import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./bsc-functions.ts";
 import { KNOWLEDGE_BASE, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT } from "./botema-examples.ts";
@@ -85,7 +85,7 @@ class BotemaAdvise extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: BOTEMA_SYSTEM_PROMPT + ` Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} Otherwise, if the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.`,
+        content: BOTEMA_SYSTEM_PROMPT + ` Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} ${LONG_FORM_ESCAPE_HATCH} Otherwise, if the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.`,
       },
       ...history,
       { role: "user", content: prompt },
@@ -126,7 +126,7 @@ class BoteMindset extends WordaliseFunction {
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: BOTEMA_SYSTEM_PROMPT + ` Be warm and honest when addressing a mindset challenge, but never open with a stock acknowledgment phrase like "I hear you," "That sounds hard," or "Great question." Get straight into a helpful, specific response.`,
+        content: BOTEMA_SYSTEM_PROMPT + ` Be warm and honest when addressing a mindset challenge, but never open with a stock acknowledgment phrase like "I hear you," "That sounds hard," or "Great question." Get straight into a helpful, specific response. ${LONG_FORM_ESCAPE_HATCH}`,
       },
       ...history,
       { role: "user", content: prompt },

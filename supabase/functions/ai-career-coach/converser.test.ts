@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH } from "./converser.ts";
 
 describe("pickRandom", () => {
   it("returns exactly n items when the pool is larger than n", () => {
@@ -154,5 +154,51 @@ NARROW_OPTIONS:   Web development   |  Data   |IT support  `;
     const result = resolveNarrowOrAnswer(raw);
     expect(result).toContain("A legitimately requested bullet");
     expect(result).not.toContain("unrelated prose section");
+  });
+
+  it("preserves a legitimately long plain-prose answer self-marked LONG_FORM_OK, stripping the marker", () => {
+    const raw = [
+      "LONG_FORM_OK",
+      "First paragraph of a genuinely long draft the user asked for.",
+      "Second paragraph continuing that same draft, still plain prose.",
+      "Third paragraph continuing that same draft, still plain prose.",
+      "Does this draft work for you?",
+    ].join("\n\n");
+    const result = resolveNarrowOrAnswer(raw);
+    expect(result).toContain("First paragraph of a genuinely long draft");
+    expect(result).toContain("Second paragraph continuing that same draft");
+    expect(result).toContain("Third paragraph continuing that same draft");
+    expect(result).not.toContain("LONG_FORM_OK");
+  });
+
+  it("still catches enumeration hedging even inside a LONG_FORM_OK-marked answer", () => {
+    const raw = [
+      "LONG_FORM_OK",
+      "Some long-form content.",
+      "Which would you like to focus on — CV, networking, or interview prep?",
+    ].join("\n\n");
+    const result = resolveNarrowOrAnswer(raw);
+    expect(result).toContain(CHOICES_MARKER);
+    expect(result).not.toContain("LONG_FORM_OK");
+  });
+
+  it("without the marker, a long plain-prose answer still gets capped as before", () => {
+    const raw = [
+      "First paragraph of a plain-prose answer without the marker.",
+      "Second paragraph continuing that answer.",
+      "Third paragraph continuing that answer.",
+      "Closing question?",
+    ].join("\n\n");
+    const result = resolveNarrowOrAnswer(raw);
+    expect(result).toContain("First paragraph of a plain-prose answer");
+    expect(result).toContain("Closing question?");
+    expect(result).not.toContain("Second paragraph continuing that answer");
+  });
+});
+
+describe("LONG_FORM_ESCAPE_HATCH", () => {
+  it("is a non-empty instruction string mentioning the marker", () => {
+    expect(LONG_FORM_ESCAPE_HATCH).toContain("LONG_FORM_OK");
+    expect(LONG_FORM_ESCAPE_HATCH.length).toBeGreaterThan(20);
   });
 });

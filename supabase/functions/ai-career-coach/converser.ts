@@ -69,10 +69,24 @@ function extractEnumeratedOptions(text: string): string[] | null {
 // though it was told to. Rather than trust that instruction alone (it
 // repeatedly hasn't held), this keeps only the opening answer and the
 // closing question — a paragraph-count cap, not a content judgment.
+//
+// One thing this must NOT do: drop a structured deliverable the user
+// actually asked for (a rewritten CV, a checklist) just because it's
+// long enough to land in its own paragraph. Observed in practice — a CV
+// rewrite came back as intro / [blank line] / the rewritten bullets /
+// [blank line] / closing question, and blindly keeping only first+last
+// silently deleted the rewrite itself. A paragraph containing a bullet
+// or numbered list item is a deliverable, not filler prose, and survives
+// the cap even when it falls in the "middle".
+const LIST_LIKE_PARAGRAPH = /^\s*([-•*]|\d+[.)])\s/m;
+
 function capParagraphs(text: string, max = 2): string {
   const paragraphs = text.split(/\n\s*\n+/).map((p) => p.trim()).filter(Boolean);
   if (paragraphs.length <= max) return text;
-  return [paragraphs[0], paragraphs[paragraphs.length - 1]].join("\n\n");
+  const first = paragraphs[0];
+  const last = paragraphs[paragraphs.length - 1];
+  const keptMiddle = paragraphs.slice(1, -1).filter((p) => LIST_LIKE_PARAGRAPH.test(p));
+  return [first, ...keptMiddle, last].join("\n\n");
 }
 
 export function resolveNarrowOrAnswer(raw: string): string {

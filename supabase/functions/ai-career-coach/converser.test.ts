@@ -126,4 +126,33 @@ NARROW_OPTIONS:   Web development   |  Data   |IT support  `;
     const raw = "Lead with a summary tied to the role and quantify your achievements.\n\nWhat role are you targeting?";
     expect(resolveNarrowOrAnswer(raw)).toBe(raw);
   });
+
+  it("does NOT delete a requested deliverable (a CV rewrite) that lands in the 'middle' paragraph", () => {
+    // Real observed regression: the paragraph cap kept only the intro and
+    // the closing question, silently deleting the actual rewrite the user
+    // asked for because it happened to be its own blank-line-separated
+    // paragraph in between.
+    const raw = [
+      "I would rewrite those bullets to foreground software-related impact, measurable outcomes, and a GitHub/portfolio link. Here's a tight rewrite to drop into your CV:",
+      "- Scaled a peer-led entrepreneurship program to 200+ students by launching structured sessions and a leadership pipeline.\n- Designed and delivered Big Data, Databases, Data Analysis, and Business Ethics courses with hands-on labs.\n- Established cross-program collaboration to embed entrepreneurship thinking across curricula.",
+      "What software stack or projects did you actually work on for these roles, and would you like me to tailor these bullets to a specific job description?",
+    ].join("\n\n");
+    const result = resolveNarrowOrAnswer(raw);
+    expect(result).toContain("Scaled a peer-led entrepreneurship program");
+    expect(result).toContain("Designed and delivered Big Data");
+    expect(result).toContain("What software stack or projects");
+  });
+
+  it("still collapses plain-prose middle paragraphs even when a list-like paragraph is also present", () => {
+    const raw = [
+      "Intro sentence promising an answer.",
+      "Some unrelated prose section that should still be dropped.",
+      "- A legitimately requested bullet\n- Another bullet",
+      "Another unrelated prose section that should still be dropped.",
+      "Closing question?",
+    ].join("\n\n");
+    const result = resolveNarrowOrAnswer(raw);
+    expect(result).toContain("A legitimately requested bullet");
+    expect(result).not.toContain("unrelated prose section");
+  });
 });

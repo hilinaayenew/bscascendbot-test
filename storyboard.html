@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BSC AI Career Coach · Chat Bot Storyboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    line-height: 1.6;
+  }
+
+  :root {
+    --paper: #fbf7f6; --paper-raised: #ffffff; --ink: #241014; --ink-muted: #7c6266;
+    --accent: #6b0f22; --accent-light: #f3e1e1; --accent-pale: #fbf2f2;
+    --teal: #1d5c56; --teal-light: #e2ede9;
+    --amber: #92400e; --amber-light: #fef3c7;
+    --red: #991b1b; --red-light: #fee2e2;
+    --gray: #7c6266; --border: #e8d9d8;
+    --code-bg: #241a1c; --code-fg: #f3e7e6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #1b1113; --paper-raised: #241518; --ink: #f3e7e6; --ink-muted: #b49a9c;
+      --accent: #e8677e; --accent-light: #3a2027; --accent-pale: #2c191c;
+      --teal: #6fc9bd; --teal-light: #17322d;
+      --amber: #d99a4e; --amber-light: #3a2c14;
+      --red: #e08585; --red-light: #3a1f1f;
+      --gray: #b49a9c; --border: #3a2427;
+      --code-bg: #0f0a0b; --code-fg: #e9dcda;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1b1113; --paper-raised: #241518; --ink: #f3e7e6; --ink-muted: #b49a9c;
+    --accent: #e8677e; --accent-light: #3a2027; --accent-pale: #2c191c;
+    --teal: #6fc9bd; --teal-light: #17322d;
+    --amber: #d99a4e; --amber-light: #3a2c14;
+    --red: #e08585; --red-light: #3a1f1f;
+    --gray: #b49a9c; --border: #3a2427;
+    --code-bg: #0f0a0b; --code-fg: #e9dcda;
+  }
+  :root[data-theme="light"] {
+    --paper: #fbf7f6; --paper-raised: #ffffff; --ink: #241014; --ink-muted: #7c6266;
+    --accent: #6b0f22; --accent-light: #f3e1e1; --accent-pale: #fbf2f2;
+    --teal: #1d5c56; --teal-light: #e2ede9;
+    --amber: #92400e; --amber-light: #fef3c7;
+    --red: #991b1b; --red-light: #fee2e2;
+    --gray: #7c6266; --border: #e8d9d8;
+    --code-bg: #241a1c; --code-fg: #f3e7e6;
+  }
+
+  body { background: var(--paper); color: var(--ink); }
+  .page { max-width: 980px; margin: 0 auto; padding: 32px 20px 90px; }
+
+  /* Header */
+  .header {
+    background: var(--accent); color: #fff; padding: 40px 36px; border-radius: 16px;
+    margin-bottom: 32px; position: relative; overflow: hidden;
+  }
+  .header .badge {
+    display: inline-block; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.28);
+    padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+    font-family: "SF Mono", Consolas, monospace;
+  }
+  .header h1 { font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: 1.9rem; font-weight: 600; margin: 14px 0 8px; }
+  .header p { font-size: 1rem; opacity: 0.88; max-width: 620px; }
+  .waveform { display: flex; align-items: flex-end; gap: 3px; height: 26px; margin-bottom: 10px; }
+  .waveform span { display: block; width: 3px; background: #fff; border-radius: 2px; opacity: 0.5; }
+
+  /* Widget-chrome mockups — the actual AICoachWidget.tsx look, not a generic chat card */
+  .widget-mock { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 6px 20px rgba(107,15,34,0.08); }
+  .widget-titlebar { padding: 9px 12px 9px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .widget-titlebar.chataki { background: var(--accent); }
+  .widget-titlebar.botema { background: var(--teal); }
+  .widget-titlebar .wt-title { color: #fff; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+  .widget-titlebar .wt-dot-avatar { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.3); flex-shrink: 0; }
+  .widget-titlebar .wt-controls { display: flex; gap: 7px; align-items: center; }
+  .widget-titlebar .wt-ctrl { width: 16px; height: 16px; border-radius: 4px; background: rgba(255,255,255,0.22); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #fff; line-height: 1; }
+  .widget-mock .scenario-strip { padding: 6px 14px; font-size: 0.72rem; color: var(--ink-muted); background: var(--paper); border-bottom: 1px solid var(--border); font-style: italic; }
+
+  /* Pipeline trace — the real internal steps a specific message took, shown
+     as a compact strip under its own example rather than a separate abstract
+     flowchart tab disconnected from any real conversation. */
+  .pipeline { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; padding: 10px 14px 12px; background: var(--paper); border-top: 1px solid var(--border); }
+  .pipeline .step { font-family: "SF Mono", Consolas, monospace; font-size: 0.64rem; padding: 3px 8px; border-radius: 20px; background: var(--paper-raised); border: 1px solid var(--border); color: var(--ink-muted); white-space: nowrap; }
+  .pipeline .step.hit { background: var(--accent-light); color: var(--accent); border-color: var(--accent); font-weight: 700; }
+  .pipeline .sep { color: var(--border); font-size: 0.7rem; }
+
+  /* Tabs — underline style, not pill buttons */
+  .tab-bar { display: flex; gap: 26px; margin-bottom: 40px; border-bottom: 1px solid var(--border); }
+  .tab-btn {
+    padding: 0 0 12px; border: none; border-bottom: 2px solid transparent; background: transparent;
+    font-size: 0.86rem; font-weight: 600; cursor: pointer; color: var(--ink-muted); font-family: inherit;
+    letter-spacing: 0.01em;
+  }
+  .tab-btn:hover { color: var(--accent); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .section { margin-bottom: 48px; }
+  .section-title {
+    font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 0.72rem; font-weight: 700; color: var(--accent); margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.09em;
+  }
+  .section-heading {
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 1.3rem; font-weight: 600; margin: 0 0 18px;
+  }
+
+  /* Persona / user cards */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .card { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+  .card.chataki { border-top: 4px solid var(--accent); }
+  .card.botema { border-top: 4px solid var(--teal); }
+  .card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .card .subtitle { font-size: 0.82rem; color: var(--ink-muted); margin-bottom: 12px; }
+  .card ul { list-style: none; font-size: 0.88rem; }
+  .card ul li { padding: 3px 0 3px 16px; position: relative; }
+  .card ul li::before { content: "–"; position: absolute; left: 0; color: var(--ink-muted); }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .pill.chataki { background: var(--accent-light); color: var(--accent); }
+  .pill.botema { background: var(--teal-light); color: var(--teal); }
+
+  /* Flow states */
+  .flow { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; padding: 28px; display: flex; align-items: flex-start; }
+  .flow-state { flex: 1; text-align: center; }
+  .flow-state .state-box { background: var(--accent-pale); border: 2px solid var(--accent); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+  .flow-state .state-box h4 { font-size: 0.85rem; font-weight: 700; color: var(--accent); }
+  .flow-state .state-box p { font-size: 0.78rem; margin-top: 4px; }
+  .flow-state ul { list-style: none; text-align: left; font-size: 0.8rem; }
+  .flow-state ul li { padding: 2px 0 2px 14px; position: relative; }
+  .flow-state ul li::before { content: "·"; position: absolute; left: 2px; font-size: 1.2rem; line-height: 1; color: var(--accent); }
+  .flow-arrow { flex: 0 0 70px; text-align: center; padding-top: 26px; color: var(--accent); font-size: 1.4rem; }
+  .flow-arrow .arrow-label { font-size: 0.7rem; color: var(--ink-muted); margin-top: 4px; }
+
+  /* Storyboard chat mockups */
+  .chat-window { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .bubble { max-width: 90%; padding: 9px 13px; border-radius: 13px; font-size: 0.82rem; }
+  .bubble.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 3px; }
+  .bubble.bot { align-self: flex-start; background: var(--paper); color: var(--ink); border: 1px solid var(--border); border-bottom-left-radius: 3px; }
+  .bubble .choices { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+  .bubble .choice { border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; padding: 5px 10px; font-size: 0.78rem; background: var(--paper-raised); }
+  .bubble.fixed .fix-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--teal); margin-bottom: 3px; letter-spacing: 0.04em; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--paper-raised); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  th { background: var(--accent); color: #fff; padding: 11px 14px; text-align: left; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .func-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
+  .func-badge.change { background: var(--amber-light); color: var(--amber); }
+  .func-badge.wordalise { background: var(--teal-light); color: var(--teal); }
+  .func-badge.instruct { background: var(--accent-light); color: var(--accent); }
+  .func-badge.engage { background: #ede9fe; color: #5b21b6; }
+
+  /* Scope cards */
+  .scope-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .scope-card .scope-head { padding: 12px 18px; font-size: 0.88rem; font-weight: 700; }
+  .scope-card.can .scope-head { background: var(--teal-light); color: var(--teal); }
+  .scope-card.cant .scope-head { background: var(--red-light); color: var(--red); }
+  .scope-card .scope-body { padding: 14px 18px; background: var(--paper-raised); }
+  .scope-item { padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .scope-item:last-child { border-bottom: none; }
+  .scope-item .example { font-size: 0.76rem; color: var(--ink-muted); font-style: italic; margin-top: 2px; }
+
+  .disclaimer { background: var(--amber-light); border: 1px solid var(--amber); border-radius: 10px; padding: 14px 18px; font-size: 0.83rem; color: var(--amber); }
+
+  /* Flow diagrams — our own token-based system: one uniform card style,
+     a text-labeled kind badge instead of a per-type pastel rainbow, and a
+     monospace reference line naming the real file/function — human-
+     readable at a glance, precise enough to hand to an agent. */
+  .flows-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .flow-diagram { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .flow-diagram.full-width { grid-column: 1 / -1; }
+  .flow-diagram-header { padding: 12px 18px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; }
+  .flow-diagram-header .ftype { font-family: "SF Mono", Consolas, monospace; font-size: 0.62rem; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 10px; font-weight: 700; background: var(--accent-light); color: var(--accent); }
+  .flow-steps { padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .flow-step { width: 100%; background: var(--paper); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; font-size: 0.8rem; }
+  .fs-kind {
+    display: inline-flex; font-family: "SF Mono", Consolas, monospace; font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 20px; margin-bottom: 6px;
+  }
+  .fs-kind.input { background: var(--border); color: var(--ink-muted); }
+  .fs-kind.router { background: var(--accent-light); color: var(--accent); }
+  .fs-kind.fn { background: var(--teal-light); color: var(--teal); }
+  .fs-kind.data { background: var(--amber-light); color: var(--amber); }
+  .fs-kind.call { background: var(--accent-light); color: var(--accent); }
+  .fs-kind.safety { background: var(--accent-light); color: var(--accent); }
+  .fs-kind.output { background: var(--teal-light); color: var(--teal); }
+  .fs-kind.decline { background: var(--red-light); color: var(--red); }
+  .flow-step .step-title { font-weight: 700; font-size: 0.78rem; margin-bottom: 2px; }
+  .flow-step .step-desc { color: var(--ink-muted); font-size: 0.76rem; }
+  .flow-step .step-ref { font-family: "SF Mono", Consolas, monospace; font-size: 0.66rem; color: var(--ink-muted); opacity: 0.75; margin-top: 5px; }
+  .flow-connector { width: 2px; height: 14px; background: var(--border); }
+  .flow-note { width: 100%; background: var(--paper); border: 1px dashed var(--border); border-radius: 6px; padding: 7px 12px; font-size: 0.73rem; color: var(--ink-muted); font-style: italic; text-align: center; margin-top: 10px; }
+  @media (max-width: 680px) { .flows-grid, .grid-2 { grid-template-columns: 1fr; } .flow { flex-direction: column; } .flow-arrow { transform: rotate(90deg); align-self: center; } }
+
+  /* Data source cards */
+  .ex-card { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+  .ex-head { padding: 9px 16px; font-size: 0.78rem; font-weight: 700; display: flex; gap: 10px; align-items: center; }
+  .ex-head.real { background: var(--teal-light); color: var(--teal); }
+  .ex-head.staff { background: var(--accent-light); color: var(--accent); }
+  .ex-body { padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ex-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 5px; letter-spacing: 0.04em; }
+  .ex-text { font-size: 0.82rem; background: var(--paper); padding: 9px; border-radius: 6px; border: 1px solid var(--border); }
+  .ex-full { grid-column: 1 / -1; }
+  @media (max-width: 680px) { .ex-body { grid-template-columns: 1fr; } }
+
+  .banner { border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; font-size: 0.84rem; }
+  .banner.info { background: var(--teal-light); color: var(--teal); border: 1px solid var(--teal); }
+
+  /* Issues tab */
+  .issue-card { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .issue-card.priority-high { border-left: 4px solid var(--red); }
+  .issue-card.priority-medium { border-left: 4px solid var(--amber); }
+  .issue-card.priority-low { border-left: 4px solid var(--gray); }
+  .issue-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 18px 10px; gap: 14px; }
+  .issue-id { font-size: 0.7rem; font-weight: 700; color: var(--ink-muted); flex-shrink: 0; margin-top: 2px; }
+  .issue-title { font-size: 0.92rem; font-weight: 700; flex: 1; }
+  .issue-priority { font-size: 0.7rem; font-weight: 700; padding: 3px 9px; border-radius: 10px; flex-shrink: 0; text-transform: uppercase; }
+  .issue-priority.high { background: var(--red-light); color: var(--red); }
+  .issue-priority.medium { background: var(--amber-light); color: var(--amber); }
+  .issue-priority.low { background: var(--border); color: var(--ink-muted); }
+  .issue-body { padding: 0 18px 14px; }
+  .issue-desc { font-size: 0.84rem; margin-bottom: 10px; }
+  .issue-files { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .issue-file { font-size: 0.71rem; background: var(--paper); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; font-family: monospace; }
+  .issue-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .issue-field label { display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 3px; }
+  .issue-field select, .issue-field input[type="text"] { width: 100%; font-size: 0.82rem; border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-family: inherit; background: var(--paper-raised); color: var(--ink); }
+  .status-open { color: var(--red); font-weight: 700; }
+  .status-progress { color: #5b21b6; font-weight: 700; }
+  .status-resolved { color: var(--teal); font-weight: 700; }
+  .issue-footer { font-size: 0.72rem; color: var(--ink-muted); padding: 7px 18px; background: var(--paper); border-top: 1px solid var(--border); display: flex; gap: 14px; }
+  @media (max-width: 600px) { .issue-meta { grid-template-columns: 1fr; } }
+
+  /* Prompts & Instructions tab */
+  .prompt-card { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .prompt-head { padding: 10px 18px; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .prompt-head.shared { background: var(--accent-light); color: var(--accent); }
+  .prompt-head.chataki { background: var(--accent-light); color: var(--accent); }
+  .prompt-head.botema { background: var(--teal-light); color: var(--teal); }
+  .prompt-head .ph-note { font-weight: 400; opacity: 0.8; font-size: 0.75rem; }
+  pre.code {
+    background: var(--code-bg); color: var(--code-fg); padding: 16px 18px; margin: 0;
+    font-family: "SF Mono", "Cascadia Code", Consolas, monospace; font-size: 0.76rem; line-height: 1.6;
+    white-space: pre-wrap; word-break: break-word; overflow-x: auto;
+  }
+  .prompt-intro { font-size: 0.84rem; color: var(--ink-muted); max-width: 60em; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('overview', this)">Overview</button>
+    <button class="tab-btn" onclick="switchTab('flows', this)">Function Flows</button>
+    <button class="tab-btn" onclick="switchTab('data', this)">Data Sources &amp; Training Data</button>
+    <button class="tab-btn" onclick="switchTab('prompts', this)">Prompts &amp; Instructions</button>
+    <button class="tab-btn" onclick="switchTab('issues', this)" id="issues-tab-btn" style="display:none">Issues To Check</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview" class="tab-panel active">
+    <div class="header">
+      <div class="waveform" aria-hidden="true">
+        <span style="height:35%"></span><span style="height:65%"></span><span style="height:25%"></span>
+        <span style="height:85%"></span><span style="height:45%"></span><span style="height:95%"></span>
+        <span style="height:55%"></span><span style="height:30%"></span><span style="height:70%"></span>
+        <span style="height:40%"></span><span style="height:60%"></span><span style="height:20%"></span>
+      </div>
+      <span class="badge">Product Storyboard · v3</span>
+      <h1>BSC AI Career Coach</h1>
+      <p>A chat-based tech career coaching assistant for Ascendency, offering two switchable personas that answer using a topic-tagged knowledge base, real few-shot voice examples, and a routing decision made entirely by the AI's own judgment — backed by code-level safety nets that catch what that judgment misses.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Overview · Personas</div><h2 class="section-heading">Two Personas</h2>
+      <div class="grid-2">
+        <div class="card chataki">
+          <div class="pill chataki">Chataki · default coach</div>
+          <h3>A real voice too — placeholder until she's onboarded</h3>
+          <p class="subtitle">Staff-authored for now · 0 examples currently — table cleared, pending her questionnaire</p>
+          <ul>
+            <li>Meant to be modeled on a real person's voice, same as Botema</li>
+            <li>Her own questionnaire hasn't been collected yet — an earlier placeholder set was seeded, then cleared once it turned out to be Botema-specific, not shared</li>
+            <li>Coach still functions with a more generic tone until real answers are seeded</li>
+            <li>Voice examples live in Postgres (<code>coach_wordalisations</code>) — currently empty</li>
+          </ul>
+        </div>
+        <div class="card botema">
+          <div class="pill botema">Botema · real-voice coach</div>
+          <h3>Modeled on a real mentor's actual words</h3>
+          <p class="subtitle">Otema's own answers · 54 examples, all source-traced</p>
+          <ul>
+            <li>Every example traces to something Otema actually wrote</li>
+            <li>Voice examples live in code (<code>botema-examples.ts</code>)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Overview · State</div><h2 class="section-heading">Conversation Flow</h2>
+      <div class="flow">
+        <div class="flow-state">
+          <div class="state-box">
+            <h4>STATE 1 · No Context</h4>
+            <p>No topic or profile captured yet</p>
+          </div>
+          <ul>
+            <li>Broad/ambiguous asks get a narrowing question first</li>
+            <li>AI writes its own tailored options, not fixed ones</li>
+            <li>Greeting and out-of-scope messages handled instantly</li>
+          </ul>
+        </div>
+        <div class="flow-arrow">→<div class="arrow-label">Topic or profile set</div></div>
+        <div class="flow-state">
+          <div class="state-box">
+            <h4>STATE 2 · Context Captured</h4>
+            <p>Topic in focus and/or profile known</p>
+          </div>
+          <ul>
+            <li>Answers stay tightly focused on that one facet</li>
+            <li>Profile (career stage, background, goals) informs tone</li>
+            <li>Follow-ups build on the last 6 messages of history</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Overview · Live Examples</div><h2 class="section-heading">Example Conversations</h2>
+      <div class="grid-2">
+
+        <div class="widget-mock">
+          <div class="widget-titlebar chataki">
+            <span class="wt-title"><span class="wt-dot-avatar"></span>Chataki · AI Career Coach</span>
+            <span class="wt-controls"><span class="wt-ctrl">–</span><span class="wt-ctrl">□</span><span class="wt-ctrl">×</span></span>
+          </div>
+          <div class="scenario-strip">Broad ask gets narrowed, not answered wholesale</div>
+          <div class="chat-window">
+            <div class="bubble user">am currently learning tech and what magerials should i use</div>
+            <div class="bubble bot fixed">
+              <div class="fix-label">AI-written, not fixed text</div>
+              Which one would you like to focus on?
+              <div class="choices"><span class="choice">Web</span><span class="choice">Data</span><span class="choice">IT</span></div>
+            </div>
+          </div>
+          <div class="pipeline">
+            <span class="step">input</span><span class="sep">→</span><span class="step hit">routing self-check</span><span class="sep">→</span><span class="step">inviteUserContext</span><span class="sep">→</span><span class="step">choices rendered</span>
+          </div>
+        </div>
+
+        <div class="widget-mock">
+          <div class="widget-titlebar chataki">
+            <span class="wt-title"><span class="wt-dot-avatar"></span>Chataki · AI Career Coach</span>
+            <span class="wt-controls"><span class="wt-ctrl">–</span><span class="wt-ctrl">□</span><span class="wt-ctrl">×</span></span>
+          </div>
+          <div class="scenario-strip">Negation is understood, not overridden by keywords</div>
+          <div class="chat-window">
+            <div class="bubble user">I want a field that is not related to tech</div>
+            <div class="bubble bot">That's a bit outside what I can help with — I'm the BSC AI Career Coach, focused specifically on tech career guidance. If there's a tech career question on your mind, I'd love to help.</div>
+          </div>
+          <div class="pipeline">
+            <span class="step">input</span><span class="sep">→</span><span class="step hit">routing rule 1 — tech-specific scope</span><span class="sep">→</span><span class="step">answerOutOfScope</span>
+          </div>
+        </div>
+
+        <div class="widget-mock">
+          <div class="widget-titlebar chataki">
+            <span class="wt-title"><span class="wt-dot-avatar"></span>Chataki · AI Career Coach</span>
+            <span class="wt-controls"><span class="wt-ctrl">–</span><span class="wt-ctrl">□</span><span class="wt-ctrl">×</span></span>
+          </div>
+          <div class="scenario-strip">Specific ask, answered directly and short</div>
+          <div class="chat-window">
+            <div class="bubble user">how do I negotiate salary</div>
+            <div class="bubble bot">Walk in with a number already decided — the awkwardness passes in a minute, the extra pay lasts years. Do you have a range in mind?</div>
+          </div>
+          <div class="pipeline">
+            <span class="step">input</span><span class="sep">→</span><span class="step">updateCareerTopic(salary)</span><span class="sep">→</span><span class="step">knowledge + examples</span><span class="sep">→</span><span class="step hit">paragraph cap: no-op, already short</span>
+          </div>
+        </div>
+
+        <div class="widget-mock">
+          <div class="widget-titlebar botema">
+            <span class="wt-title"><span class="wt-dot-avatar"></span>Botema · AI Career Coach</span>
+            <span class="wt-controls"><span class="wt-ctrl">–</span><span class="wt-ctrl">□</span><span class="wt-ctrl">×</span></span>
+          </div>
+          <div class="scenario-strip">Mindset support, no stock opener</div>
+          <div class="chat-window">
+            <div class="bubble user">I constantly feel like I don't belong in tech.</div>
+            <div class="bubble bot">Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space? Talk to a mentor or supervisor who can help you navigate either. What's making you feel this way right now?</div>
+          </div>
+          <div class="pipeline">
+            <span class="step">input</span><span class="sep">→</span><span class="step">addressMindsetChallenge</span><span class="sep">→</span><span class="step hit">no-stock-opener check</span><span class="sep">→</span><span class="step">paragraph cap</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Overview · Routing</div><h2 class="section-heading">How the Bot Decides What to Do</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>What the user says</th><th>Function called</th><th>Type</th><th>What happens</th></tr></thead>
+          <tbody>
+            <tr><td>"what's the capital of France" / "not related to tech"</td><td><strong>answerOutOfScope</strong></td><td><span class="func-badge instruct">INSTRUCTIONS</span></td><td>Fixed decline — must be about a TECH career specifically, not careers generically</td></tr>
+            <tr><td>"I feel like an imposter"</td><td><strong>addressMindsetChallenge</strong></td><td><span class="func-badge wordalise">WORDALISE</span></td><td>Validating but non-scripted response, blends mindset + wellbeing knowledge</td></tr>
+            <tr><td>"I'm a nurse with 5 years' experience wanting to move into health tech"</td><td><strong>captureUserBackground</strong></td><td><span class="func-badge change">CHANGE_CONTEXT</span></td><td>Persists profile fields, chains to a re-engagement question</td></tr>
+            <tr><td>"hi" / "what can you do"</td><td><strong>howCoachWorks</strong></td><td><span class="func-badge instruct">INSTRUCTIONS</span></td><td>Fixed explainer, no AI call</td></tr>
+            <tr><td>"help me learn tech" / "what materials should I use"</td><td><strong>inviteUserContext</strong></td><td><span class="func-badge engage">ENGAGE</span></td><td>AI writes its own tailored question + options, same call as routing</td></tr>
+            <tr><td>"how do I write a CV" / "salary negotiation"</td><td><strong>updateCareerTopic</strong></td><td><span class="func-badge change">CHANGE_CONTEXT</span></td><td>Sets topic via enum, chains to adviseOnCareerTopic</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Overview · Scope</div><h2 class="section-heading">What the Bot Can and Cannot Answer</h2>
+      <div class="grid-2">
+        <div class="scope-card can">
+          <div class="scope-head">Can answer</div>
+          <div class="scope-body">
+            <div class="scope-item"><strong>Getting started in tech</strong><div class="example">"I have no background, where do I begin?"</div></div>
+            <div class="scope-item"><strong>Career paths &amp; roadmaps</strong><div class="example">"How do I get into data science?"</div></div>
+            <div class="scope-item"><strong>CV, job search, interviews, salary</strong><div class="example">"How do I negotiate my first offer?"</div></div>
+            <div class="scope-item"><strong>Mentorship &amp; further education</strong><div class="example">"Do I need a master's?"</div></div>
+            <div class="scope-item"><strong>Mindset &amp; wellbeing in a tech career</strong><div class="example">"How do I stay motivated when progress is slow?"</div></div>
+            <div class="scope-item"><strong>AI's impact on tech careers</strong><div class="example">"Is learning tech still worth it because of AI?"</div></div>
+          </div>
+        </div>
+        <div class="scope-card cant">
+          <div class="scope-head">Cannot answer</div>
+          <div class="scope-body">
+            <div class="scope-item"><strong>Non-tech fields or careers</strong><div class="example">"I want a field not related to tech" → declined, not generically advised</div></div>
+            <div class="scope-item"><strong>General trivia / unrelated tasks</strong><div class="example">"What's the capital of France?" / "write me a script"</div></div>
+            <div class="scope-item"><strong>Clinical mental-health support</strong><div class="example">Mindset support ≠ therapy — redirects for anything beyond career-context coaching</div></div>
+            <div class="scope-item"><strong>Guaranteed outcomes</strong><div class="example">Can't promise a job, an offer, or a specific salary number</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer"><strong>Not a replacement for a human mentor.</strong> The BSC AI Career Coach gives general tech-career guidance grounded in BSC's own knowledge and real mentor voices where available — it does not replace the BSC mentorship programme, professional therapy, or legal/immigration advice.</div>
+  </div>
+
+  <!-- FUNCTION FLOWS -->
+  <div id="tab-flows" class="tab-panel">
+    <div class="flows-grid">
+
+      <div class="flow-diagram">
+        <div class="flow-diagram-header"><span>Flow 1 – Topic Advice</span><span class="ftype">CHANGE_CONTEXT → WORDALISE</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">User names a specific facet</div><div class="step-desc">"how do I write a CV" / "how do I negotiate salary"</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind router">routing</span><div class="step-title">Routing call (tool_choice: required)</div><div class="step-desc">AI picks updateCareerTopic and a topic from a fixed enum — no free-text classification afterward</div><div class="step-ref">index.ts → routeWithAI()</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind fn">function</span><div class="step-title">updateCareerTopic → adviseOnCareerTopic</div><div class="step-desc">CHANGE_CONTEXT sets the topic in context, chains straight into its paired WORDALISE function</div><div class="step-ref">bsc-functions.ts / botema-coach.ts</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind data">knowledge lookup</span><div class="step-title">getDomainKnowledge() + loadFewShotExamples()</div><div class="step-desc">Pulls the matched KNOWLEDGE_BASE topic + only the voice examples tagged with that topic</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind call">azure openai call</span><div class="step-title">Generation call</div><div class="step-desc">Auto-retries once at double the token budget if the reasoning model returns empty content</div><div class="step-ref">callAzure() / callAzureOnce()</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind safety">safety net</span><div class="step-title">resolveNarrowOrAnswer()</div><div class="step-desc">Catches hedged multi-track answers and multi-paragraph rundowns before they reach the user</div><div class="step-ref">converser.ts</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Reply saved &amp; returned</div><div class="step-desc">Short, single-facet answer ending in a question</div></div>
+        </div>
+      </div>
+
+      <div class="flow-diagram">
+        <div class="flow-diagram-header"><span>Flow 2 – Needs Narrowing</span><span class="ftype">ENGAGE</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">Broad or multi-facet ask</div><div class="step-desc">"help me learn tech" / "job search strategy" / "what materials should I use"</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind router">routing</span><div class="step-title">Routing call — AI's own judgment</div><div class="step-desc">Self-check: "would my answer need to name 2+ directions side by side?" If yes → narrow first</div><div class="step-ref">bsc-coach.ts / botema-coach.ts — rule 5</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind fn">function</span><div class="step-title">inviteUserContext(question, options)</div><div class="step-desc">AI writes its own tailored question + 3-5 options as part of the SAME call — no extra latency</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Tappable choice buttons rendered</div><div class="step-desc">Plain-text %%CHOICES%% marker, parsed by the widget — no schema change needed</div><div class="step-ref">converser.ts → withChoices()</div></div>
+          <div class="flow-note">No separate AI call for the options — they ride on the routing decision itself.</div>
+        </div>
+      </div>
+
+      <div class="flow-diagram">
+        <div class="flow-diagram-header"><span>Flow 2b – Narrowing Safety Net</span><span class="ftype">CODE FALLBACK</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">Routing let a broad ask through anyway</div><div class="step-desc">Small models don't always self-regulate rule 5 from instructions alone</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind call">azure openai call</span><div class="step-title">Generated answer hedges across tracks</div><div class="step-desc">e.g. "...which area — web, data, or IT?"</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind safety">safety net</span><div class="step-title">Enumeration pattern detected</div><div class="step-desc">A generic structural check on the AI's OWN output — a 3+ item list ending "or &lt;item&gt;?" — not a guess at user intent</div><div class="step-ref">converser.ts → extractEnumeratedOptions()</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Hedge discarded, narrowing question built instead</div><div class="step-desc">Options extracted directly from the model's own listed items</div></div>
+        </div>
+      </div>
+
+      <div class="flow-diagram">
+        <div class="flow-diagram-header"><span>Flow 3 – Mindset Support</span><span class="ftype">WORDALISE</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">Emotional/mindset signal</div><div class="step-desc">Imposter syndrome, burnout, motivation loss, not belonging</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind router">routing</span><div class="step-title">Routing call</div><div class="step-desc">AI selects addressMindsetChallenge, optionally tags a challenge_type</div><div class="step-ref">rule 2</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind data">knowledge lookup</span><div class="step-title">Blended knowledge + matched examples</div><div class="step-desc">mindset + wellbeing knowledge together; examples filtered by challenge_type</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind call">azure openai call</span><div class="step-title">Generation — no stock openers allowed</div><div class="step-desc">Explicitly banned: "I hear you," "That sounds hard," "Great question"</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind safety">safety net</span><div class="step-title">Paragraph cap applied</div><div class="step-desc">Same resolveNarrowOrAnswer() safety net as Flow 1</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Reply returned</div></div>
+        </div>
+      </div>
+
+      <div class="flow-diagram">
+        <div class="flow-diagram-header"><span>Flow 4 – How Coach Works</span><span class="ftype">INSTRUCTIONS</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">Greeting or "what can you do"</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind router">routing</span><div class="step-title">Routing call</div><div class="step-desc">AI selects howCoachWorks — no arguments</div><div class="step-ref">rule 4</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Fixed reply returned</div><div class="step-desc">No AI generation call, no tokens consumed</div><div class="step-ref">HowCoachWorks / BotemaHowItWorks</div></div>
+          <div class="flow-note">Fastest path in the system.</div>
+        </div>
+      </div>
+
+      <div class="flow-diagram full-width">
+        <div class="flow-diagram-header"><span>Flow 5 – Out of Scope</span><span class="ftype">DECLINED</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">Message isn't about a TECH career specifically</div><div class="step-desc">"what's the capital of France" / "write me a script" / "I want a field not related to tech"</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind router">routing</span><div class="step-title">Routing rule 1 — scope check</div><div class="step-desc">Being about careers/jobs generically is NOT enough — it must be about a tech career</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind decline">declined</span><div class="step-title">answerOutOfScope</div><div class="step-desc">Fixed decline, acknowledges + redirects to tech career topics</div><div class="step-ref">OutOfScope / BotemaOutOfScope</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Reply returned</div><div class="step-desc">Same decline logic is duplicated at generation time in adviseOnCareerTopic's own prompt, as a second line of defense</div><div class="step-ref">ADVISE_SYSTEM_PROMPT</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DATA SOURCES -->
+  <div id="tab-data" class="tab-panel">
+    <div class="banner info">
+      <strong>Same provenance standard, different stage.</strong> Both personas are meant to be modeled on a real person's actual voice — Chataki just doesn't have her questionnaire collected yet. A staff-authored placeholder set was seeded into <code>coach_wordalisations</code>, then cleared by a later migration once it turned out to be Botema-specific rather than shared — so the table is currently empty, and Chataki runs with a more generic tone until her real questionnaire is collected and seeded. Botema is already there — every example traces to something Otema actually wrote. The same standard will apply to Chataki once her real answers land.
+    </div>
+
+    <div class="section">
+      <div class="section-title">Data · Inventory</div><h2 class="section-heading">All Data Sources</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Source</th><th>Used by</th><th>What it does</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td><code>bsc-knowledge.ts → KNOWLEDGE_BASE</code></td><td>adviseOnCareerTopic (both personas)</td><td>10 topic guides (getting_started, career_paths, salary, ai_impact, etc.)</td><td><span class="func-badge instruct">Staff-authored</span></td></tr>
+            <tr><td><code>coach_wordalisations</code> (Postgres)</td><td>Chataki's adviseOnCareerTopic / addressMindsetChallenge</td><td>0 rows currently — cleared by <code>20260723150000_clear_coach_wordalisations_pending_real_data.sql</code></td><td><span class="func-badge instruct">Empty — pending real voice</span></td></tr>
+            <tr><td><code>botema-examples.ts → BOTEMA_EXAMPLES</code></td><td>Botema's adviseOnCareerTopic / addressMindsetChallenge</td><td>54 voice examples, source-traced to Otema's real questionnaire</td><td><span class="func-badge wordalise">Real-person, verified</span></td></tr>
+            <tr><td><code>coach_user_profiles</code> (Postgres)</td><td>All WORDALISE functions</td><td>Career stage, background, target role, goals — persisted across sessions</td><td><span class="func-badge change">User-provided</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Data · Chataki</div><h2 class="section-heading">Sample examples — none currently seeded</h2>
+      <div class="ex-card">
+        <div class="ex-head staff">coach_wordalisations · 0 rows</div>
+        <div class="ex-body ex-full">
+          <p class="ex-text">A staff-authored placeholder set (matched to the shared training-question bank) was seeded here, then deleted by <code>20260723150000_clear_coach_wordalisations_pending_real_data.sql</code> after it turned out to be Botema-specific rather than shared. Chataki currently runs with zero few-shot examples — still functional, just less voice-consistent — until her real questionnaire answers are collected and seeded.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Data · Botema</div><h2 class="section-heading">Sample examples — real, source-traced to Otema</h2>
+      <div class="ex-card">
+        <div class="ex-head real">getting_started · verified against Otema's original questionnaire</div>
+        <div class="ex-body">
+          <div><div class="ex-label">Question</div><p class="ex-text">What free resources do you recommend for someone starting in tech today?</p></div>
+          <div><div class="ex-label">Answer</div><p class="ex-text">YouTube first, then freeCodeCamp, GeeksforGeeks, Coursera, or Harvard's courses through EdX — and don't forget Ascendency's own courses. What area are you leaning toward?</p></div>
+        </div>
+      </div>
+      <div class="ex-card">
+        <div class="ex-head real">ai_impact · verified against Otema's original questionnaire</div>
+        <div class="ex-body">
+          <div><div class="ex-label">Question</div><p class="ex-text">Is learning tech still worth it due to AI replacing jobs?</p></div>
+          <div><div class="ex-label">Answer</div><p class="ex-text">AI is enhancing work more than replacing it — it's a bit like the fear around calculators in classrooms back in 1986, which turned out to just make people more efficient. What's worrying you about this?</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Data · Maintenance</div><h2 class="section-heading">How to Add or Edit Examples</h2>
+      <div style="background:var(--paper-raised);border:1px solid var(--border);border-radius:12px;padding:22px;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Source</th><th>Shape</th><th>When to edit</th></tr></thead>
+            <tbody>
+              <tr><td><code>coach_wordalisations</code></td><td><code>function_name, topic, question, knowledge, answer</code></td><td>New migration to add/correct placeholder examples now — once her real questionnaire is collected, the same "never invent on her behalf" rule as Botema's row below applies</td></tr>
+              <tr><td><code>botema-examples.ts</code></td><td><code>{ question, answer, topic }</code> per array entry</td><td>Only when re-verifying against Otema's actual source material — never invent an answer on her behalf</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROMPTS & INSTRUCTIONS -->
+  <div id="tab-prompts" class="tab-panel">
+    <div class="section">
+      <div class="section-title">Prompts · Intro</div><h2 class="section-heading">What's Actually Sent to the Model</h2>
+      <p class="prompt-intro">Not a paraphrase — this is the literal text sent as the <code>system</code> message for each call, pulled directly from the source files. Routing rules are identical for both personas except the coach's own name; generation prompts differ by persona and are shown separately.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Prompts · Routing</div><h2 class="section-heading">Routing Instructions</h2>
+      <div class="prompt-card">
+        <div class="prompt-head shared">Routing system prompt <span class="ph-note">bsc-coach.ts / botema-coach.ts — get instructions()</span></div>
+        <pre class="code">You are routing user messages to the correct [Persona] Career Coach function.
+
+Current user profile: [career_stage, background, target_role, goals — or "No profile captured yet"]
+Current career topic in focus: [topic or "none"]
+
+ROUTING RULES — always call exactly one function, never respond directly:
+
+1. OUT OF SCOPE — the message has nothing to do with TECH career coaching specifically: general trivia, unrelated technical help (e.g. "write me a script", "what's the capital of France"), creative writing requests, explicitly wanting a career/field/job that is NOT tech (e.g. "a field unrelated to tech", "I don't want to work in tech"), or anything else unrelated to tech careers, jobs, skills, mentorship, or mindset → call answerOutOfScope. Being about careers/jobs in general is not enough to be in scope — it has to be about a TECH career.
+
+2. MINDSET — user expresses imposter syndrome, self-doubt, fear, anxiety, burnout, motivation loss, feeling they don't belong → call addressMindsetChallenge.
+
+3. BACKGROUND — user explicitly shares detailed personal info: their current job title, years of experience, specific goals, location, or education level → call captureUserBackground. Do NOT use this for short replies like "I'm new" or "I'm a beginner".
+
+4. GREETING — user says hello, hi, asks what you can do, or sends their very first message with no topic → call howCoachWorks.
+
+5. NEEDS NARROWING — judge this from the message itself, not a fixed list: could you give ONE focused, specific answer right now, or would answering mean covering several genuinely different angles just to be safe? If it's the latter, call inviteUserContext to ask ONE short question narrowing down which angle to focus on, instead of covering all of them at once. This applies whether the message has no topic at all ("help me learn tech", "how do I start a career in tech") OR names a topic that still spans multiple distinct angles (e.g. "job search strategy" could mean CV, networking, the no-experience path, LinkedIn, or interview prep — which one? "what resources should I use" could mean web, data, or IT — which one?). A reliable self-check: if the answer you're about to write would naturally include branching phrasing like "if you're interested in X, do A — for Y, try B, and for Z, try C", that is proof the question was still broad. Stop and ask which ONE they want FIRST instead of writing that answer. When genuinely in doubt, prefer narrowing over answering — it only costs the user one tap, and prevents a long, multi-track answer covering options they didn't ask for. Skip narrowing only when the message already points to one specific, answerable facet ("how do I learn Python", "CV help", "salary negotiation"), or if the profile or conversation history already makes the intent clear. When you call inviteUserContext, always fill in its "question" and "options" arguments yourself — a short question and 3-5 answer options tailored specifically to what THIS user asked, not generic ones.
+
+6. TOPIC/QUESTION (DEFAULT) — the message already points to one specific, answerable facet — a skill, a concrete question, a clearly single-angle request, even short ones like "I'm new to tech" or "I want to be a developer" → call updateCareerTopic with the best topic you can infer. The answer that follows should stay tightly focused on that one facet — don't pull in every related sub-topic just because they live in the same knowledge area. Keep it short: a few lines, not a comprehensive rundown of everything related.
+
+When in doubt between updateCareerTopic and answerOutOfScope, prefer updateCareerTopic unless the message is clearly unrelated to tech careers.
+
+Always call exactly one function.</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Prompts · Safety Net</div><h2 class="section-heading">The Narrowing Self-Check</h2>
+      <div class="prompt-card">
+        <div class="prompt-head shared">NARROW_SELF_CHECK <span class="ph-note">converser.ts — exported constant</span></div>
+        <pre class="code">Self-check before you answer — read this carefully: if your answer would name more than one distinct direction/track/option side by side (e.g. "for web development, do A; for data, do B; for IT, do C"), that is ALWAYS wrong — even if you also end with a clarifying question. Listing every track "to be safe" instead of asking which one FIRST is exactly the mistake to avoid; ending with a question does not excuse it. The moment you notice yourself about to name a second distinct track/option in the same answer, stop — do not send that answer. Output ONLY these two lines instead, exactly, and nothing else:
+NARROW_QUESTION: &lt;a short question tailored to what they asked&gt;
+NARROW_OPTIONS: &lt;option 1&gt; | &lt;option 2&gt; | &lt;option 3&gt;
+(3-5 short options tailored to their message, each under 6 words, separated by " | ")</pre>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-head shared">LONG_FORM_ESCAPE_HATCH <span class="ph-note">converser.ts — exported constant</span></div>
+        <pre class="code">If — and only if — the user explicitly asked for something that genuinely needs a longer, multi-paragraph answer (a full draft, a full rewrite, or they asked you to explain more or go deeper), start your reply with the exact marker LONG_FORM_OK alone on its own first line, then continue with your full answer as normal on the following lines. Do not include this marker for an ordinary short answer — it should be rare, not the default.</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Prompts · Chataki</div><h2 class="section-heading">Persona-Specific Generation Prompts</h2>
+      <div class="prompt-card">
+        <div class="prompt-head chataki">adviseOnCareerTopic <span class="ph-note">bsc-functions.ts — ADVISE_SYSTEM_PROMPT</span></div>
+        <pre class="code">You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. Default to a short, direct answer — a sentence or two, or a short paragraph at most. The knowledge below may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. [NARROW_SELF_CHECK inserted here] Otherwise, only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper — [LONG_FORM_ESCAPE_HATCH inserted here] Always end with a question that invites the user to share more about their situation. If the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.</pre>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-head chataki">addressMindsetChallenge <span class="ph-note">bsc-functions.ts — generateResponse()</span></div>
+        <pre class="code">You are the BSC AI Career Coach addressing a mindset challenge. Be warm, honest, and grounded — but never open with a stock acknowledgment phrase like "I hear you," "That sounds hard," or "Great question." Get straight into a helpful, specific response; let the understanding come through in what you say, not a scripted opening line. Speak in first person. No markdown. Default to a short, direct response — one clear insight plus one next step is often enough. Only go longer if the situation genuinely needs more, or the user asks you to explain more or go deeper — [LONG_FORM_ESCAPE_HATCH inserted here] End with a question that invites them to share more.</pre>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-head chataki">answerOutOfScope <span class="ph-note">bsc-functions.ts — fixed reply, no AI call</span></div>
+        <pre class="code">That's a bit outside what I can help with — I'm the BSC AI Career Coach, so I'm focused specifically on tech career guidance: things like getting started in tech, choosing a path, CVs and job search, interview prep, salary negotiation, further education, mentorship, and working through the mindset side of a career change.
+
+If there's a tech career question on your mind, I'd love to help with that. What's going on with your career right now?</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Prompts · Botema</div><h2 class="section-heading">Persona-Specific Generation Prompts</h2>
+      <div class="prompt-card">
+        <div class="prompt-head botema">BOTEMA_SYSTEM_PROMPT (base voice) <span class="ph-note">botema-examples.ts</span></div>
+        <pre class="code">You are Botema, a BSC Career Coach. You are direct, warm, and personally engaged. You share your own perspective and recommendations openly. You speak from experience and are aware of African tech contexts and markets. You use phrases like "I would always recommend", "In my experience", and "What I've seen work". You are honest about what is hard, but you always point toward a way forward. Speak in first person, no markdown. Default to a short, direct answer — a sentence or two, or a short paragraph at most. Only go longer if the question genuinely needs it, or the user asks you to explain more or go deeper. Always end with a question that invites the user to share more about their specific situation.</pre>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-head botema">adviseOnCareerTopic <span class="ph-note">botema-coach.ts — BOTEMA_SYSTEM_PROMPT + this, appended</span></div>
+        <pre class="code">Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. [NARROW_SELF_CHECK inserted here] [LONG_FORM_ESCAPE_HATCH inserted here] Otherwise, if the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.</pre>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-head botema">addressMindsetChallenge <span class="ph-note">botema-coach.ts — BOTEMA_SYSTEM_PROMPT + this, appended</span></div>
+        <pre class="code">Be warm and honest when addressing a mindset challenge, but never open with a stock acknowledgment phrase like "I hear you," "That sounds hard," or "Great question." Get straight into a helpful, specific response. [LONG_FORM_ESCAPE_HATCH inserted here]</pre>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-head botema">answerOutOfScope <span class="ph-note">botema-coach.ts — fixed reply, no AI call</span></div>
+        <pre class="code">That one's outside my lane — I'm Botema, your BSC Career Coach, and I stick to tech careers: getting started, choosing a path, CVs and job search, interview prep, salary negotiation, further education, mentorship, and the mindset side of a career change.
+
+If you've got a tech career question, bring it — I'll give you my honest take. What's going on with your career right now?</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ISSUES -->
+  <div id="tab-issues" class="tab-panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="section-title">Issues</div><h2 class="section-heading" style="margin:0">Issues To Check</h2>
+        <p style="font-size:0.82rem;color:var(--ink-muted);margin-top:4px;">Status/assigned/responsible are editable here and auto-saved in this browser.</p>
+      </div>
+      <div style="display:flex;gap:8px;font-size:0.78rem;">
+        <span id="count-open" style="padding:4px 12px;border-radius:12px;background:var(--red-light);color:var(--red);font-weight:700;"></span>
+        <span id="count-prog" style="padding:4px 12px;border-radius:12px;background:#ede9fe;color:#5b21b6;font-weight:700;"></span>
+        <span id="count-done" style="padding:4px 12px;border-radius:12px;background:var(--teal-light);color:var(--teal);font-weight:700;"></span>
+      </div>
+    </div>
+    <div id="issues-list" style="display:flex;flex-direction:column;gap:14px;"></div>
+  </div>
+
+</div>
+
+<script>
+  const ISSUES = [
+    {
+      id: "ISSUE-001",
+      title: "Small routing model isn't perfectly reliable on its own",
+      description: "The coach uses a small, cost-efficient model rather than a large frontier model. Its own judgment for 'does this need narrowing?' isn't fully consistent — mitigated by rule-5 wording plus the code-level narrowing safety net (Flow 2b), but not eliminated without a larger, costlier model.",
+      priority: "medium", status: "open",
+      files: ["bsc-coach.ts", "botema-coach.ts"], added: "2026-08-04", phase: "Ongoing"
+    },
+    {
+      id: "ISSUE-002",
+      title: "Botema's voice examples had drifted from the real source answers",
+      description: "A review found several examples weren't actually from Otema's questionnaire — some invented to fill gaps, one with a factual drift, two real answers dropped. Rebuilt directly from her original source CSV; every example now traces to something she actually wrote.",
+      priority: "high", status: "resolved",
+      files: ["botema-examples.ts"], added: "2026-08-04", phase: "This project"
+    },
+    {
+      id: "ISSUE-003",
+      title: "Knowledge base and voice examples are hardcoded, not DB-backed",
+      description: "KNOWLEDGE_BASE and BOTEMA_EXAMPLES live in source files rather than as rows in Postgres. Planned fix: a Persona Voice Kit — a contributor-facing tool with provenance tracking and a review/publish workflow.",
+      priority: "medium", status: "open",
+      files: ["bsc-knowledge.ts", "botema-examples.ts"], added: "2026-08-04", phase: "Persona Voice Kit roadmap"
+    },
+    {
+      id: "ISSUE-004",
+      title: "Reasoning model can silently return an empty response",
+      description: "gpt-5-nano can spend its whole token budget on hidden reasoning and return a technically successful but empty reply. Mitigated with an automatic single retry at double the token budget.",
+      priority: "low", status: "resolved",
+      files: ["bsc-functions.ts", "botema-coach.ts"], added: "2026-08-04", phase: "This project"
+    },
+    {
+      id: "ISSUE-005",
+      title: "Narrowing self-check alone didn't hold — needed a code-level fallback",
+      description: "The same real message ('what materials should I use') kept getting answered across web/data/IT in one reply despite three rounds of instruction tightening. resolveNarrowOrAnswer() now also scans the model's own output for the enumerated-list pattern and rebuilds a narrowing question from it.",
+      priority: "medium", status: "resolved",
+      files: ["converser.ts"], added: "2026-08-04", phase: "This project"
+    },
+    {
+      id: "ISSUE-006",
+      title: "\"Keep it short\" instruction alone didn't hold for broad topics",
+      description: "Answers that stayed on one topic still came back as 5-6 section rundowns. Added a code-level paragraph cap (keep only the opening answer + closing question) and discovered addressMindsetChallenge/BoteMindset weren't running through the safety-net pipeline at all.",
+      priority: "medium", status: "resolved",
+      files: ["converser.ts", "bsc-functions.ts", "botema-coach.ts"], added: "2026-08-04", phase: "This project"
+    },
+    {
+      id: "ISSUE-007",
+      title: "Out-of-scope definition was too loose",
+      description: "\"Unrelated to careers\" let non-tech career questions slip through as in-scope, since they ARE about a career — just not a tech one. Tightened both the routing rule and the generation-time check to require TECH careers specifically.",
+      priority: "medium", status: "resolved",
+      files: ["bsc-coach.ts", "botema-coach.ts", "bsc-functions.ts"], added: "2026-08-04", phase: "This project"
+    }
+  ];
+
+  const STORAGE_KEY = 'bsc_coach_issues_state';
+  function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
+  function saveState(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+  function updateCounts() {
+    const state = loadState();
+    let open = 0, prog = 0, done = 0;
+    ISSUES.forEach(issue => {
+      const s = (state[issue.id] || {}).status || issue.status;
+      if (s === 'open') open++; else if (s === 'in-progress') prog++; else if (s === 'resolved') done++;
+    });
+    document.getElementById('count-open').textContent = open + ' Open';
+    document.getElementById('count-prog').textContent = prog + ' In Progress';
+    document.getElementById('count-done').textContent = done + ' Resolved';
+    const btn = document.getElementById('issues-tab-btn');
+    btn.textContent = open > 0 ? `Issues To Check (${open})` : 'Issues To Check';
+  }
+
+  function renderIssues() {
+    const state = loadState();
+    const list = document.getElementById('issues-list');
+    list.innerHTML = '';
+    ISSUES.forEach(issue => {
+      const saved = state[issue.id] || {};
+      const status = saved.status || issue.status;
+      const assigned = saved.assigned || '';
+      const responsible = saved.responsible || '';
+      const statusLabel = { open: 'Open', 'in-progress': 'In Progress', resolved: 'Resolved' };
+      const statusClass = { open: 'status-open', 'in-progress': 'status-progress', resolved: 'status-resolved' };
+      const card = document.createElement('div');
+      card.className = `issue-card priority-${issue.priority}`;
+      if (status === 'resolved') card.style.opacity = '0.65';
+      card.innerHTML = `
+        <div class="issue-header">
+          <div style="display:flex;align-items:flex-start;gap:10px;flex:1;">
+            <span class="issue-id">${issue.id}</span><span class="issue-title">${issue.title}</span>
+          </div>
+          <span class="issue-priority ${issue.priority}">${issue.priority}</span>
+        </div>
+        <div class="issue-body">
+          <p class="issue-desc">${issue.description}</p>
+          <div class="issue-files">${issue.files.map(f => `<span class="issue-file">${f}</span>`).join('')}</div>
+          <div class="issue-meta">
+            <div class="issue-field"><label>Status</label>
+              <select onchange="updateIssueField('${issue.id}','status',this.value)">
+                <option value="open" ${status==='open'?'selected':''}>Open</option>
+                <option value="in-progress" ${status==='in-progress'?'selected':''}>In Progress</option>
+                <option value="resolved" ${status==='resolved'?'selected':''}>Resolved</option>
+              </select>
+            </div>
+            <div class="issue-field"><label>Assigned to</label>
+              <input type="text" placeholder="Name or initials" value="${assigned}" onblur="updateIssueField('${issue.id}','assigned',this.value)" onkeydown="if(event.key==='Enter')this.blur()" />
+            </div>
+            <div class="issue-field"><label>Responsible</label>
+              <input type="text" placeholder="Team or person" value="${responsible}" onblur="updateIssueField('${issue.id}','responsible',this.value)" onkeydown="if(event.key==='Enter')this.blur()" />
+            </div>
+          </div>
+        </div>
+        <div class="issue-footer">
+          <span>Added: ${issue.added}</span><span>Phase: ${issue.phase}</span>
+          <span class="${statusClass[status]}">${statusLabel[status]}</span>
+        </div>`;
+      list.appendChild(card);
+    });
+    updateCounts();
+  }
+
+  function updateIssueField(id, field, value) {
+    const state = loadState();
+    state[id] = state[id] || {};
+    state[id][field] = value;
+    saveState(state);
+    renderIssues();
+  }
+
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+    if (id === 'issues') renderIssues();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('DOMContentLoaded', renderIssues);
+</script>
+</body>
+</html>

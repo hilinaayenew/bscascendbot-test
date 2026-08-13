@@ -1,73 +1,46 @@
-# Welcome to your Lovable project
+# Ascendency (Because She Can)
 
-## Project info
+A mentorship platform connecting African women with tech mentors, with an AI Career Coach chatbot built in — two switchable personas (Chataki and Botema) available as a floating widget on dashboard pages.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Tech stack
 
-## How can I edit this code?
+- Vite + React + TypeScript
+- shadcn-ui + Tailwind CSS
+- Supabase (Postgres, Auth, Storage, Realtime, Edge Functions)
+- Deployed to Vercel
 
-There are several ways of editing your application.
+## Getting started
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Requires Node.js & npm ([install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)).
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Clone the repository
+git clone https://github.com/hilinaayenew/bscascendbot-test
+cd bscascendbot-test
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+# Install dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the dev server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Testing
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm test        # run once
+npm run test:watch
+```
 
-**Use GitHub Codespaces**
+## Deployment
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **Frontend**: Vercel auto-deploys from this repo on every push to `main` (`git push origin main`), per the rewrite rule in `vercel.json`.
+- **AI Coach edge function** (`supabase/functions/ai-career-coach/`): pushing to git does **not** deploy it — after pushing, also run:
+  ```sh
+  npx supabase functions deploy ai-career-coach
+  ```
 
-## What technologies are used for this project?
+## More documentation
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- [AGENT.md](AGENT.md) — practical, project-specific notes for working on this repo (git remotes, Supabase project details, deployment steps, environment quirks).
+- [supabase/functions/ai-career-coach/README.md](supabase/functions/ai-career-coach/README.md) — full design doc for the AI Career Coach architecture.

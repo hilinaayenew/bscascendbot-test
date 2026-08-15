@@ -13,6 +13,8 @@
 // leading anywhere — only show up over a run.
 // ============================================================================
 
+import { replyOf, everyReplyAsks, noRepeatedOpeners, jargonPerReply, maxRepeatOverlap } from "../checks.mjs";
+
 export default [
   {
     id: "01-career-changer-lowballed",

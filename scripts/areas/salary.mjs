@@ -42,6 +42,20 @@ export default {
     C: "the conversation with your employer",
   },
 
+  // Facets that stop applying once the conversation has moved past them.
+  //
+  // Once a counter-offer is on the table she has already asked, already been
+  // refused, and already resigned. Sending her away to assemble milestones for
+  // a raise is work for a situation she left behind — and it kept happening,
+  // because "raise" and "asked" match those examples lexically however the
+  // conversation has moved.
+  //
+  // Read as: once `after` has been drawn on, never select `retire` again in
+  // this conversation.
+  supersedes: [
+    { after: "G8", retire: ["S4", "S4a", "S4b", "S4c", "G4", "G4a", "G4b", "G4c", "G4d"] },
+  ],
+
   stages: {
     A: {
       label: "Before there's an offer",
@@ -53,7 +67,7 @@ export default {
       label: "An offer is on the table",
       describes:
         "They are negotiating with a PROSPECTIVE employer. A job offer exists, or one is being discussed — they do not work there yet. Anything about an offer, an equity package, a signing bonus, or what to say during hiring.",
-      facets: ["S2", "S2a", "S3", "S3a", "S5", "S5a", "G3", "G3a", "G6", "G7", "G7a", "G9", "G9a", "G5"],
+      facets: ["S2", "S2a", "S3", "S3a", "S3b", "S5", "S5a", "G3", "G3a", "G6", "G7", "G7a", "G9", "G9a", "G5"],
     },
     C: {
       label: "Already in the job",

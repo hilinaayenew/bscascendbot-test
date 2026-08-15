@@ -256,7 +256,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "The offer is less than half what I expected.",
       answer:
-        "That isn't a negotiation, it's a mismatch: either they've misunderstood the role or they're hoping you don't know what it pays. Asking what range the role was budgeted at will tell you which, and don't read a gap that size as information about your worth. What did they say the role actually involves?",
+        "That isn't a negotiation, it's a mismatch: either they've misunderstood the role or they're hoping you don't know what it pays. Do not read it as the advertised range being inflated — job ads with published ranges are one of the few honest signals we have, and treating a half offer as \"the ad oversold it\" is the employer's argument, not yours. Ask what range the role was budgeted at; that tells you which of the two it is. What did they say the role actually involves?",
       topic: "salary", area: 9, facet: "G3a", respondsTo: "G3",
       userSaid: "It's less than half what I expected",
       gap: "An offer so far below range it signals something else",
@@ -314,6 +314,15 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
       topic: "salary", area: 9, facet: "G9a", respondsTo: "G9",
       userSaid: "Someone did call me difficult for asking",
       gap: "Actually being penalised socially for negotiating",
+      reviewStatus: "unreviewed", drafted: "2026-08-15",
+    },
+    {
+      question: "They're asking me to prove what I currently earn — a payslip or a screenshot.",
+      answer:
+        "Don't send it, and don't send a summary of it either — a redacted version is still your number, and if you're underpaid now it anchors their offer to what someone else undervalued you at. Put it back to them: \"I'd rather we work from what this role is worth. What range has been budgeted for it?\" If they insist a payslip is policy, ask whose policy and whether an offer depends on it, because that answer tells you a great deal about them. What have they actually asked you for?",
+      topic: "salary", area: 9, facet: "S3b", respondsTo: "S3",
+      userSaid: "They want proof of my current salary",
+      gap: "An employer demanding evidence of current pay, not just asking",
       reviewStatus: "unreviewed", drafted: "2026-08-15",
     },
     {

@@ -222,6 +222,49 @@ export function stripImplausiblePeriods(text: string): string {
 }
 
 /**
+ * Drops a sentence that repeats one the coach already said this conversation.
+ *
+ * Observed across four of five test conversations: the same three-item
+ * checklist — a fixed review date, explicit targets, confirmation in writing —
+ * issued on four consecutive turns, including on a turn where she admitted a
+ * fear rather than asking anything. Another conversation re-asked for a
+ * breakdown of base, equity and bonus on four turns running.
+ *
+ * The instruction ("do NOT repeat advice you have already given — she heard
+ * it") has now lost this argument repeatedly, so it moves into code. Seventh
+ * time a prompt rule has had to become a check.
+ *
+ * Compares content words only, so a rephrasing of the same advice is caught
+ * where an exact-string match would miss it. The closing question is always
+ * kept: questions legitimately recur, and dropping one strands the turn.
+ */
+export function dropRepeatedSentences(text: string, previousReplies: string[], threshold = 0.6): string {
+  if (!previousReplies.length) return text;
+
+  const contentWords = (s: string) =>
+    new Set(
+      s.toLowerCase().replace(/[^a-z\s]/g, " ").split(/\s+/).filter((w) => w.length > 4),
+    );
+
+  const seen = previousReplies.flatMap((r) => splitSentences(r)).map(contentWords);
+  const kept = splitSentences(text).filter((sentence) => {
+    if (sentence.trim().endsWith("?")) return true;
+    const words = contentWords(sentence);
+    if (words.size < 4) return true;
+    return !seen.some((before) => {
+      if (!before.size) return false;
+      let shared = 0;
+      words.forEach((w) => { if (before.has(w)) shared++; });
+      return shared / words.size >= threshold;
+    });
+  });
+
+  // If everything was a repeat, the turn genuinely had nothing new in it —
+  // which is the stall condition, not something to paper over with filler.
+  return kept.length ? kept.join(" ").trim() : "";
+}
+
+/**
  * Sentence-level cap, for the rundown that capParagraphs() cannot see.
  *
  * capParagraphs splits on blank lines, so a single unbroken paragraph — which

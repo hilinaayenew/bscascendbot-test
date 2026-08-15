@@ -152,6 +152,7 @@ const STAGES = areaConfig.stages;
 const STAGE_SUMMARY = areaConfig.stageSummary;
 const S_ORDER = areaConfig.realOrder;
 const AREA_TOPIC = areaConfig.topic;
+const SUPERSEDES = areaConfig.supersedes || [];
 
 function buildFacets() {
   const f = {};
@@ -181,9 +182,47 @@ const OTHER_AREAS = Object.fromEntries(Object.entries(ALL_AREAS).filter(([n]) =>
 // Fires regardless of what the classifier says. Cheap, deterministic, and the
 // one case where a user is unambiguous and being ignored would be insulting.
 
-const LEAVE_PHRASES = /\b(?:something else|different (?:topic|area|subject)|move on|change (?:the )?(?:topic|subject)|talk about (?:something|mentors?|cvs?|interviews?)|let'?s leave|forget (?:this|that)|next topic|done with (?:this|that|salary))\b/i;
+// Every phrase here must express an intent to change subject ON ITS OWN. This
+// check runs before any model call, so a false positive closes the area with
+// no judgment applied at all.
+//
+// Observed: she typed "i dont want to seem awkward and have them just move on
+// to the next candidate" and the bare "move on" matched. The coach closed the
+// area and asked what was on her mind — at the exact sentence the confidence
+// facet exists for. A worry about how she will be perceived is never a leave
+// signal.
+//
+// So the loose fragments are gone, and the ones that survive are either
+// unambiguous on their own or anchored to a subject word.
+const LEAVE_PHRASES = new RegExp(
+  [
+    "\\btalk about something else\\b",
+    "\\b(?:different|another|new)\\s+(?:topic|subject|area|question)\\b",
+    "\\bchange (?:the )?(?:topic|subject)\\b",
+    "\\blet'?s (?:move on|leave (?:it|this|that))\\b",
+    "\\bmove on to (?:something|another|a different)\\b",
+    "\\bcan we talk about (?:something|mentors?|cvs?|interviews?)\\b",
+    "\\bforget (?:this|that|it)\\b",
+    "\\bnext (?:topic|question|subject)\\b",
+    "\\bdone with (?:this|that|salary|pay)\\b",
+    "\\benough about (?:this|that|salary|pay|money)\\b",
+  ].join("|"),
+  "i",
+);
+
+// Phrases that look like leaving but are her describing a fear or a situation.
+// Checked first: if one of these is present, the message is about her, not
+// about changing the subject.
+const NOT_LEAVING = /\b(?:move on to the next|moving on to the next|move on without|they (?:just )?move on|worried|scared|afraid|nervous|don'?t want to (?:seem|look|be seen))\b/i;
+
+// Said when a model call fails outright. Keeps her in the conversation and
+// keeps the question with her, rather than stranding her on the turn she
+// most needed answered.
+const COULD_NOT_ANSWER =
+  "Sorry — that one did not come through properly on my end. Say it again, or put it differently, and I will pick it up.";
 
 function saysLeaving(text) {
+  if (NOT_LEAVING.test(text)) return false;
   return LEAVE_PHRASES.test(text);
 }
 
@@ -277,6 +316,25 @@ function splitSentences(text) {
   return out;
 }
 
+// Mirrors dropRepeatedSentences in converser.ts.
+function dropRepeatedSentences(text, previousReplies, threshold = 0.6) {
+  if (!previousReplies.length) return text;
+  const words = (s) => new Set(s.toLowerCase().replace(/[^a-z\s]/g, " ").split(/\s+/).filter((w) => w.length > 4));
+  const seen = previousReplies.flatMap((r) => splitSentences(r)).map(words);
+  const kept = splitSentences(text).filter((sentence) => {
+    if (sentence.trim().endsWith("?")) return true;
+    const w = words(sentence);
+    if (w.size < 4) return true;
+    return !seen.some((before) => {
+      if (!before.size) return false;
+      let shared = 0;
+      w.forEach((x) => { if (before.has(x)) shared++; });
+      return shared / w.size >= threshold;
+    });
+  });
+  return kept.length ? kept.join(" ").trim() : "";
+}
+
 function capSentences(text, keep = 3) {
   const sentences = splitSentences(text);
   if (sentences.length <= keep) return { text, capped: false };
@@ -316,7 +374,15 @@ async function callAzure(messages, { tools, maxTokens = 2000 } = {}) {
   const choice = data.choices?.[0];
   if (tools) {
     const call = choice?.message?.tool_calls?.[0];
-    if (!call) return null;
+    // The content path already retries once at double the budget when
+    // gpt-5-nano spends everything on hidden reasoning. The tool path returned
+    // null instead — so a dropped classification ended the turn with nothing,
+    // and it did so on the last turn of two conversations, both times on the
+    // decision she had come for. Same retry, same reason.
+    if (!call) {
+      if (maxTokens < 12000) return callAzure(messages, { tools, maxTokens: maxTokens * 2 });
+      return null;
+    }
     try { return JSON.parse(call.function.arguments || "{}"); } catch { return {}; }
   }
   // gpt-5-nano can spend the whole budget on hidden reasoning and return
@@ -486,7 +552,21 @@ function conversationQuery(message, history) {
   return `${message} ${message} ${earlier}`;
 }
 
+// Facets the conversation has moved past. Removed from the pool outright
+// rather than down-weighted, because a down-weighted example still wins when
+// it is the closest lexical match — which is exactly how raise-asking material
+// kept surfacing after a resignation.
+function retiredBy(used) {
+  const gone = new Set();
+  for (const rule of SUPERSEDES) {
+    if (used.includes(rule.after)) for (const f of rule.retire) gone.add(f);
+  }
+  return gone;
+}
+
 function mostRelevant(pool, message, limit = 4, used = []) {
+  const retired = retiredBy(used);
+  if (retired.size) pool = pool.filter((e) => !retired.has(e.id));
   const stop = new Set(["what", "when", "should", "would", "there", "their", "about", "this", "that", "with", "from", "have", "they", "them", "your", "just", "been", "much", "more", "than"]);
   const words = new Set(
     message.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length > 3 && !stop.has(w)),
@@ -705,10 +785,22 @@ async function main() {
     try {
       placed = DRY ? { stage: "A", why: "dry mode — not classified" } : await classify(input, history, state.covered_stages);
     } catch (err) {
-      console.log(C.amber(`\n  Azure error: ${err.message}\n`));
+      // Content filter, network, or a hard API failure. She sees a coach who
+      // is still present, not a stack trace — and the diagnostic stays dim so
+      // it is obvious to us and invisible in tone to her.
+      console.log(C.dim(`  [azure error: ${err.message.slice(0, 120)}]`));
+      console.log(`\n${C.wine("Botema")}`);
+      console.log(wrap(COULD_NOT_ANSWER));
+      console.log("");
       continue;
     }
-    if (!placed) { console.log(C.amber("  (no classification returned — try rephrasing)")); continue; }
+    if (!placed) {
+      console.log(C.dim("  [no classification after retry]"));
+      console.log(`\n${C.wine("Botema")}`);
+      console.log(wrap(COULD_NOT_ANSWER));
+      console.log("");
+      continue;
+    }
 
     console.log(C.dim(`  [stage ${placed.stage} — ${placed.why}]`));
 
@@ -793,7 +885,11 @@ async function main() {
     // the web, and only when we know both the role and the place. Without a
     // location the query is unanswerable and a search is worse than none.
     let search = null;
-    if ((placed.needsMarketData || narrowed) && state.role && state.location) {
+    // A refinement narrows an EXISTING market question; it does not turn a
+    // tactical one into a market question. Observed: five turns of currency
+    // advice, every one preceded by a ~30s search that returned no figure,
+    // because any refinement satisfied the disjunction on its own.
+    if (placed.needsMarketData && state.role && state.location) {
       try {
         // A search takes ~30s. Saying nothing for half a minute reads as a
         // hang, so tell her what's happening in her coach's voice — not as a
@@ -826,11 +922,27 @@ async function main() {
       console.log(C.amber(`\n  Azure error: ${err.message}\n`));
       continue;
     }
-    if (!reply) { console.log(C.amber("  (empty response — the reasoning budget ran out)")); continue; }
+    if (!reply) {
+      console.log(C.dim("  [empty response after retry]"));
+      console.log(`\n${C.wine("Botema")}`);
+      console.log(wrap(COULD_NOT_ANSWER));
+      console.log("");
+      continue;
+    }
 
     const { text: guarded, stripped } = search ? { text: reply, stripped: false } : stripFigures(reply);
     if (stripped) console.log(C.amber("  [figure guard fired — a figure or source claim was removed]"));
-    const plausible = stripImplausiblePeriods(stripImplausibleFigures(guarded));
+    const priorReplies = history.filter((m) => m.role === "assistant").map((m) => m.content);
+    const deduped = dropRepeatedSentences(guarded, priorReplies);
+    if (deduped !== guarded) console.log(C.amber("  [repeated advice removed]"));
+    if (!deduped) {
+      // The whole reply was advice she has already had. That is the stall
+      // condition, not something to fill with more words.
+      console.log(C.amber("  [reply was entirely repetition — treating as a stall]"));
+      state.stallCount += 1;
+      if (state.stallCount >= 2) { await closeArea("nothing new left to say — the stall rule"); break; }
+    }
+    const plausible = stripImplausiblePeriods(stripImplausibleFigures(deduped || guarded));
     if (plausible !== guarded) console.log(C.amber("  [implausible figure removed — outlier, mixed currency, or wrong period]"));
     const { text, capped } = capSentences(flattenInlineList(plausible), search ? 5 : 3);
     if (capped) console.log(C.amber("  [sentence cap fired — the model wrote a rundown]"));

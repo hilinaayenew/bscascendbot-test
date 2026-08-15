@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods, dropRepeatedSentences } from "./converser.ts";
 
 describe("pickRandom", () => {
   it("returns exactly n items when the pool is larger than n", () => {
@@ -494,5 +494,51 @@ describe("stripImplausiblePeriods", () => {
   it("ignores currencies it has no floor for", () => {
     const raw = "About XYZ 100 per year. What next?";
     expect(stripImplausiblePeriods(raw)).toBe(raw);
+  });
+});
+
+// ── Repeated advice ─────────────────────────────────────────────────────────
+// The same three-item checklist on four consecutive turns, including one where
+// she admitted a fear rather than asking anything. The instruction lost four
+// times out of five conversations.
+
+describe("dropRepeatedSentences", () => {
+  const earlier = [
+    "Push for a formal written plan: a fixed review date, explicit targets that trigger a raise, and written confirmation. When is the cycle?",
+  ];
+
+  it("drops a rephrasing of advice already given", () => {
+    const raw =
+      "Ask for a formal written review with a fixed date and explicit targets that would trigger a raise, plus written confirmation of the outcome. " +
+      "What did she say when you pushed back?";
+    const out = dropRepeatedSentences(raw, earlier);
+    expect(out).not.toContain("explicit targets");
+    expect(out).toContain("What did she say when you pushed back?");
+  });
+
+  it("keeps genuinely new advice", () => {
+    const raw = "Start looking now, quietly, while the conversation is still open. What would make you stay?";
+    expect(dropRepeatedSentences(raw, earlier)).toBe(raw);
+  });
+
+  it("always keeps the closing question", () => {
+    const raw = "A fixed review date with explicit targets and written confirmation. When is the cycle?";
+    expect(dropRepeatedSentences(raw, earlier)).toBe("When is the cycle?");
+  });
+
+  it("returns empty when the whole reply was a repeat", () => {
+    const raw = "Push for a formal written plan with a fixed review date and explicit targets that trigger a raise.";
+    expect(dropRepeatedSentences(raw, earlier)).toBe("");
+  });
+
+  it("does nothing on the first reply of a conversation", () => {
+    const raw = "Push for a formal written plan. When is the cycle?";
+    expect(dropRepeatedSentences(raw, [])).toBe(raw);
+  });
+
+  it("leaves short sentences alone — too little to judge", () => {
+    const raw = "Be careful here. Push for a formal written plan with fixed review dates and explicit targets. What now?";
+    const out = dropRepeatedSentences(raw, earlier);
+    expect(out).toContain("Be careful here.");
   });
 });

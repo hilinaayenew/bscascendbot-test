@@ -1018,7 +1018,12 @@ async function main() {
     try {
       reply = await wordalise(input, placed.stage, history, facets, search, state.usedExamples, history.filter((m) => m.role === "assistant").map((m) => m.content));
     } catch (err) {
-      console.log(C.amber(`\n  Azure error: ${err.message}\n`));
+      // Was still printing the raw error. A transient "fetch failed" left two
+      // turns of a conversation with no reply at all, and nothing said so.
+      console.log(C.dim(`  [azure error: ${err.message.slice(0, 120)}]`));
+      console.log(`\n${C.wine("Botema")}`);
+      console.log(wrap(COULD_NOT_ANSWER));
+      console.log("");
       continue;
     }
     if (!reply) {

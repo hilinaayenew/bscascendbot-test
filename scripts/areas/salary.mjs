@@ -78,7 +78,8 @@ export default {
     C: {
       label: "Already in the job",
       describes:
-        "They ALREADY WORK for the employer in question, so the money conversation is one they must start themselves. A rise asked for or refused, a manager who said no, a pay gap with a colleague, a counter-offer on resigning. If the words manager, my team, my job, my boss or a raise appear, this is almost always the stage — even if a negotiation is live.",
+        "They ALREADY WORK for the employer in question, so the money conversation is one they must start themselves. A rise asked for or refused, a manager who said no, a pay gap with a colleague, a counter-offer on resigning. If the words manager, my team, my job, my boss or a raise appear, this is almost always the stage — even if a negotiation is live. " +
+        "Saying the money was not the only reason she was leaving is squarely THIS stage, not a departure from it: weighing a counter-offer against why she wanted to go is the decision itself. Do not read it as a confidence or wellbeing question.",
       facets: ["S4", "S4a", "S4b", "S4c", "G1", "G1a", "G1b", "G4", "G4a", "G4b", "G4c", "G4d", "G8", "G9", "G9a"],
     },
   },

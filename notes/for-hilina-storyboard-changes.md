@@ -113,6 +113,56 @@ a day's work otherwise. Everything here is on top of that.
 
 ---
 
+## 2026-08-15 — A real citation for a number nobody gets
+
+David spotted this reading a transcript. Asked about remote work for a European company, the coach
+answered a Lagos developer with:
+
+> ...they anchor around NGN 1,927,160 per year (Glassdoor, 2026). For fully remote roles with a
+> European company, there are higher anchors like **USD 200,000 per year (Crossover, 2026)**.
+
+Crossover advertises headline rates as a recruitment hook. Nobody in that market is paid it, and a
+European developer might be on EUR 60,000. Presented beside a Nigerian salary survey as a comparable
+"anchor", it invites someone into a negotiation with an expectation that will damage them.
+
+**Why this one is worth studying.** Every individual step worked. The search found a real page. The
+citation was genuine. The figure was transcribed accurately. Nothing malfunctioned — the failure was
+entirely one of *judgment*: that a company's marketing is not a market rate, and that a Lagos salary
+and a US-benchmarked remote rate are not comparable numbers. This is the class of error guards can
+blunt but never remove, and it is the strongest argument for Otema reviewing anything that reaches a
+user.
+
+### Three layers, and why the third exists
+
+1. **Search brief** — prefer salary surveys and aggregators; explicitly avoid a single employer's own
+   recruitment pages.
+2. **Summarise rule** — if one figure is several times the others, name it as a headline rate from
+   one employer rather than presenting it as an anchor.
+3. **A code check**, because 1 and 2 are instructions. `stripImplausibleFigures()` in `converser.ts`
+   drops a figure in a second currency (there is no conversion rate available, so the two are not
+   comparable) or one more than 5× the smallest in the same currency. Six tests, including this exact
+   example.
+
+Note that this check runs **even when the answer is grounded**, unlike the invented-figure guard
+which steps aside for real data. A genuine citation attached to an unreachable number is precisely
+the case that needs catching.
+
+### The pattern worth taking from this
+
+**When an instruction fails twice, write the check instead of rewording it a third time.** That has
+now happened four times in this coach:
+
+| What kept failing | The check that fixed it |
+|---|---|
+| Hedging across tracks | `extractEnumeratedOptions()` (ISSUE-005) |
+| "Keep it short" | `capParagraphs()`, then `capSentences()` (ISSUE-006, ISSUE-020) |
+| "Never write a list" | `flattenInlineList()` — it complied with the letter and wrote one inline |
+| "Be sceptical of outliers" | `stripImplausibleFigures()` |
+
+Rewording is cheap and feels like progress. It has not once been the thing that worked.
+
+---
+
 ## 2026-08-15 — Web search built, and two serious faults it introduced
 
 Web search now works in the harness, using the mechanism David specified: Azure's **Responses API**

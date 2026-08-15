@@ -1,6 +1,6 @@
 # She resigned and they suddenly found the money
 
-_Run 2026-08-15 16:05 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 17:12 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C throughout, and asks why the number only appeared once she was leaving.
 
@@ -12,68 +12,52 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I handed in my notice last week and now they've offered me 30% more to stay
-  [stage C — User is negotiating with their current employer after handing in notice; this is Stage C.]
+  [stage C — User has just received a counter-offer from their current employer after handing in notice; this is a current-employer negotiation scenario.]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [sentence cap fired — the model wrote a rundown]
   [drew on G8, S4c, S4, S4a — 1 Otema, 3 drafted]
 
 Botema
-  30% is a meaningful raise and yes, counter-offers happen when they don’t
-  want to lose you. Don’t decide on the spot—ask for a written offer that
-  spells out base pay, the new title and scope, a clear path to future
-  increases, a fixed review date, and any bonuses or equity, so you can really
-  judge if this fixes what pushed you to resign. What were the top two reasons
-  you handed in your notice, and would this offer address them long-term?
+  Counter-offers after you resign are real, and a 30% bump is meaningful, but
+  it often buys time rather than fixes the core reasons you started looking.
+  If you stay, insist on a written offer that covers the new salary, your
+  role/title, a concrete growth plan, and a fixed six-month review; if those
+  aren’t guaranteed, I’d walk. What’s the one deal-breaker you’d need to stay,
+  and by when would you want it confirmed?
 
   you > I'd asked for a raise twice before and got nothing
-  [stage C — User is already employed; previously asked for a raise and was refused, now faced with a counter-offer from current employer; stage remains C.]
+  [stage C — User is currently negotiating with their employer; past raise requests failed; still in the same company; this is stage C money talk.]
+  [sentence cap fired — the model wrote a rundown]
   [drew on S4b, G4, G8, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That’s real and common: they only listen when you threaten to walk, and a
-  later “raise” can still be a stopgap. Make sure you get a written offer that
-  details the new base pay, title/scope, a fixed timeline for future
-  increases, and any bonuses or equity, plus a clear review date and what
-  happens if targets aren’t met. Since you’d asked twice before with no
-  action, what were the two core issues you needed addressed, and do you
-  believe this new package actually fixes them long-term?
+  Yes. It’s real and it’s common for two prior asks to be ignored. What’s your
+  current title and the milestones you can attach to a raise?
 
   you > honestly the money was only part of why I was going
-  [stage C — Non-monetary reasons behind leaving; money was not the sole factor, need to evaluate alignment, growth, and relationship with manager.]
+  [stage C — User is negotiating while still employed; they indicate money wasn't the only reason for leaving; updates context to Stage C]
   [sentence cap fired — the model wrote a rundown]
-  [drew on G8, G9a, S4b, S4 — 1 Otema, 3 drafted]
+  [drew on G8, G9, G9a, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That’s real and important to name. If money wasn’t the only driver, what are
-  your two non-monetary priorities (growth path, project ownership,
-  mentorship, learning budget, flexible work, culture, etc.)? What are your
-  two top non-monetary priorities, and do you want help drafting how to ask
-  for them in the written offer?
+  I hear you—that money was only part of it. The real questions now are the
+  non-monetary gaps you want fixed: growth, scope, mentorship, and culture.
+  What’s the single non-monetary item you absolutely need to see in writing to
+  consider staying?
 
   you > my new employer has already sent the contract
-  [stage B — User reports new contract from new employer; this indicates they are at an offer stage with a prospective employer rather than already negotiating with current employer.]
+  [stage B — User has a new job contract from a prospective employer, so the conversation is in negotiation with a new offer (Stage B).]
   [sentence cap fired — the model wrote a rundown]
-  [drew on S5a, G7, S2, S3a — 1 Otema, 3 drafted]
+  [drew on S5a, G6, G7, S2 — 1 Otema, 3 drafted]
 
 Botema
-  Nice that you have it in hand. Don’t sign yet—ask for a short extension (3–5
-  business days) to review and get the contract updated in writing to match
-  what you discussed. What are your two top non-monetary priorities you want
-  included, and would you like me to help draft the extension request and a
-  list of edits to propose?
+  Nice—that contract means you have leverage now. Get written commitments on
+  your growth plan and scope, mentorship, culture, and a concrete performance
+  review, and verify money details (currency, benefits, any signing bonus, and
+  equity terms if any). What is the one non-monetary item you must see in
+  writing, and by when would you want it confirmed?
 
   you > so do I take it or not
-  [stage B — User asking whether to accept current offer in ongoing offer-stage negotiation.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G6, S5a, G9a, S3 — 1 Otema, 3 drafted]
-
-Botema
-  I wouldn’t sign it as-is. Don’t rush—ask for a short extension (3–5 business
-  days) to review and get a written version that matches what you discussed,
-  including non-monetary priorities. What are your two non-monetary priorities
-  you want included, and would you like me to draft the extension request and
-  proposed edits?
-
+  (no classification returned — try rephrasing)
   you > quit
 
   ── state ─────────────────────────────────────────────
@@ -81,7 +65,7 @@ Botema
   covered_stages  C, B
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a, S2, S2a, S3, S3a, S5, S5a, G3, G3a, G6, G7, G7a, G5
   closed_areas    —
-  role/location   current position / negotiating terms / —
+  role/location   — / —
 
   Nothing was written to any database.
 ```
@@ -89,11 +73,11 @@ Botema
 ## Checks
 
 - PASS — classified stage C
-- PASS — questions why the money appeared only now
-- PASS — treats money as not the whole reason
-- PASS — every reply ends on a question
-- PASS — no two replies open the same way
-- PASS — no reply stacks more than two jargon terms
+- **FAIL** — questions why the money appeared only now
+- **FAIL** — treats money as not the whole reason
+- **FAIL** — every reply ends on a question
+- **FAIL** — no two replies open the same way
+- **FAIL** — no reply stacks more than two jargon terms
 - **FAIL** — no reply mostly restates the one before it
 
 ---

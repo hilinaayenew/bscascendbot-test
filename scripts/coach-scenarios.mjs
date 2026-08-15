@@ -24,112 +24,20 @@ import { dirname, join } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "examples");
 
-const SCENARIOS = [
-  {
-    id: "01-career-changer-lowballed",
-    title: "A nurse moving into health tech, offered far too little",
-    claim: "Crosses stage A into B mid-conversation, and treats a half offer as a mismatch rather than a starting point.",
-    turns: [
-      "I've been a nurse for 6 years and I'm moving into health tech",
-      "they've offered me something but it feels really low",
-      "it's about half what the job ads say for that role",
-      "I keep thinking maybe I don't deserve more since I'm new to tech",
-      "what do I actually say to them",
-    ],
-    checks: [
-      ["reads the offer as a mismatch, not her worth", (o) => /(mismatch|misunderstood|budget|range|not about you|worth)/i.test(replyOf(o))],
-      ["values her clinical background rather than discounting it", (o) => /(nurse|clinical|healthcare|domain|background|experience)/i.test(replyOf(o))],
-      ["stayed in the area for all five turns", (o) => !/stage leaving/.test(o)],
-      ["every reply ends on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
-      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
-      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
-    ],
-  },
-  {
-    id: "02-counter-offer",
-    title: "She resigned and they suddenly found the money",
-    claim: "Stage C throughout, and asks why the number only appeared once she was leaving.",
-    turns: [
-      "I handed in my notice last week and now they've offered me 30% more to stay",
-      "I'd asked for a raise twice before and got nothing",
-      "honestly the money was only part of why I was going",
-      "my new employer has already sent the contract",
-      "so do I take it or not",
-    ],
-    checks: [
-      ["classified stage C", (o) => /\[stage C/.test(o)],
-      ["questions why the money appeared only now", (o) => /(before|why|earlier|only now|resignation|notice)/i.test(replyOf(o))],
-      ["treats money as not the whole reason", (o) => /(reason|why you|what was wrong|part of|fix)/i.test(replyOf(o))],
-      ["every reply ends on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
-      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
-      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
-    ],
-  },
-  {
-    id: "03-paid-in-local-currency",
-    title: "A foreign employer insisting on local currency",
-    claim: "Negotiates the mechanism — review interval, pegging — rather than arguing about the currency itself.",
-    turns: [
-      "I'm in Accra and a German company wants to hire me remotely",
-      "they say they'll only pay in cedis",
-      "the cedi has moved a lot this year and I'm worried",
-      "is there anything I can actually ask for here",
-      "how do I put that to them without sounding difficult",
-    ],
-    checks: [
-      ["reaches the mechanism, not just the currency", (o) => /(review|peg|interval|adjust|index|contract|written)/i.test(replyOf(o))],
-      ["takes the currency worry seriously", (o) => /(volatil|inflation|moved|devalu|risk|stable)/i.test(replyOf(o))],
-      ["handles the 'sounding difficult' turn without leaving", (o) => !/stage leaving/.test(o)],
-      ["every reply ends on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
-      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
-      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
-    ],
-  },
-  {
-    id: "04-fobbed-off-twice",
-    title: "Told to wait for the review cycle, for the second year running",
-    claim: "Stage C. Recognises a pattern rather than repeating last year's advice.",
-    turns: [
-      "my manager told me to wait for the review cycle",
-      "she said exactly the same thing last year",
-      "I did everything on the list she gave me",
-      "I don't want to be the person who complains",
-      "am I being naive staying here",
-    ],
-    checks: [
-      ["classified stage C", (o) => /\[stage C/.test(o)],
-      ["names the repetition as information about them", (o) => /(pattern|again|last year|twice|says something|about them|not about you)/i.test(replyOf(o))],
-      ["does not treat raising it as complaining", (o) => /(not complain|reasonable|entitled|fair|normal|right to)/i.test(replyOf(o))],
-      ["every reply ends on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
-      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
-      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
-    ],
-  },
-  {
-    id: "05-no-job-yet",
-    title: "Asking what to earn before she has anything to negotiate",
-    claim: "The precondition is missing — it should hand off to Job Search rather than coach a negotiation that cannot happen.",
-    turns: [
-      "what should I be earning as a junior data analyst",
-      "I'm in Kampala",
-      "well I haven't actually got a job yet",
-      "I've been applying for about four months with nothing back",
-      "should I just take whatever I'm offered",
-    ],
-    checks: [
-      ["noticed the missing precondition", (o) => /stage leaving/.test(o) || /(applying|job search|no offer|haven't got|first)/i.test(replyOf(o))],
-      ["did not simply keep coaching a negotiation that cannot happen", (o) => /(search|applying|CV|interview|Area 7|Job Search|first)/i.test(o)],
-      ["never told her to take whatever she is offered", (o) => !/take whatever|accept anything|any offer is/i.test(replyOf(o))],
-      ["every reply ends on a question", (o) => everyReplyAsks(o)],
-      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
-      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
-    ],
-  },
-];
+// ── The area under test ─────────────────────────────────────────────────────
+// Named, not numbered — `--area=salary`.
+const areaArg = process.argv.find((a) => a.startsWith("--area="));
+const AREA_SLUG = areaArg ? areaArg.slice(7).toLowerCase() : "salary";
+
+let SCENARIOS;
+let AREA_NAME = AREA_SLUG;
+try {
+  SCENARIOS = (await import(`./scenarios/${AREA_SLUG}.mjs`)).default;
+  AREA_NAME = (await import(`./areas/${AREA_SLUG}.mjs`)).default.name;
+} catch {
+  console.error(`\n  No scenarios for "${AREA_SLUG}" — expected scripts/scenarios/${AREA_SLUG}.mjs\n`);
+  process.exit(1);
+}
 
 // Substance repetition: how much of a reply is words it already used in the
 // previous one. Openers were the visible symptom; this catches restating the
@@ -221,6 +129,7 @@ for (const s of SCENARIOS) {
     out = strip(execFileSync("node", [
       join(ROOT, "scripts/coach-local.mjs"),
       `--script=${[...s.turns, "quit"].join("|")}`,
+      `--area=${AREA_SLUG}`,
     ], { encoding: "utf8", timeout: 900000 }));
   } catch (err) {
     error = err.message.slice(0, 200);
@@ -267,7 +176,7 @@ const index = [
   `Five conversations run through \`scripts/coach-local.mjs\` against live Azure (\`gpt-5-nano\`), five turns each.`,
   `Each exists to test one claim the storyboard makes about the area model.`,
   "",
-  `_Last run: **${STAMP}** — regenerate with \`npm run coach:scenarios\`._`,
+  `_${AREA_NAME} · last run **${STAMP}** — regenerate with \`npm run coach:scenarios -- --area=${AREA_SLUG}\`._`,
   "",
   `**${passed} of ${results.length} scenarios passed all checks.**`,
   "",

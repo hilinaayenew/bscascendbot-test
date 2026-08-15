@@ -62,11 +62,13 @@ const DRY = process.argv.includes("--dry") || !AZURE.endpoint || !AZURE.apiKey;
 
 const unq = (s) => s.replace(/\\"/g, '"').replace(/\\n/g, "\n");
 
-function loadReal() {
+function loadReal(topic) {
   const src = readFileSync(join(FN, "botema-examples.ts"), "utf8");
-  return [...src.matchAll(
-    /question:\s*"((?:[^"\\]|\\.)*)",\s*\n\s*answer:\s*"((?:[^"\\]|\\.)*)",\s*\n\s*topic:\s*"salary"/g,
-  )].map((m) => ({ question: unq(m[1]), answer: unq(m[2]), source: "OTEMA" }));
+  const re = new RegExp(
+    `question:\\s*"((?:[^"\\\\]|\\\\.)*)",\\s*\\n\\s*answer:\\s*"((?:[^"\\\\]|\\\\.)*)",\\s*\\n\\s*topic:\\s*"${topic}"`,
+    "g",
+  );
+  return [...src.matchAll(re)].map((m) => ({ question: unq(m[1]), answer: unq(m[2]), source: "OTEMA" }));
 }
 
 function loadDrafted() {
@@ -90,9 +92,9 @@ function loadSystemPrompt() {
   return [values?.[1], voice?.[1] || "You are Botema, a BSC Career Coach."].filter(Boolean).join("\n\n");
 }
 
-function loadKnowledge() {
+function loadKnowledge(topic) {
   const src = readFileSync(join(FN, "bsc-knowledge.ts"), "utf8");
-  const m = src.match(/salary: `([\s\S]*?)`\.trim\(\)/);
+  const m = src.match(new RegExp(`${topic}: \`([\\s\\S]*?)\`\\.trim\\(\\)`));
   return m ? m[1].trim() : "";
 }
 
@@ -120,43 +122,43 @@ function loadFigureGuard() {
   return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
 }
 
-const S_ORDER = ["S1", "S2", "S3", "S4", "S5"];
+// ── The area under test ─────────────────────────────────────────────────────
+// The coverage map lives in scripts/areas/, one file per discussion area, so a
+// new area is a new file rather than an edit to this harness.
+
+// Areas are named, not numbered — `--area=salary`, not `--area=9`. The numbers
+// exist because the storyboard orders them, but nobody thinks in numbers and
+// "area 9" tells a reader nothing.
+const areaArg = process.argv.find((a) => a.startsWith("--area="));
+const AREA_SLUG = areaArg ? areaArg.slice(7).toLowerCase() : "salary";
+
+const AREAS_BUILT = [
+  "salary",
+  // "getting-started",   ← Hilina
+  // "confidence",        ← Hilina
+];
+
+if (!AREAS_BUILT.includes(AREA_SLUG)) {
+  console.error(`\n  No coverage map for "${AREA_SLUG}".`);
+  console.error(`  Built so far: ${AREAS_BUILT.join(", ")}`);
+  console.error(`  Add one at scripts/areas/${AREA_SLUG}.mjs — copy salary.mjs for the shape.\n`);
+  process.exit(1);
+}
+
+const areaConfig = (await import(`./areas/${AREA_SLUG}.mjs`)).default;
+const AREA = { n: areaConfig.n, name: areaConfig.name };
+const AREA_N = areaConfig.n;
+const STAGES = areaConfig.stages;
+const STAGE_SUMMARY = areaConfig.stageSummary;
+const S_ORDER = areaConfig.realOrder;
+const AREA_TOPIC = areaConfig.topic;
 
 function buildFacets() {
   const f = {};
-  loadReal().forEach((e, i) => { if (S_ORDER[i]) f[S_ORDER[i]] = { ...e, id: S_ORDER[i] }; });
+  loadReal(AREA_TOPIC).forEach((e, i) => { if (S_ORDER[i]) f[S_ORDER[i]] = { ...e, id: S_ORDER[i] }; });
   loadDrafted().forEach((e) => { f[e.facet] = { ...e, id: e.facet }; });
   return f;
 }
-
-// ── The coverage map ────────────────────────────────────────────────────────
-// Not a route. This says only what material each stage can draw on.
-
-const AREA = { n: 9, name: "Salary & Negotiation" };
-
-const STAGE_SUMMARY = {
-  A: "what the role is worth",
-  B: "the offer on the table",
-  C: "the conversation with your employer",
-};
-
-const STAGES = {
-  A: {
-    label: "Before there's an offer",
-    describes: "They are pricing themselves — working out what a role pays, or what they're worth coming from another field. No live negotiation, no employer at the table yet.",
-    facets: ["S1", "G2", "G10", "G10a", "G5"],
-  },
-  B: {
-    label: "An offer is on the table",
-    describes: "They are negotiating with a PROSPECTIVE employer. A job offer exists, or one is being discussed — they do not work there yet. Anything about an offer, an equity package, a signing bonus, or what to say during hiring.",
-    facets: ["S2", "S2a", "S3", "S3a", "S5", "S5a", "G3", "G3a", "G6", "G7", "G7a", "G9", "G9a", "G5"],
-  },
-  C: {
-    label: "Already in the job",
-    describes: "They ALREADY WORK for the employer in question, so the money conversation is one they must start themselves. A rise asked for or refused, a manager who said no, a pay gap with a colleague, a counter-offer on resigning. If the words manager, my team, my job, my boss or a raise appear, this is almost always the stage — even if a negotiation is live.",
-    facets: ["S4", "S4a", "S4b", "S4c", "G1", "G1a", "G1b", "G4", "G4a", "G4b", "G4c", "G4d", "G8", "G9", "G9a"],
-  },
-};
 
 // All ten areas. An earlier version listed only salary's three designed exits,
 // which sent a mentorship question to Confidence — the classifier could only
@@ -173,7 +175,7 @@ const ALL_AREAS = {
   9: "Salary & Negotiation",
   10: "AI & the Future of Tech Work",
 };
-const OTHER_AREAS = Object.fromEntries(Object.entries(ALL_AREAS).filter(([n]) => Number(n) !== 9));
+const OTHER_AREAS = Object.fromEntries(Object.entries(ALL_AREAS).filter(([n]) => Number(n) !== AREA_N));
 
 // ── Leave detection, layer 2: explicit phrases ──────────────────────────────
 // Fires regardless of what the classifier says. Cheap, deterministic, and the
@@ -553,7 +555,7 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     examples,
     "",
     "Background you may draw on if it is relevant to what was actually asked:",
-    loadKnowledge(),
+    loadKnowledge(AREA_TOPIC),
     "",
     search ? "" : loadFigureGuard(),
     grounding,

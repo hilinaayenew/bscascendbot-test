@@ -113,6 +113,57 @@ a day's work otherwise. Everything here is on top of that.
 
 ---
 
+## 2026-08-15 — An agent for testing an area
+
+`.claude/agents/area-tester.md` — invoke it and ask it to test an area. It runs five conversations
+against the live model, critiques the output **against Otema** rather than against abstract quality,
+and reports at most six ranked findings. It stops there; David picks what to act on.
+
+### Why it is built the way it is
+
+David has set up testers before and they spiral — fixating on marginal specifics and producing
+volume instead of judgment. Five constraints are written into the agent definition to stop that, and
+they are the reusable part of this:
+
+- **Two separated phases.** Run all five conversations, *then* critique using only the transcripts.
+  Interleaving is the compounding mechanism: each new conversation raises new marginal questions.
+- **Six findings maximum**, three per category, force-ranked. Prioritisation is exactly the judgment
+  that disappears when a tester spirals, so the cap forces it.
+- **Two-artifact citation.** Every finding quotes the bot line *and* the thing it violates. The
+  strongest filter available, because marginal things cannot be traced to a concrete violation.
+- **A severity gate in plain words** — would this mislead her, cost her money in a real negotiation,
+  or make her stop trusting the coach?
+- **"No findings" declared valid in advance**, plus a `## Not reported` section where marginal
+  observations go. Agents manufacture findings because reporting none feels like failing the task.
+
+The three things it looks for are David's: outright errors, not listening to the conversation, and
+"Otema wouldn't say that". Examined in that order deliberately — the first is checkable and the last
+is taste, and doing the checkable one first stops it reaching for taste too early.
+
+### Running it for a new area
+
+The harness and runner are now area-parameterised:
+
+```
+npm run coach -- --area=9              # talk to one area
+npm run coach:scenarios -- --area=9    # run its five conversations
+```
+
+To add Area 1 or 6 you need two files, and neither touches the harness:
+
+1. **`scripts/areas/area-01-getting-started.mjs`** — the coverage map. Copy `area-09-salary.mjs`;
+   its header explains the three things that matter. The one that matters most: each stage's
+   `describes` must say what distinguishes it **from the other stages**, not just what it is about.
+   Salary's classifier flipped between two stages on the same input until those descriptions said
+   "prospective employer" versus "already work there".
+2. **`scripts/scenarios/area-01.mjs`** — four fixed conversations plus a slot 05 the agent rewrites
+   each run. Five turns each, always.
+
+Then register the file in `AREA_FILES` in `scripts/coach-local.mjs` — there are commented
+placeholders for areas 1 and 6 already.
+
+---
+
 ## TWO KINDS OF CHANGE — read this before reusing any of it
 
 Everything below divides into two piles, and they have different lifespans. One is about **what

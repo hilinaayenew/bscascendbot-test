@@ -119,6 +119,59 @@ export function flattenInlineList(text: string): string {
 }
 
 /**
+ * Removes a pay figure that cannot be true for the person asking.
+ *
+ * Observed against a grounded answer for a Lagos developer considering remote
+ * European work: "around NGN 1,927,160 per year (Glassdoor, 2026) … higher
+ * anchors like USD 200,000 per year (Crossover, 2026)". Crossover advertises
+ * headline rates as a recruitment hook; nobody in that market is being paid it,
+ * and a European developer might be on €60,000. Presented side by side as
+ * "anchors", it invites someone to walk into a negotiation with an expectation
+ * that will damage them.
+ *
+ * Two rules, both deliberately blunt:
+ *   • mixed currencies — keep the one that appears first (hers), drop the rest,
+ *     because two currencies without a conversion rate are not comparable and
+ *     the model has no rate
+ *   • within one currency, a figure more than 5× the smallest is an outlier
+ *
+ * Sentences carrying a rejected figure are dropped whole, as with
+ * stripUnsourcedFigures. Losing a sentence is much cheaper than the number.
+ */
+const MONEY = /(?:\b(?:NGN|KES|KSh|ZAR|GHS|UGX|TZS|RWF|USD|GBP|EUR)\b|[$£€₦])\s?([\d][\d,.]*)\s*(k|m|million)?/gi;
+
+export function stripImplausibleFigures(text: string): string {
+  const found: Array<{ currency: string; value: number; sentence: number }> = [];
+  const sentences = text.split(/(?<=[.!?])\s+/);
+
+  sentences.forEach((sentence, i) => {
+    for (const m of sentence.matchAll(MONEY)) {
+      const currency = (m[0].match(/[A-Z]{3}|[$£€₦]/i) || [""])[0].toUpperCase();
+      let value = parseFloat(m[1].replace(/,/g, ""));
+      if (/^k$/i.test(m[2] || "")) value *= 1_000;
+      if (/^(m|million)$/i.test(m[2] || "")) value *= 1_000_000;
+      if (Number.isFinite(value)) found.push({ currency, value, sentence: i });
+    }
+  });
+  if (found.length < 2) return text;
+
+  const primary = found[0].currency;
+  const sameCurrency = found.filter((f) => f.currency === primary);
+  const smallest = Math.min(...sameCurrency.map((f) => f.value));
+
+  const drop = new Set<number>();
+  for (const f of found) {
+    if (f.currency !== primary) drop.add(f.sentence);
+    else if (f.value > smallest * 5) drop.add(f.sentence);
+  }
+  if (!drop.size) return text;
+
+  const kept = sentences.filter((s, i) => !drop.has(i) || s.trim().endsWith("?"));
+  const substantive = kept.filter((s) => !s.trim().endsWith("?"));
+  return substantive.length ? kept.join(" ").trim() : NO_RELIABLE_PAY_DATA;
+}
+
+/**
  * Sentence-level cap, for the rundown that capParagraphs() cannot see.
  *
  * capParagraphs splits on blank lines, so a single unbroken paragraph — which
@@ -284,7 +337,7 @@ export function resolveNarrowOrAnswer(raw: string): string {
     return withChoices("Which one would you like to focus on?", enumeratedOptions);
   }
 
-  const resolved = longFormMatch ? body : capSentences(capParagraphs(flattenInlineList(body)));
+  const resolved = longFormMatch ? body : capSentences(capParagraphs(flattenInlineList(stripImplausibleFigures(body))));
 
   // Last gate before the user sees it. Runs on every generation path — both
   // personas, advice and mindset alike — because this is the single funnel

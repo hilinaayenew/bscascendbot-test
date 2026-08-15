@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures } from "./converser.ts";
 
 describe("pickRandom", () => {
   it("returns exactly n items when the pool is larger than n", () => {
@@ -348,5 +348,64 @@ describe("flattenInlineList", () => {
   it("leaves a real multi-line list to capParagraphs", () => {
     const raw = "Steps:\n- research the range\n- decide a floor\n- ask for a day";
     expect(flattenInlineList(raw)).toBe(raw);
+  });
+});
+
+// ── Implausible figures ─────────────────────────────────────────────────────
+// A number she cannot actually get is worse than no number: it sets an
+// expectation that will damage her in the room.
+
+describe("stripImplausibleFigures", () => {
+  it("drops the Crossover-style outlier presented beside a local salary", () => {
+    const raw =
+      "I could only find Lagos-specific figures for mid-level backend roles, and they anchor around NGN 1,927,160 per year (Glassdoor, 2026). " +
+      "For fully remote roles with a European company, there are higher anchors like USD 200,000 per year (Crossover, 2026). " +
+      "Are you aiming for a fully remote EU role?";
+    const out = stripImplausibleFigures(raw);
+    expect(out).not.toContain("200,000");
+    expect(out).not.toContain("Crossover");
+    expect(out).toContain("NGN 1,927,160");
+    expect(out).toContain("Are you aiming for a fully remote EU role?");
+  });
+
+  it("drops an outlier within a single currency", () => {
+    const raw =
+      "Mid-level roles sit around NGN 300,000 a month (Glassdoor, 2026). " +
+      "Some listings claim NGN 4,000,000 a month (a recruiter ad). " +
+      "What are you targeting?";
+    const out = stripImplausibleFigures(raw);
+    expect(out).not.toContain("4,000,000");
+    expect(out).toContain("300,000");
+  });
+
+  it("leaves a sane range in one currency alone", () => {
+    const raw = "Expect NGN 250,000 to NGN 600,000 a month (CareerBuddy, 2026). What level are you at?";
+    expect(stripImplausibleFigures(raw)).toBe(raw);
+  });
+
+  it("handles k and m shorthand", () => {
+    const raw = "Around NGN 300k a month is typical. Some claim NGN 5m a month. What are you targeting?";
+    const out = stripImplausibleFigures(raw);
+    expect(out).not.toContain("5m");
+    expect(out).toContain("300k");
+  });
+
+  it("ignores text with a single figure", () => {
+    const raw = "Roughly NGN 298,578 a month (Glassdoor, 2024). Does that match what you've seen?";
+    expect(stripImplausibleFigures(raw)).toBe(raw);
+  });
+
+  it("keeps the first currency and drops the rest — it cannot convert between them", () => {
+    const raw = "It could be USD 200,000 a year. Or EUR 300,000 a year.";
+    const out = stripImplausibleFigures(raw);
+    expect(out).toContain("USD 200,000");
+    expect(out).not.toContain("EUR 300,000");
+  });
+
+  it("falls back to the method when nothing survives but a question", () => {
+    const raw = "Around NGN 300,000 a month. Some say USD 200,000 a year. What are you targeting?";
+    const out = stripImplausibleFigures(raw);
+    expect(out).not.toContain("USD 200,000");
+    expect(out).toContain("NGN 300,000");
   });
 });

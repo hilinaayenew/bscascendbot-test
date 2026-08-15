@@ -182,6 +182,34 @@ const CURRENCY_FIGURE = new RegExp(
 const FABRICATED_SOURCE =
   /\b(?:based on|according to|per)\b[^.!?]{0,50}\b(?:market data|salary data|pay data|salary surveys?|surveys?|research|reports?|figures|benchmarks?)\b/i;
 
+const MONEY = /(?:\b(?:NGN|KES|KSh|ZAR|GHS|UGX|TZS|RWF|USD|GBP|EUR)\b|[$£€₦])\s?([\d][\d,.]*)\s*(k|m|million)?/gi;
+
+function stripImplausibleFigures(text) {
+  const found = [];
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  sentences.forEach((sentence, i) => {
+    for (const m of sentence.matchAll(MONEY)) {
+      const currency = (m[0].match(/[A-Z]{3}|[$£€₦]/i) || [""])[0].toUpperCase();
+      let value = parseFloat(m[1].replace(/,/g, ""));
+      if (/^k$/i.test(m[2] || "")) value *= 1000;
+      if (/^(m|million)$/i.test(m[2] || "")) value *= 1000000;
+      if (Number.isFinite(value)) found.push({ currency, value, sentence: i });
+    }
+  });
+  if (found.length < 2) return text;
+  const primary = found[0].currency;
+  const same = found.filter((f) => f.currency === primary);
+  const smallest = Math.min(...same.map((f) => f.value));
+  const drop = new Set();
+  for (const f of found) {
+    if (f.currency !== primary) drop.add(f.sentence);
+    else if (f.value > smallest * 5) drop.add(f.sentence);
+  }
+  if (!drop.size) return text;
+  const kept = sentences.filter((s, i) => !drop.has(i) || s.trim().endsWith("?"));
+  return kept.join(" ").trim();
+}
+
 function flattenInlineList(text) {
   if (/\n/.test(text)) return text;
   const bullets = text.match(/\s-\s(?=[A-Z0-9])/g);
@@ -262,7 +290,8 @@ async function searchMarketRate(role, location, context = "") {
   const question = [
     `What does a ${role} earn in ${location}?`,
     context ? `Focus specifically on: ${context}.` : "",
-    "Report AT MOST THREE figures, the three most reliable and most recent you find.",
+    "Prefer salary surveys, aggregators and job ads with published ranges. AVOID a single employer's own recruitment or marketing pages — an advertised headline rate is a hiring hook, not a market rate.",
+    "Report AT MOST THREE figures, the three most reliable and most recent you find, all in the SAME currency and the SAME period wherever possible.",
     "Give each on its own line as: amount | period | source name | year. Nothing else — no commentary, no caveats, no extra rows.",
     "If you cannot find reliable data for this specific market, reply with the single line: NO RELIABLE DATA — and say in one clause what you did find, if anything.",
   ].filter(Boolean).join(" ");
@@ -407,6 +436,8 @@ async function wordalise(message, stage, history, facets, search = null) {
     "Name the source and its date whenever you give a number — 'Glassdoor, 2025' — so she can judge it herself.",
     "If the results are thin, or don't cover what she asked, say so as yourself — 'I couldn't find much on fintech specifically' — and then give her the approach instead. Never switch to a neutral, sourceless summary and pretend it answers her.",
     "Never mention searching, sources you could fetch, or offering to look again — she is talking to a coach, not a search box. Cite the source of a figure by name, but never narrate how you got it.",
+    "Be sceptical of an outlier. If one figure is several times the others, do not present it as an anchor — say plainly that it looks like a headline rate from one employer rather than what the market pays. A number she cannot actually get is worse than no number.",
+    "Never put two currencies side by side as if they were comparable. If the results mix them, use the one for HER market and mention the other only as a contrast, saying so.",
     "Copy the period EXACTLY as the results give it. If a source says per month, say per month. Never convert monthly to annual or the reverse, and never restate a figure in a period the source did not use.",
     "Cite each figure ONCE, inline, in brackets — 'NGN 298,578 a month (Glassdoor, 2024)'. Never add a separate 'Source:' sentence afterwards; you have already said it.",
     "If you gave her figures earlier in this conversation, do NOT repeat them. She has them. Answer only what she has just narrowed to, and refer back in one clause if you must — 'those were general roles, but for fintech…'. Restating the same numbers reads as if you weren't listening.",
@@ -670,7 +701,9 @@ async function main() {
 
     const { text: guarded, stripped } = search ? { text: reply, stripped: false } : stripFigures(reply);
     if (stripped) console.log(C.amber("  [figure guard fired — a figure or source claim was removed]"));
-    const { text, capped } = capSentences(flattenInlineList(guarded), search ? 5 : 3);
+    const plausible = stripImplausibleFigures(guarded);
+    if (plausible !== guarded) console.log(C.amber("  [implausible figure removed — outlier or mixed currency]"));
+    const { text, capped } = capSentences(flattenInlineList(plausible), search ? 5 : 3);
     if (capped) console.log(C.amber("  [sentence cap fired — the model wrote a rundown]"));
 
     const chosen = mostRelevant(STAGES[placed.stage].facets.map((f) => facets[f]).filter(Boolean), input);

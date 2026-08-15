@@ -1,6 +1,6 @@
 # A foreign employer insisting on local currency
 
-_Run 2026-08-15 17:59 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 18:08 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Negotiates the mechanism — review interval, pegging — rather than arguing about the currency itself.
 
@@ -12,66 +12,60 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I'm in Accra and a German company wants to hire me remotely
-  [stage B — User is being priced in a live negotiation with a prospective employer (remote offer discussion).]
+  [stage B — undefined]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [drew on G6, G7, G7a, S2 — 1 Otema, 3 drafted]
 
 Botema
-  That remote-from-Accra setup is exactly what I see a lot now. I’d push for
-  payment in a stable currency (EUR or USD) with a fixed rate mechanism
-  written in the contract, not in an email, and I’d want clarity on who
-  handles taxes and social contributions (employee vs contractor) because that
-  changes your net and benefits. What currency and work status did they
-  propose, and do you know whether you’d be on their payroll or billed as a
-  contractor?
+  That can be a solid setup, but remote work from Accra to a German employer
+  brings currency stability and tax questions to the fore. I would push to be
+  paid in euros or dollars, with a fixed rate or regular review, and have the
+  payroll and tax arrangements spelled out in the contract. What currency have
+  they offered, and how will taxes be handled for you in Ghana?
 
   you > they say they'll only pay in cedis
-  [stage B — User is negotiating currency; it's a live negotiation with a prospective employer.]
-  [drew on S2a, S3, S3a, S3b — 1 Otema, 3 drafted]
+  [stage B — New information: employer insists on paying in local currency; assess negotiation strategy]
 
-Botema
-  Paying in cedis is a real risk for you—FX volatility and tax handling can
-  eat into your take-home. I would push for either a salary in USD/EUR paid
-  into your account, or a formal FX clause that fixes your GHS amount to a
-  USD/EUR rate (with regular review) and clear tax/social contributions
-  arrangements. Have they said whether you’d be on their payroll or working as
-  a contractor, and who covers taxes in that setup?
+  Azure error: fetch failed
 
   you > the cedi has moved a lot this year and I'm worried
-  [stage B — The user expressed concern about cedi volatility affecting take-home pay, which introduces a concrete negotiation lever (currency of pay, FX clauses, payroll mechanics).]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G9, G5, S5, S5a — 1 Otema, 3 drafted]
+  [stage B — User expressed currency volatility concerns affecting compensation negotiations]
+  [drew on G9, G5, S2a, S3 — 1 Otema, 3 drafted]
 
 Botema
-  That volatility is real and it will bite you if you stay paid in cedi
-  without protection. What exact terms did they offer for currency and payroll
-  status, and how often would the rate be reviewed?
+  You’re not overreacting—cedi volatility can eat into your take-home when pay
+  comes from abroad. I would demand a stable currency (USD or EUR) with a
+  fixed or regularly reviewed exchange-rate mechanism in the contract; if they
+  won’t commit, push for an FX cushion and at least a portion paid in hard
+  currency. What currency have they offered and what protections have they
+  proposed so far?
 
   you > is there anything I can actually ask for here
-  [stage B — User asks for actionable asks to negotiate with a prospective employer]
-  [drew on G6, G3a, G9a, S2 — 1 Otema, 3 drafted]
+  [stage B — User is negotiating with a prospective employer about compensation and wants concrete asks]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G6, S3b, S5a, S5 — 1 Otema, 3 drafted]
 
 Botema
-  Yes, you can push for concrete protections against currency risk. I’d ask
-  for one of these on the table: a salary in USD or EUR, or a formal FX hedge
-  that fixes your GHS pay to a USD/EUR rate with quarterly reviews and a
-  floor/ceiling, plus a clear payroll/tax arrangement and a signing bonus or
-  regular cost-of-living adjustment to offset volatility (and, if possible, a
-  remote-work stipend and health/pension contributions). What did they propose
-  about payroll status, rate review frequency, and any upfront bonuses so far?
+  Yes. You can push for a hard-currency base (USD or EUR) or a hedged
+  mechanism that fixes or caps the exchange rate so your take‑home isn’t
+  erased by cedi moves. What have they offered so far on currency protection,
+  taxes, and how often they’ll review the package?
 
   you > how do I put that to them without sounding difficult
-  [stage B — User asks for how to phrase request without sounding difficult.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G6, G9, G7, S2 — 1 Otema, 3 drafted]
+  [stage B — User is negotiating with a prospective employer and asked for wording guidance to avoid sounding difficult.]
+  [drew on G9a, G6, G9, S2 — 1 Otema, 3 drafted]
 
 Botema
-  I’m excited about the role, and I want to move forward with protections
-  against FX volatility since paying in cedis erodes my take-home. Could we
-  either fix the salary in USD (or EUR) or include an FX clause that ties GHS
-  pay to a USD/EUR rate with quarterly reviews and a floor/ceiling, plus a
-  clear payroll/tax arrangement? Would that be doable for them?
+  You’re not being difficult—currency risk is real in cross-border remote
+  roles, and you’re simply asking for a sane protection so your pay isn’t
+  eroded. Try one of these lines: - “To protect my take‑home from cedi
+  volatility, could we set my base pay in USD or EUR with a fixed rate or a
+  quarterly FX review?” - “If a fixed rate isn’t possible, could we include an
+  FX hedge (a cap or rolling 3‑month rate) to limit swings?” - “Also, could we
+  confirm how taxes will be handled for a Ghana-based remote worker and ensure
+  the contract reflects the currency arrangement?” Which of these feels right
+  to you, or would you like me to tailor it to the exact offer wording you’ve
+  seen?
 
   you > quit
 
@@ -80,7 +74,9 @@ Botema
   covered_stages  B
   touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
   closed_areas    —
-  role/location   software developer (remote) / Accra, Ghana
+  role/location   remote software developer / Accra, Ghana
+  where she is    She is in Accra; role not stated; a German company wants to hire her remotely, and they say they will pay in cedis. The cedi has moved a lot this year and she is worried.
+  trying to do    She is trying to figure out what she can actually ask for here.
 
   Nothing was written to any database.
 ```
@@ -92,8 +88,8 @@ Botema
 - PASS — handles the 'sounding difficult' turn without leaving
 - PASS — every reply ends on a question
 - PASS — no two replies open the same way
-- **FAIL** — no reply stacks more than two jargon terms
-- **FAIL** — no reply mostly restates the one before it
+- PASS — no reply stacks more than two jargon terms
+- PASS — no reply mostly restates the one before it
 
 ---
 

@@ -1,6 +1,6 @@
 # A recruiter asking what she is currently on, before any offer exists
 
-_Run 2026-08-15 17:59 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 18:08 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage B. She is being pushed to anchor on a salary that would trap her — tests whether the coach moves the conversation onto what the ROLE is worth, gives her words for a payslip demand, and handles 'should I just say a higher number' without either moralising or transplanting a US pay-history ban that does not apply where she is.
 
@@ -12,57 +12,54 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > there's a role i really want and the recruiter has asked what im currently on before they put an offer together
-  [stage B — User is in a live negotiation with a recruiter asking about current pay, which is stage B (offer in discussion).]
+  [stage B — User is in a live offer-stage negotiation with a recruiter who asked for their current pay.]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [sentence cap fired — the model wrote a rundown]
   [drew on S3b, S3a, S2, S5 — 2 Otema, 2 drafted]
 
 Botema
-  Don't share your current salary. Say: I'd rather we base the offer on the
-  role's value—what range has been budgeted for this position? What is the
-  exact role level and city, so I can tailor a precise range for you?
+  I’d rather we anchor on the market value of this role rather than my current
+  pay. Could you share the budgeted range for this role (and whether the offer
+  will be in local currency or USD)? What range have you seen for similar
+  roles in your market?
 
   you > problem is im badly underpaid where i am now, i think its about half what this role should pay
-  [stage B — User states current pay is under market; this informs negotiation context with prospective employer.]
-  [drew on G7, S3b, G3, S3 — 1 Otema, 3 drafted]
-
-Botema
-  You’re right to feel frustrated—pay gaps for women in tech are real, and
-  being underpaid now can’t anchor your next offer. I’d base the discussion on
-  the role’s value in your city, not your current pay, and push for a clear
-  budgeted range for the role plus negotiables like a signing bonus or
-  learning budget if the base is low. Do you want me to draft a tight script
-  you can use with the recruiter that states you’re targeting market rate and
-  asks for the exact budgeted range for this role?
-
-  you > she's also asked me to send a payslip to confirm it
-  [stage B — The user has a live request from a recruiter to share a payslip; this affects negotiation stance and requires a strategy within stage B]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S3b, G3a, G7, S2 — 1 Otema, 3 drafted]
-
-Botema
-  I don’t share my payslip. I’d rather we base the offer on the role’s
-  value—what range has been budgeted for this position in [city] and what is
-  the level? Could you confirm the city and level for this role so I tailor my
-  range precisely?
-
-  you > if i give her a higher number will they find out
-  [stage B — User asked about consequences of giving a higher salary number to recruiter during Stage B negotiation.]
+  [stage B — User is negotiating with a prospective employer and has new information about being underpaid currently, which affects their market-value ask.]
+  [W · skipped — no location known yet]
 
   Azure error: fetch failed
 
-  you > i dont want to seem awkward and have them just move on to the next candidate
-  [stage B — The user is negotiating with a prospective employer about an offer; they are worried about sounding awkward and losing the candidate. This message fits Stage B.]
-  [no new information — stall 1/2]
-  [drew on S3b, G3, S2, S3a — 1 Otema, 3 drafted]
+  you > she's also asked me to send a payslip to confirm it
+  [stage B — You are in live offer negotiation with a recruiter; payslip request is new information affecting how to proceed.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on S3b, G3, G3a, S5 — 1 Otema, 3 drafted]
 
 Botema
-  You’re not imagining it—pay norms are real, but you can stay in the running
-  by anchoring on market value and asking for the budgeted range, not your
-  current pay. Use a tight line like: “I’m very excited about this role; to
-  avoid anchoring on my current pay, could you share the budgeted range for
-  this position in [city] and confirm the level? I won’t share a payslip.”
-  Would you like me to tailor that exactly to your city and level?
+  Want me to tailor this to your voice before you send?
+
+  you > if i give her a higher number will they find out
+  [stage B — The user is negotiating with a prospective employer about current pay and potential disclosure of payslips; this is stage B.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S3b, G6, S3a, S5 — 1 Otema, 3 drafted]
+
+Botema
+  Yes. If you give a higher number, they may try to verify it and it anchors
+  the offer to that inflated figure, which can backfire if they discover it
+  isn’t true. What range are you prepared to anchor on, and is this role based
+  in local currency or USD?
+
+  you > i dont want to seem awkward and have them just move on to the next candidate
+  [stage B — User expresses concern about appearing awkward and the risk of the recruiter moving on to another candidate; negotiation is in progress with a prospective employer.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on S3b, S3a, G3, S5 — 1 Otema, 3 drafted]
+
+Botema
+  You’re not wrong to feel awkward, but negotiation is expected here and a
+  clear market-based anchor usually wins more than it loses. What range are
+  you prepared to anchor on, and is the offer in local currency or USD?
 
   you > quit
 
@@ -71,9 +68,9 @@ Botema
   covered_stages  B
   touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
   closed_areas    —
-  role/location   software engineer / —
-  where she is    She is currently in a role where she is badly underpaid; she believes her pay is about half of what the role she wants should pay.
-  trying to do    She is trying to land a role she really wants. The recruiter has asked what she is currently on before they put together an offer and has asked for a payslip to confirm it. The barrier remains that her current pay is roughly half of what the target role should pay. What she has already tried: not stated. She asked whether giving a higher number would make them find out.
+  role/location   unspecified tech role / —
+  where she is    She is currently underpaid in her present role, and believes her current pay is about half of what the role she wants should pay.
+  trying to do    She is trying to secure an offer for the role she really wants. The recruiter has asked what she is currently on before they put together the offer. She notes that she is badly underpaid in her current role, about half of what this role should pay. She has been asked to send a payslip to confirm it. She is worried that if she provides a higher number, it will be discovered. She does not want to seem awkward and have them move on to the next candidate.
 
   Nothing was written to any database.
 ```

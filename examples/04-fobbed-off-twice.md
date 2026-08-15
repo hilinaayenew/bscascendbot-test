@@ -1,6 +1,6 @@
 # Told to wait for the review cycle, for the second year running
 
-_Run 2026-08-15 17:59 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 18:08 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C. Recognises a pattern rather than repeating last year's advice.
 
@@ -12,44 +12,50 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > my manager told me to wait for the review cycle
-  [stage C — They are already employed; the money conversation is with their current boss and will start during/after the review cycle.]
+  [stage C — They are employed and the pay discussion would be with their current manager; awaiting the upcoming review cycle.]
   → enterDiscussionArea(9 · Salary & Negotiation)
+  [sentence cap fired — the model wrote a rundown]
   [drew on G4c, S4c, G1, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That’s real and common here. I would push for a specific date and the exact
-  uplift tied to concrete milestones, plus a brief written confirmation of the
-  agreement so it isn’t just a chat. What are the cycle dates and the
-  milestones you’re expected to hit by then?
+  That’s real and common. Don’t let it drift—get a concrete date and a
+  measurable outcome, and have it in writing. What is the exact date of your
+  review cycle, and which milestones did you agree you’d hit by then?
 
   you > she said exactly the same thing last year
-  [stage C — User is in ongoing pay discussion with manager; new data that last year's same response occurred; helps determine which area stage applies.]
+  [stage C — User is already employed; the conversation is about a manager delaying raise discussion; confirms it's stage C.]
   [drew on G4c, G9a, G1a, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That pattern is real and it’s exactly the kind of stall tactic many of us
-  face. I’d demand a fixed review date this time and a concrete uplift tied to
-  measurable milestones, with a written confirmation of the plan; given last
-  year’s play, consider looping in a trusted mentor or HR to hold them to it.
-  What dates and milestones are they offering this time, and who will confirm
-  the plan?
+  That pattern is real; last year’s promise is a red flag and you shouldn’t
+  let it slide again. Use a written commitment this time, for example: “To
+  avoid repeating this cycle, let's lock in a date and milestones in writing:
+  by [date], I will have completed [milestone], and we will reassess my
+  compensation.” What date and milestone would you lock in now?
 
   you > I did everything on the list she gave me
-  [stage C — User states they've completed the list their manager gave; they're waiting on review cycle and need guidance on next steps.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage C — User is in stage C and reports completing the manager's list; seeks guidance on next steps for a compensation review.]
   [drew on G4c, G9a, G4a, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That pattern is real and frustrating. If last year repeats, bring in a
-  mentor or HR to hold them to it. What date would you propose for the review,
-  and can you list the concrete results you delivered so you can anchor the
-  request in those milestones?
+  That pattern is real, and you’ve done the hard part. Now push for written
+  confirmation of the review date and the exact compensation outcome tied to
+  clear milestones. A tight note you can send: “I’ve completed all items on
+  the agreed list. Please confirm the review date and the compensation outcome
+  in writing, and outline the milestones we’ll use to assess progress.” What
+  is the review date you’re aiming for, and which milestones should be tied to
+  the outcome?
 
   you > I don't want to be the person who complains
-  [stage C — The user is continuing a pay discussion with their manager and expresses concern about being seen as complaining; this fits stage C and indicates new emotional framing.]
+  [stage C — User is continuing within the same negotiation context and expresses concern about being seen as complaining; this fits Stage C (already work for employer; money conversation to start by employee) and adds emotional framing.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G4c, G9a, G4b, S4 — 1 Otema, 3 drafted]
 
-  Azure error: fetch failed
+Botema
+  That worry is real, but asking for written clarity isn’t complaining—it’s
+  professional and necessary for fair growth. What date do you want the review
+  to occur by, and which milestones should anchor the outcome?
 
   you > am I being naive staying here
   [azure error: Azure 400: {"error":{"message":"The response was filtered due to the prompt triggering Azure OpenAI's content management]
@@ -65,9 +71,9 @@ Botema
   covered_stages  C
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
   closed_areas    —
-  role/location   current role / —
-  where she is    — My manager told me to wait for the review cycle.
-  trying to do    — I don't want to be the person who complains.
+  role/location   mid-level software engineer / —
+  where she is    She is waiting for the review cycle as instructed by her manager, and she has completed everything on the list the manager gave her.
+  trying to do    She wants the review cycle to proceed with a clear outcome, but she doesn't want to be seen as the person who complains. She has already done everything on the list. She is pushing for written confirmation of the review date and the compensation outcome, tied to clear milestones.
 
   Nothing was written to any database.
 ```
@@ -76,7 +82,7 @@ Botema
 
 - PASS — classified stage C
 - PASS — names the repetition as information about them
-- **FAIL** — does not treat raising it as complaining
+- PASS — does not treat raising it as complaining
 - PASS — every reply ends on a question
 - **FAIL** — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms

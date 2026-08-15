@@ -666,7 +666,7 @@ function mostRelevant(pool, message, limit = 4, used = []) {
   return picked;
 }
 
-async function wordalise(message, stage, history, facets, search = null, used = []) {
+async function wordalise(message, stage, history, facets, search = null, used = [], previousReplies = []) {
   const all = STAGES[stage].facets.map((id) => facets[id]).filter(Boolean);
   const pool = mostRelevant(all, conversationQuery(message, history), 4, used);
   const examples = pool.map((e) => `Q: ${e.question}\nA: ${e.answer}`).join("\n\n");
@@ -736,7 +736,10 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     "The examples above are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.",
     "When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.",
     "You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.",
-    "Do not open two replies in a row the same way. 'I would always recommend' is yours, but used every turn it stops sounding like you and starts sounding like a template.",
+    previousReplies.length
+      ? `Your last reply began: "${previousReplies[previousReplies.length - 1].split(/\s+/).slice(0, 8).join(" ")}…". Do NOT begin this one the same way — different first words, different shape.`
+      : null,
+    "'I would always recommend' is yours, but used every turn it stops sounding like you and starts sounding like a template.",
     "Answer only the one thing the user actually asked. You have been given several examples so that you can pick the right one — not so that you can cover them all.",
     search
       ? [
@@ -1006,7 +1009,7 @@ async function main() {
 
     let reply;
     try {
-      reply = await wordalise(input, placed.stage, history, facets, search, state.usedExamples);
+      reply = await wordalise(input, placed.stage, history, facets, search, state.usedExamples, history.filter((m) => m.role === "assistant").map((m) => m.content));
     } catch (err) {
       console.log(C.amber(`\n  Azure error: ${err.message}\n`));
       continue;

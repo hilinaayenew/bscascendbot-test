@@ -85,8 +85,9 @@ function loadDrafted() {
 
 function loadSystemPrompt() {
   const src = readFileSync(join(FN, "botema-examples.ts"), "utf8");
-  const m = src.match(/export const BOTEMA_SYSTEM_PROMPT = `([^`]*)`/);
-  return m ? m[1] : "You are Botema, a BSC Career Coach.";
+  const values = src.match(/export const BOTEMA_VALUES = `([^`]*)`/);
+  const voice = src.match(/export const BOTEMA_SYSTEM_PROMPT = `([^`]*)`/);
+  return [values?.[1], voice?.[1] || "You are Botema, a BSC Career Coach."].filter(Boolean).join("\n\n");
 }
 
 function loadKnowledge() {
@@ -98,6 +99,18 @@ function loadKnowledge() {
 function loadStandWithHer() {
   const src = readFileSync(join(FN, "converser.ts"), "utf8");
   const m = src.match(/export const STAND_WITH_HER =\s*([\s\S]*?);\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
+}
+
+function loadNeverAct() {
+  const src = readFileSync(join(FN, "converser.ts"), "utf8");
+  const m = src.match(/export const NEVER_OFFER_TO_ACT =\s*([\s\S]*?);\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
+}
+
+function loadPlainLanguage() {
+  const src = readFileSync(join(FN, "converser.ts"), "utf8");
+  const m = src.match(/export const PLAIN_LANGUAGE =\s*([\s\S]*?);\n/);
   return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
 }
 
@@ -210,6 +223,29 @@ function stripImplausibleFigures(text) {
   return kept.join(" ").trim();
 }
 
+const ANNUAL_FLOOR = { NGN: 1200000, KES: 300000, GHS: 30000, ZAR: 100000, UGX: 5000000, TZS: 3000000, RWF: 1500000, ZMW: 30000, ETB: 100000, XOF: 1000000, XAF: 1000000, USD: 5000, EUR: 5000, GBP: 5000, "$": 5000, "£": 5000, "€": 5000, "₦": 1200000 };
+const ANNUAL_CLAIM = /(?:\b(NGN|KES|KSh|ZAR|GHS|UGX|TZS|RWF|XOF|XAF|ZMW|ETB|USD|GBP|EUR)\b|([$£€₦]))\s?([\d][\d,.]*)\s*(k|m|million)?[^.!?]{0,24}?\b(?:(?:per|a|\/)\s*(?:year|annum|yr)|annually)\b/gi;
+
+// A monthly figure reported as annual — NGN 300k a year is about EUR 190.
+function stripImplausiblePeriods(text) {
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  const drop = new Set();
+  sentences.forEach((sentence, i) => {
+    for (const m of sentence.matchAll(ANNUAL_CLAIM)) {
+      const cur = (m[1] || m[2] || "").toUpperCase().replace("KSH", "KES");
+      let v = parseFloat((m[3] || "").replace(/,/g, ""));
+      const sc = (m[4] || "").toLowerCase();
+      if (sc === "k") v *= 1000;
+      if (sc === "m" || sc === "million") v *= 1000000;
+      const floor = ANNUAL_FLOOR[cur];
+      if (floor && Number.isFinite(v) && v < floor) drop.add(i);
+    }
+  });
+  if (!drop.size) return text;
+  const kept = sentences.filter((s, i) => !drop.has(i) || s.trim().endsWith("?"));
+  return kept.join(" ").trim();
+}
+
 function flattenInlineList(text) {
   if (/\n/.test(text)) return text;
   const bullets = text.match(/\s-\s(?=[A-Z0-9])/g);
@@ -221,11 +257,31 @@ function flattenInlineList(text) {
 // single long paragraph — which is what gpt-5-nano actually returns most of the
 // time — sails straight through it. Keeps the opening answer and the closing
 // question, drops the rundown in between.
+// Mirrors capSentences in converser.ts, including the two fixes: rescue the
+// closing question wherever it sits, and never split inside a quoted script.
+function hasOpenQuote(s) {
+  const straight = (s.match(/"/g) || []).length;
+  return straight % 2 === 1 || (s.match(/[“„]/g) || []).length > (s.match(/[”]/g) || []).length;
+}
+
+function splitSentences(text) {
+  const rough = text.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+  const out = [];
+  for (const part of rough) {
+    const prev = out[out.length - 1];
+    if (prev && hasOpenQuote(prev)) out[out.length - 1] = prev + " " + part;
+    else out.push(part);
+  }
+  return out;
+}
+
 function capSentences(text, keep = 3) {
-  const sentences = text.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+  const sentences = splitSentences(text);
   if (sentences.length <= keep) return { text, capped: false };
-  const question = sentences[sentences.length - 1].endsWith("?") ? sentences.pop() : null;
-  const body = sentences.slice(0, keep - (question ? 1 : 0));
+  let qi = -1;
+  for (let i = sentences.length - 1; i >= 0; i--) if (sentences[i].endsWith("?")) { qi = i; break; }
+  const question = qi >= 0 ? sentences[qi] : null;
+  const body = sentences.slice(0, keep - (question ? 1 : 0)).filter((_, i) => i !== qi);
   return { text: [...body, question].filter(Boolean).join(" "), capped: true };
 }
 
@@ -267,6 +323,26 @@ async function callAzure(messages, { tools, maxTokens = 2000 } = {}) {
     return callAzure(messages, { maxTokens: maxTokens * 2 });
   }
   return choice?.message?.content || null;
+}
+
+// Words that describe a location without being one. The model reaches for
+// these when it has no city, and they must never satisfy the check.
+const NON_PLACES = [
+  "unspecified", "unknown", "none", "remote", "global", "local", "market",
+  "based", "abroad", "international", "anywhere", "various", "your", "their",
+];
+
+// True only when the place actually appears in what she typed. Matches on any
+// word of the candidate that is a real place-word — so "Lagos, Nigeria"
+// counts if she said either — while "unspecified", "remote" and "her market"
+// never do, because she never said them.
+function mentionedByUser(candidate, saidByUser) {
+  const words = String(candidate)
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 3 && !NON_PLACES.includes(w));
+  return words.length > 0 && words.some((w) => saidByUser.includes(w));
 }
 
 // ── Web search — call one of two ────────────────────────────────────────────
@@ -348,7 +424,7 @@ const CLASSIFY_TOOL = [{
         },
         needsMarketData: {
           type: "boolean",
-          description: "True only if answering well requires knowing what a role actually pays in a specific place — a market rate or a freelance rate. False for everything else, including how to negotiate, what to say, or how to feel about asking.",
+          description: "True ONLY if she is asking what a role actually pays, AND she has already named a city or country. False for everything else: how to negotiate, what to say, whether an offer is fair in principle, and anything about how she feels — self-doubt, deserving more, fear of asking. If no place has been named, this is false.",
         },
         role: { type: "string", description: "The role being priced, if any. e.g. mid-level backend developer." },
         refinement: { type: "string", description: "Any narrowing this message adds to a pay question — an industry, a company type, remote vs local. Use none if there is none." },
@@ -389,7 +465,26 @@ async function classify(message, history, covered) {
 // that matters and the model answers from the average instead of the example.
 // The deployed loadFewShotExamples() already takes 3 — this does the same, but
 // chosen by relevance rather than at random.
-function mostRelevant(pool, message, limit = 4) {
+// Selection reads the whole conversation, not just the latest message.
+//
+// Observed: turn 1 was "I handed in my notice and they've offered me 30% more
+// to stay"; turn 2 was "I'd asked for a raise twice before and got nothing".
+// Matching on turn 2 alone pulled S4 and G4 — how to ASK for a raise — when
+// she had already been given one and the live question was whether to take it.
+// The situation was established a turn earlier and the retrieval couldn't see
+// it, so the coach answered the words rather than the conversation.
+//
+// The latest message still dominates; earlier ones only tip the balance.
+function conversationQuery(message, history) {
+  const earlier = history
+    .filter((m) => m.role === "user")
+    .slice(-4)
+    .map((m) => m.content)
+    .join(" ");
+  return `${message} ${message} ${earlier}`;
+}
+
+function mostRelevant(pool, message, limit = 4, used = []) {
   const stop = new Set(["what", "when", "should", "would", "there", "their", "about", "this", "that", "with", "from", "have", "they", "them", "your", "just", "been", "much", "more", "than"]);
   const words = new Set(
     message.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length > 3 && !stop.has(w)),
@@ -402,7 +497,9 @@ function mostRelevant(pool, message, limit = 4) {
     for (const w of words) if (hay.includes(w)) n += 1;
     return n;
   };
-  const scored = pool.map((e) => ({ e, score: score(e) })).sort((a, b) => b.score - a.score);
+  const scored = pool
+    .map((e) => ({ e, score: score(e) - (used.includes(e.id) ? 1.5 : 0) }))
+    .sort((a, b) => b.score - a.score);
   const picked = scored.slice(0, limit).map((s) => s.e);
 
   // Always carry at least one of Otema's real answers, even when the drafted
@@ -417,9 +514,9 @@ function mostRelevant(pool, message, limit = 4) {
   return picked;
 }
 
-async function wordalise(message, stage, history, facets, search = null) {
+async function wordalise(message, stage, history, facets, search = null, used = []) {
   const all = STAGES[stage].facets.map((id) => facets[id]).filter(Boolean);
-  const pool = mostRelevant(all, message);
+  const pool = mostRelevant(all, conversationQuery(message, history), 4, used);
   const examples = pool.map((e) => `Q: ${e.question}\nA: ${e.answer}`).join("\n\n");
 
   // Call two of two. An ordinary chat completion — no tools, no searching.
@@ -463,6 +560,22 @@ async function wordalise(message, stage, history, facets, search = null) {
     "",
     "NOW THE RULES FOR YOUR REPLY, WHICH OVERRIDE EVERYTHING ABOVE:",
     loadStandWithHer(),
+    loadNeverAct(),
+    loadPlainLanguage(),
+    // Observed across five turns on freelance rates: four replies opened "I
+    // would always recommend" and the billable-days method was re-derived
+    // three times. She has already been told; saying it again is not emphasis,
+    // it is not listening.
+    // Observed: turn 1 was "I handed in my notice and they've offered me 30%
+    // more to stay"; turn 2 mentioned having asked for a raise twice before.
+    // The reply explained how to go in and ask for a raise — advice for
+    // someone still seeking one, given to someone who had already been
+    // offered it. The examples were about asking, so it advised asking.
+    "ANSWER THE CONVERSATION, NOT THE TOPIC. Before you write, ask yourself what has actually already happened to her — what she has been offered, refused, told or decided in this conversation so far. Her latest message is usually a detail added to that situation, not a new question.",
+    "The examples above are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.",
+    "When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.",
+    "You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.",
+    "Do not open two replies in a row the same way. 'I would always recommend' is yours, but used every turn it stops sounding like you and starts sounding like a template.",
     "Answer only the one thing the user actually asked. You have been given several examples so that you can pick the right one — not so that you can cover them all.",
     search
       ? [
@@ -493,6 +606,7 @@ const state = {
   role: null,
   location: null,
   lastRefinement: null,
+  usedExamples: [],
 };
 
 // ── Presentation ────────────────────────────────────────────────────────────
@@ -617,8 +731,21 @@ async function main() {
     // Carry forward what we already know about them — these are facts about
     // the person, not about one message, and the location column in the
     // migration exists for exactly this.
-    if (placed.role && !/^(none|unknown|n\/a)$/i.test(placed.role)) state.role = placed.role;
-    if (placed.location && !/^(none|unknown|n\/a)$/i.test(placed.location)) state.location = placed.location;
+    //
+    // A location is only real if SHE SAID IT. Observed: a nurse moving into
+    // health tech never mentioned a city, and the classifier returned
+    // "unspecified" — which passed a blocklist of none/unknown/n\/a and
+    // triggered three web searches for a place called "unspecified", ~90
+    // seconds of waiting for nothing. Blocklisting the words the model happens
+    // to invent is whack-a-mole; requiring the place to appear in her own
+    // words is not. A city is a proper noun. If she never typed it, we do not
+    // have it.
+    const saidByUser = [...history.filter((m) => m.role === "user").map((m) => m.content), input]
+      .join(" ")
+      .toLowerCase();
+
+    if (placed.role && !/^(none|unknown|n\/a|unspecified)$/i.test(placed.role)) state.role = placed.role;
+    if (placed.location && mentionedByUser(placed.location, saidByUser)) state.location = placed.location;
 
     // What this turn narrows to — "is that for fintech" should search again
     // with fintech in the query, not reuse the previous general answer.
@@ -692,7 +819,7 @@ async function main() {
 
     let reply;
     try {
-      reply = await wordalise(input, placed.stage, history, facets, search);
+      reply = await wordalise(input, placed.stage, history, facets, search, state.usedExamples);
     } catch (err) {
       console.log(C.amber(`\n  Azure error: ${err.message}\n`));
       continue;
@@ -701,12 +828,13 @@ async function main() {
 
     const { text: guarded, stripped } = search ? { text: reply, stripped: false } : stripFigures(reply);
     if (stripped) console.log(C.amber("  [figure guard fired — a figure or source claim was removed]"));
-    const plausible = stripImplausibleFigures(guarded);
-    if (plausible !== guarded) console.log(C.amber("  [implausible figure removed — outlier or mixed currency]"));
+    const plausible = stripImplausiblePeriods(stripImplausibleFigures(guarded));
+    if (plausible !== guarded) console.log(C.amber("  [implausible figure removed — outlier, mixed currency, or wrong period]"));
     const { text, capped } = capSentences(flattenInlineList(plausible), search ? 5 : 3);
     if (capped) console.log(C.amber("  [sentence cap fired — the model wrote a rundown]"));
 
-    const chosen = mostRelevant(STAGES[placed.stage].facets.map((f) => facets[f]).filter(Boolean), input);
+    const chosen = mostRelevant(STAGES[placed.stage].facets.map((f) => facets[f]).filter(Boolean), conversationQuery(input, history), 4, state.usedExamples);
+    for (const e of chosen) if (!state.usedExamples.includes(e.id)) state.usedExamples.push(e.id);
     const real = chosen.filter((e) => e.source === "OTEMA").length;
     console.log(C.dim(`  [drew on ${chosen.map((e) => e.id).join(", ")} — ${real} Otema, ${chosen.length - real} drafted]`));
     console.log(`\n${C.wine("Botema")}`);

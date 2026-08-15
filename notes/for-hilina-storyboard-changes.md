@@ -113,6 +113,116 @@ a day's work otherwise. Everything here is on top of that.
 
 ---
 
+## TWO KINDS OF CHANGE — read this before reusing any of it
+
+Everything below divides into two piles, and they have different lifespans. One is about **what
+this bot knows and how Otema sounds** — it dies if you change persona or subject. The other is
+about **how any LLM-grounded coach gets an answer out** — it transfers to every area you build
+next, and to other bots entirely.
+
+Worth separating because the second pile is where the reusable engineering is, and because it is
+much larger than it looks from the log below.
+
+---
+
+### A · Specific to this bot — content, voice, subject
+
+These are BSC's and Otema's. They do not transfer.
+
+| What | Where | Why it is specific |
+|---|---|---|
+| **`BOTEMA_VALUES`** | `botema-examples.ts` | Otema's identity, BSC's stated values, the Ghanaian and African context. Meaningless for another persona |
+| **Salary knowledge rewritten for African markets** | `bsc-knowledge.ts` | Removed UK disclosure law and `£` examples; added local-vs-remote pricing and currency instability. Wrong for a UK bot |
+| **The ten discussion areas** | storyboard | Derived from BSC's own 57 training questions |
+| **Salary's three stages (A/B/C)** | `coach-local.mjs` | Situational stages that fit *salary*. Confidence almost certainly needs different ones — that is why it is scaffolded as a test |
+| **26 drafted answers + the review gate** | `botema-generated-examples.ts` | Otema's voice, awaiting Otema's approval |
+| **Chataki parked** | `index.ts`, widget | A product decision about this product |
+
+**One borderline case worth arguing about.** `STAND_WITH_HER` — validate a woman's experience of
+discrimination with a documented fact *before* advising — reads as BSC-specific, and its content is.
+But the underlying move is general: **when a user reports something the evidence says is common,
+say so before you coach them through it.** Any bot serving people who are routinely disbelieved
+needs that, with different evidence. Treat the constant as specific and the pattern as portable.
+
+---
+
+### B · General — how to get a bot to answer well
+
+These came out of this bot but are not about it. Reuse them.
+
+**Making the answer trustworthy.** Every one exists because the model asserted something it could
+not know:
+
+- `stripUnsourcedFigures` — no figure, and no claimed source, without grounding
+- `stripImplausibleFigures` — reject an outlier or a second currency; there is no conversion rate
+- `stripImplausiblePeriods` — a monthly figure reported as annual is a wrong answer, not a typo
+- Grounding must be **returned**, not merely **attempted** — a search with zero citations is not
+  grounding, and treating it as such reopened the exact hole the guard was built to close
+
+**Making the answer readable.** All three were instructions first, and all three failed:
+
+- `capParagraphs` → `capSentences` — the second exists because the first only saw blank lines
+- `flattenInlineList` — told not to write a list, the model wrote one inline with dashes
+- `PLAIN_LANGUAGE` + a jargon-density check — monitored rather than rewritten
+
+**Making it a conversation rather than a lookup.** The most transferable group, and the one nobody
+would think to build up front:
+
+- **Retrieve against the whole conversation, not the latest message.** "I asked twice and got
+  nothing" pulled *how to ask for a raise* for someone who had already been offered one
+- **The examples are the nearest material, not necessarily the right material.** If her situation
+  has moved past them, answer her and let the examples inform only the voice
+- **Rotate what you inject.** The same top-scoring example every turn makes the bot re-derive the
+  same advice in fresh words
+- **A new fact must change the answer**, not decorate it
+- **Do not repeat yourself** — checked on openers *and* on content-word overlap
+
+**Knowing when to stop, or leave.**
+
+- Leaving detection in three layers: the classifier, an explicit phrase check that runs first, and
+  a stall counter — because one layer never holds on a small model
+- Stall keyed on *the user adding nothing*, never on the topic repeating: several productive turns
+  on one subject is the normal case
+- Who closed the conversation decides how it closes. If she said "something else", follow her —
+  summarising what she covered reads as a chair closing an agenda item
+
+**Search discipline** — most of it is about restraint:
+
+- Search only where the fact genuinely varies by time and place. Three facets of fifteen
+- **Cap the tool calls.** Measured: 10 searches / 69s uncapped versus 1 search / 29s capped, same
+  citations. An *instruction* to search once was worse than the parameter
+- Never search on a parameter the user did not give. The classifier invented `location:
+  "unspecified"` and searched three times for it — the fix is requiring the place to appear in
+  **her own words**, not a longer blocklist of invented ones
+- Say something while it runs. Thirty seconds of silence reads as a hang
+- Prefer surveys over a single employer's recruitment marketing
+
+**Honesty about capability.** `NEVER_OFFER_TO_ACT` — the coach cannot call, email, read a document
+or follow up. Any chat-only assistant needs this, and the reason is not pedantry: a bot that appears
+to promise contact and never makes it is worse than one that never offered.
+
+---
+
+### The one lesson underneath most of section B
+
+**When an instruction fails twice, write the check instead of rewording it a third time.**
+
+| What kept failing | The check that fixed it |
+|---|---|
+| Hedging across tracks | `extractEnumeratedOptions()` |
+| "Keep it short" | `capParagraphs()`, then `capSentences()` |
+| "Never write a list" | `flattenInlineList()` |
+| "Be sceptical of outliers" | `stripImplausibleFigures()` |
+| "Never convert the pay period" | `stripImplausiblePeriods()` |
+| "Only use a location she gave" | `mentionedByUser()` |
+
+Six times. Rewording is cheap and feels like progress; it has not once been the thing that worked.
+The corollary is that **a prompt rule you cannot test is a prompt rule you should not rely on** —
+which is why every one of these has unit tests, and why the scenario checks assert claims rather
+than being read by eye.
+
+---
+
 ## 2026-08-15 — A real citation for a number nobody gets
 
 David spotted this reading a transcript. Asked about remote work for a European company, the coach

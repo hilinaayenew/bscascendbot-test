@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods } from "./converser.ts";
 
 describe("pickRandom", () => {
   it("returns exactly n items when the pool is larger than n", () => {
@@ -407,5 +407,92 @@ describe("stripImplausibleFigures", () => {
     const out = stripImplausibleFigures(raw);
     expect(out).not.toContain("USD 200,000");
     expect(out).toContain("NGN 300,000");
+  });
+});
+
+// ── Cap must not strand a half-sentence ─────────────────────────────────────
+// Observed: answers cut mid-clause ("...align on pay now and revisit in")
+// because the closing question wasn't the final sentence, so nothing was
+// rescued and everything after the cap was dropped.
+
+describe("capSentences — closing question and quotes", () => {
+  it("rescues a question that is not the last sentence", () => {
+    const raw =
+      "One point here. Two points here. Three points here. What would you like to do? " +
+      "A stray extra sentence the model tacked on afterwards.";
+    const out = capSentences(raw);
+    expect(out).toContain("What would you like to do?");
+    expect(out.trim().endsWith("?")).toBe(true);
+  });
+
+  it("never ends mid-clause", () => {
+    const raw =
+      "First sentence of advice. Second sentence of advice. Third sentence of advice. " +
+      "Fourth sentence of advice. When would you want to have that conversation? Trailing note.";
+    const out = capSentences(raw);
+    expect(out.trim()).toMatch(/[.!?]$/);
+  });
+
+  it("does not split inside a quoted script", () => {
+    const raw =
+      "Frame it around the market. Say: \"Based on my research, the market rate is X. " +
+      "I'd like us to align on that.\" Then stop talking and let them answer. " +
+      "Another sentence. And another one. When is your review?";
+    const out = capSentences(raw);
+    expect(out).not.toMatch(/market rate is X\.$/);
+    expect(out).toContain("When is your review?");
+  });
+
+  it("still leaves a short answer untouched", () => {
+    const raw = "Walk in with a number already decided. Do you have a range in mind?";
+    expect(capSentences(raw)).toBe(raw);
+  });
+});
+
+// ── Implausible pay periods ─────────────────────────────────────────────────
+// The monthly Lagos figure reported as annual: NGN 300k a year is about EUR
+// 190. Instructed against explicitly, and it happened twice (ISSUE-023).
+
+describe("stripImplausiblePeriods", () => {
+  it("rejects the observed Lagos figures reported as annual", () => {
+    const raw =
+      "I could only find a couple of Lagos figures: mid-level backend developer about NGN 299,513 per year (Glassdoor, 2026). " +
+      "A closely related role is about NGN 316,667 per year (Glassdoor, 2026). " +
+      "What's your experience level?";
+    const out = stripImplausiblePeriods(raw);
+    expect(out).not.toContain("299,513");
+    expect(out).not.toContain("316,667");
+    // Both figures were the whole answer, so what is left is the honest one.
+    expect(out).toBe(NO_RELIABLE_PAY_DATA);
+  });
+
+  it("accepts a genuine annual figure", () => {
+    const raw = "Mid-level backend in Lagos runs about NGN 3,600,000 per year (Glassdoor, 2026). What level are you?";
+    expect(stripImplausiblePeriods(raw)).toBe(raw);
+  });
+
+  it("leaves monthly figures alone — they are not the failure mode", () => {
+    const raw = "Around NGN 300,000 per month (Glassdoor, 2026). Does that match what you've seen?";
+    expect(stripImplausiblePeriods(raw)).toBe(raw);
+  });
+
+  it("handles 'a year' and 'annually' as well as 'per year'", () => {
+    expect(stripImplausiblePeriods("About NGN 250,000 a year. What next?")).not.toContain("250,000");
+    expect(stripImplausiblePeriods("About KES 120,000 annually. What next?")).not.toContain("120,000");
+  });
+
+  it("handles k and m shorthand", () => {
+    expect(stripImplausiblePeriods("Roughly NGN 300k per year. And you?")).not.toContain("300k");
+    expect(stripImplausiblePeriods("Roughly NGN 4m per year. And you?")).toContain("4m");
+  });
+
+  it("falls back to the method when nothing credible survives", () => {
+    const raw = "It's about NGN 299,513 per year.";
+    expect(stripImplausiblePeriods(raw)).toBe(NO_RELIABLE_PAY_DATA);
+  });
+
+  it("ignores currencies it has no floor for", () => {
+    const raw = "About XYZ 100 per year. What next?";
+    expect(stripImplausiblePeriods(raw)).toBe(raw);
   });
 });

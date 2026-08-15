@@ -172,6 +172,56 @@ export function stripImplausibleFigures(text: string): string {
 }
 
 /**
+ * Rejects a pay figure whose stated period cannot be right.
+ *
+ * Observed twice: "NGN 299,513 per year" and "NGN 316,667 per year" for Lagos
+ * backend roles. Those are the *monthly* Glassdoor figures — as annual salaries
+ * they come to roughly €190 a year. The summarise call was told in plain terms
+ * to copy the period exactly and never convert; it converted anyway. Fourth
+ * time an instruction has lost, so it moves into code (ISSUE-023).
+ *
+ * The test is deliberately crude: a floor below which an annual professional
+ * salary simply isn't credible in that currency. Set low on purpose — the aim
+ * is to catch a figure off by a factor of twelve, not to adjudicate whether a
+ * salary is good. A real annual figure will clear these easily.
+ *
+ * Detection only. It never rewrites the period to what it guesses was meant,
+ * because that would be asserting a number nobody verified.
+ */
+const ANNUAL_FLOOR: Record<string, number> = {
+  NGN: 1_200_000, KES: 300_000, GHS: 30_000, ZAR: 100_000, UGX: 5_000_000,
+  TZS: 3_000_000, RWF: 1_500_000, ZMW: 30_000, ETB: 100_000, XOF: 1_000_000,
+  XAF: 1_000_000, USD: 5_000, EUR: 5_000, GBP: 5_000,
+  "$": 5_000, "£": 5_000, "€": 5_000, "₦": 1_200_000,
+};
+
+const ANNUAL_CLAIM =
+  /(?:\b(NGN|KES|KSh|ZAR|GHS|UGX|TZS|RWF|XOF|XAF|ZMW|ETB|USD|GBP|EUR)\b|([$£€₦]))\s?([\d][\d,.]*)\s*(k|m|million)?[^.!?]{0,24}?\b(?:(?:per|a|\/)\s*(?:year|annum|yr)|annually)\b/gi;
+
+export function stripImplausiblePeriods(text: string): string {
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  const drop = new Set<number>();
+
+  sentences.forEach((sentence, i) => {
+    for (const m of sentence.matchAll(ANNUAL_CLAIM)) {
+      const currency = (m[1] || m[2] || "").toUpperCase().replace("KSH", "KES");
+      let value = parseFloat((m[3] || "").replace(/,/g, ""));
+      const scale = (m[4] || "").toLowerCase();
+      if (scale === "k") value *= 1_000;
+      if (scale === "m" || scale === "million") value *= 1_000_000;
+
+      const floor = ANNUAL_FLOOR[currency];
+      if (floor && Number.isFinite(value) && value < floor) drop.add(i);
+    }
+  });
+  if (!drop.size) return text;
+
+  const kept = sentences.filter((s, i) => !drop.has(i) || s.trim().endsWith("?"));
+  const substantive = kept.filter((s) => !s.trim().endsWith("?"));
+  return substantive.length ? kept.join(" ").trim() : NO_RELIABLE_PAY_DATA;
+}
+
+/**
  * Sentence-level cap, for the rundown that capParagraphs() cannot see.
  *
  * capParagraphs splits on blank lines, so a single unbroken paragraph — which
@@ -190,16 +240,50 @@ export function capSentences(text: string, keep = 4): string {
   if (/\n\s*\n/.test(text)) return text;
   if (LIST_LIKE_PARAGRAPH.test(text)) return text;
 
-  const sentences = text.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+  const sentences = splitSentences(text);
   if (sentences.length <= keep) return text;
 
-  // The closing question is the one part that must survive — every answer is
-  // supposed to end on one, and dropping it strands the conversation.
-  const closing = sentences[sentences.length - 1].endsWith("?")
-    ? sentences[sentences.length - 1]
-    : null;
-  const body = sentences.slice(0, keep - (closing ? 1 : 0));
+  // The closing question must survive — every answer is supposed to end on one,
+  // and dropping it strands the conversation.
+  //
+  // It is not always the last sentence. The model sometimes puts a quoted
+  // script or a stray list item after it, and an earlier version only rescued
+  // the question when it came last — so those answers were cut mid-sentence
+  // ("...I'd like us to align on pay now and revisit in"). Search backwards
+  // instead, and take the last question wherever it sits.
+  const closingIndex = findLastIndex(sentences, (s) => s.endsWith("?"));
+  const closing = closingIndex >= 0 ? sentences[closingIndex] : null;
+
+  const body = sentences
+    .slice(0, keep - (closing ? 1 : 0))
+    .filter((_, i) => i !== closingIndex);
   return [...body, closing].filter(Boolean).join(" ");
+}
+
+// Splits on sentence boundaries without cutting inside a quotation. The model
+// often quotes a script for her to say — "Based on my research, I'm looking at
+// X" — and splitting inside it strands half a sentence in the output.
+function splitSentences(text: string): string[] {
+  const rough = text.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+  const out: string[] = [];
+  for (const part of rough) {
+    const previous = out[out.length - 1];
+    if (previous && hasOpenQuote(previous)) out[out.length - 1] = `${previous} ${part}`;
+    else out.push(part);
+  }
+  return out;
+}
+
+function hasOpenQuote(s: string): boolean {
+  const straight = (s.match(/"/g) || []).length;
+  const opened = (s.match(/[“„]/g) || []).length;
+  const closed = (s.match(/[”]/g) || []).length;
+  return straight % 2 === 1 || opened > closed;
+}
+
+function findLastIndex<T>(items: T[], predicate: (item: T) => boolean): number {
+  for (let i = items.length - 1; i >= 0; i--) if (predicate(items[i])) return i;
+  return -1;
 }
 
 // The bullet-shape check above still can't save a legitimately long
@@ -248,6 +332,40 @@ export const STAND_WITH_HER =
   "Never open by asking her to prove it. 'Check whether it's really the same role' is useful and it is not how you start; it reads as doubt. Validate first, then help her get her facts. " +
   "Be accurate rather than sweeping: the pattern is well established, this particular case you cannot know from here — say both, in that order. " +
   "Do this with substance, not sympathy: a fact she can use beats a soft phrase every time.";
+
+// ── The coach cannot do anything outside this chat ──────────────────────────
+// Observed: an answer about getting an equity offer in writing ended
+// "...I'm happy to discuss on a quick call if needed." It was meant as part
+// of a script for HER to send an employer, but the quote boundary was lost and
+// it read as Botema offering to phone her.
+//
+// Either reading is a problem. She cannot call, and a coach that appears to
+// promise contact and then never makes it is worse than one that never
+// offered — particularly for a user who is already short of people to ask.
+// The honest move is to point at BSC's actual mentors, which is also what
+// "lift as they climb" means in practice.
+export const NEVER_OFFER_TO_ACT =
+  "You exist only inside this chat. You cannot make or join calls, send or read email, attend meetings, review a document she sends, contact anyone on her behalf, or follow anything up later. " +
+  "Never offer or imply otherwise — no 'happy to jump on a call', no 'send it over and I'll look', no 'I'll check back with you'. " +
+  "When you give her words to use with someone else, say whose they are and close the quotation cleanly, so it is never mistaken for you offering to act. " +
+  "If what she needs is a person rather than an answer, say so and point her at BSC's mentorship programme or a mentor in her network — not at yourself.";
+
+// ── Plain language ──────────────────────────────────────────────────────────
+// Observed: "a milestone-based cash bonus, an equity refresh or larger option
+// grant with a clear vesting schedule, and a currency protection clause or USD
+// pegging… or an equipment stipend." Five pieces of Silicon Valley vocabulary
+// in two sentences, aimed at someone who may be negotiating her first offer.
+//
+// This is not only a style problem. BSC's stated values include Education —
+// "explain, don't gatekeep" — and jargon gatekeeps: it quietly signals that
+// the room has a vocabulary she is expected to already know. Otema is
+// well-spoken and professional, which is not the same as sounding like a term
+// sheet.
+export const PLAIN_LANGUAGE =
+  "Use ordinary words. If a plain phrase will do, use it — 'a bigger share' not 'an equity refresh', 'paid in dollars' not 'USD pegging', 'money towards a laptop' not 'an equipment stipend'. " +
+  "Some terms are genuinely worth knowing because she will meet them in the room — vesting, equity, a signing bonus. Use those, and say what each means in the same breath, once, without making a lesson of it. " +
+  "Never stack two or more technical terms in one sentence. If a sentence needs a glossary, rewrite it. " +
+  "Avoid startup and US-tech vocabulary that does not travel. She is negotiating in Lagos or Accra or Nairobi, not reading a term sheet in San Francisco.";
 
 // ── Invented-figure guard ───────────────────────────────────────────────────
 // The coach has no web search and no pay data of any kind: its only sources are
@@ -337,7 +455,7 @@ export function resolveNarrowOrAnswer(raw: string): string {
     return withChoices("Which one would you like to focus on?", enumeratedOptions);
   }
 
-  const resolved = longFormMatch ? body : capSentences(capParagraphs(flattenInlineList(stripImplausibleFigures(body))));
+  const resolved = longFormMatch ? body : capSentences(capParagraphs(flattenInlineList(stripImplausiblePeriods(stripImplausibleFigures(body)))));
 
   // Last gate before the user sees it. Runs on every generation path — both
   // personas, advice and mindset alike — because this is the single funnel

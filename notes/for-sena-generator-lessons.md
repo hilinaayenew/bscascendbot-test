@@ -69,6 +69,47 @@ any of it as general.
 
 ---
 
+## 2026-08-15 — the reusable half is bigger than the storyboard can describe
+
+**The observation.** Splitting two days of work into "specific to this bot" versus "general to any
+LLM-grounded converser" produced a lopsided result: the bot-specific pile is six items — a persona,
+a knowledge base, an area list, a stage model, some drafted answers, a product decision. The
+general pile is roughly twenty, and it is all *mechanism*: guards on what the model may assert,
+caps on how it writes, rules about retrieving against the conversation rather than the last message,
+three-layer detection for leaving, restraint about when to search.
+
+The full list is in `notes/for-hilina-storyboard-changes.md` under "Two kinds of change". The point
+for the tool is what happened when we tried to record any of it in the storyboard: **there is
+nowhere to put it.**
+
+The generator can describe *what a converser knows* (`dataSources`), *what it will and won't answer*
+(`scope`), *what it says* (prompts) and *what functions it calls* (`capabilities`, `flows`). It has
+no vocabulary for what a converser will not do — never state a figure without grounding, never
+convert a pay period, never claim a source it doesn't have, never offer an action it cannot take,
+never search on a parameter the user did not supply. Those are the rules that make an answer safe,
+and in this project they now outnumber everything else.
+
+We ended up documenting them as prose in the Prompts tab, alongside the actual prompt text, which
+misrepresents them — half are code, not instructions, and the distinction matters enormously.
+
+**Candidate changes:**
+
+1. A **guarantees** or **constraints** section: things the converser will never do, each marked as
+   enforced by *prompt* or by *code*. Both are real; conflating them is how a reader ends up
+   trusting a rule that has failed six times.
+2. Somewhere to record that a rule **was tried as an instruction and had to become code**. In this
+   project that has happened six times, and it is the single most useful thing we learned. A
+   storyboard that showed it would save the next project the same six rounds.
+3. Consider whether these belong in a **shared** layer rather than per-converser. Almost none of
+   ours is BSC-specific — a health assistant needs the same no-invented-figures rule with different
+   nouns. A generator that shipped a starter set of constraints, and let a project add to it, would
+   be doing something no storyboard alone can.
+
+**The broader point for Sena:** the tool currently helps you describe a converser's *content* very
+well and its *behaviour under failure* not at all. For a project at the design stage that seems
+fine. For one that has met real output, the failure behaviour is most of the work.
+
+
 ## 2026-08-15 — the tool draws deterministic flows, and this converser doesn't have any
 
 **The finding.** We specified an in-area conversation model twice. The first version was a

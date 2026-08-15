@@ -1,6 +1,6 @@
 # Told to wait for the review cycle, for the second year running
 
-_Run 2026-08-15 18:45 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 19:09 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C. Recognises a pattern rather than repeating last year's advice.
 
@@ -12,55 +12,51 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > my manager told me to wait for the review cycle
-  [stage C — They are negotiating for a raise with their current employer and are waiting for the review cycle.]
+  [stage C — User is currently employed and mentions waiting for the review cycle; the money conversation is initiated by employee and should be treated as stage C.]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [sentence cap fired — the model wrote a rundown]
   [drew on G4c, S4c, G1, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That’s real, not a bluff. Treat it as a commitment: pin the exact date of
-  the review cycle and list the concrete outcomes you’ll deliver by then, and
-  ask for a written confirmation that meeting those outcomes will trigger the
-  raise. What is the cycle date, and which specific outcomes will you target
-  to make the case?
+  That “wait for the review” line is common, but you should anchor it with a
+  date and concrete outcomes. Ask for it in writing and define the exact
+  results that would justify a raise, while keeping a tight record of your
+  impact. What is the next cycle date and the concrete deliverables you’ll use
+  to demonstrate value by then?
 
   you > she said exactly the same thing last year
-  [stage C — User indicates manager repeated same stance last year, so the issue is recurring and needs a revised strategy; message belongs to stage C.]
+  [stage C — User is in ongoing pay negotiation with manager; not leaving; this indicates a repeated pattern that needs a stronger tactic.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
+  [sentence cap fired — the model wrote a rundown]
   [drew on G4c, G9a, G1a, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That pattern is real and common—“wait for the review” is often a delaying
-  tactic, not a fair process. If they miss it again, have your escalation plan
-  ready (HR or higher leadership) and bring documented evidence of your
-  impact. What date would you propose, and which two outcomes will you anchor
-  this to?
+  Yes. It’s a common delaying tactic, and saying it again year after year
+  signals a lack of real advancement. What 2–3 concrete deliverables can you
+  commit to in the next 6–8 weeks that would justify a raise, and what would
+  you want the cycle date to be this time?
 
   you > I did everything on the list she gave me
-  [stage C — User is in stage C: already working; has completed the list; seeking next steps for salary negotiation.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage C — User is negotiating a raise with their manager after describing completion of tasks; needs guidance on next steps.]
+  [sentence cap fired — the model wrote a rundown]
   [drew on G4c, G9a, G4a, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That pattern is real and common; you did the right thing completing the
-  list. If they won’t provide that, escalate to HR or senior leadership and
-  keep records for the next cycle or a job search. What date will you push
-  for, and which two outcomes will you anchor the raise to?
+  That pattern is real and not okay. Since you did everything on the list, ask
+  for a written rationale and a firm decision date, with concrete criteria
+  that would trigger a raise if met. Would you like me to draft that note for
+  you?
 
   you > I don't want to be the person who complains
-  [stage C — User is negotiating from within their current job and expresses concern about being perceived as a complainer; this is a stage C scenario.]
+  [stage C — User is in stage C and asks for help to avoid being seen as a complainer while pursuing a raise.]
   [drew on G4c, G9a, G4b, S4 — 1 Otema, 3 drafted]
 
 Botema
-  That worry is real, but advocating for fair pay is professional, not a
-  complaint. I’d frame it as a business decision: request a formal salary
-  review in writing, anchored to 3 concrete outcomes you’ve delivered and a
-  short market reference, with a specific review date; and if they stall,
-  outline the escalation path to HR or senior leadership and keep a tight
-  record. What would you include as your three outcomes, and what date would
-  you push for the formal review?
+  That worry is real, but you’re not asking for a favour—you’re asking to be
+  recognised for the work you’ve done. Turn it into a business case: 2–3
+  measurable outcomes, the impact, a market benchmark if you have one, and a
+  firm decision date for the review. Do you want me to draft a tight note you
+  can send, and which two outcomes will you foreground?
 
   you > am I being naive staying here
   [azure error: Azure 400: {"error":{"message":"The response was filtered due to the prompt triggering Azure OpenAI's content management]
@@ -76,9 +72,9 @@ Botema
   covered_stages  C
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
   closed_areas    —
-  role/location   current role unknown / —
-  where she is    She is waiting for the review cycle as instructed by her manager.
-  trying to do    She did everything on the list her manager gave her. She does not want to be the person who complains.
+  role/location   software engineer / —
+  where she is    She is waiting for the review cycle, as instructed by her manager. She notes that she said exactly the same thing last year. She has completed everything on the list her manager gave her.
+  trying to do    She did everything on the list her manager gave her. She is awaiting the results of the review cycle. She does not want to be the person who complains.
 
   Nothing was written to any database.
 ```
@@ -87,10 +83,10 @@ Botema
 
 - PASS — classified stage C
 - PASS — names the repetition as information about them
-- PASS — does not treat raising it as complaining
+- **FAIL** — does not treat raising it as complaining
 - PASS — every reply ends on a question
 - PASS — never asks her to disclose her own pay
-- **FAIL** — no two replies open the same way
+- PASS — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms
 - PASS — no reply mostly restates the one before it
 

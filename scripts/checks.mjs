@@ -52,8 +52,12 @@ export function jargonPerReply(out) {
 // with punctuation stripped: at six words and punctuation intact, "You're not
 // imagining it—pay offers" and "You're not imagining it—ads often" read as
 // different openers when they are plainly the same one.
+// The could-not-answer line is a fixed system message, not generated content.
+// Two network failures in a run produced it twice and tripped this check.
+const FALLBACK_LINE = /that one did not come through properly/i;
+
 export function noRepeatedOpeners(out) {
-  const openers = replyOf(out).split("\n\n").filter(Boolean)
+  const openers = replyOf(out).split("\n\n").filter(Boolean).filter((r) => !FALLBACK_LINE.test(r))
     .map((r) => r.trim().toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean).slice(0, 4).join(" "));
   return new Set(openers).size === openers.length;
 }

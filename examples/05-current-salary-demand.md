@@ -1,6 +1,6 @@
 # A recruiter asking what she is currently on, before any offer exists
 
-_Run 2026-08-15 18:45 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 19:09 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage B. She is being pushed to anchor on a salary that would trap her — tests whether the coach moves the conversation onto what the ROLE is worth, gives her words for a payslip demand, and handles 'should I just say a higher number' without either moralising or transplanting a US pay-history ban that does not apply where she is.
 
@@ -12,72 +12,76 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > there's a role i really want and the recruiter has asked what im currently on before they put an offer together
-  [stage B — The user describes that a recruiter asked for current pay while negotiating for a role they want.]
+  [stage A — The user is in the pricing/valuation stage before an offer, not yet negotiating with an employer.]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [drew on S3b, S3a, S2, S5 — 2 Otema, 2 drafted]
+  [drew on G10, G10a, S1, G2 — 1 Otema, 3 drafted]
 
 Botema
-  Don't share your current pay. I’d respond, calmly: “I’d rather we anchor the
-  offer on the market value of this role here—what range has been budgeted for
-  it?” If they push, ask whose policy that is and whether the offer depends on
-  disclosing your current figure. What did they say so far about budget or
-  range, and how far have you gotten in the negotiation?
+  That question is real, and you don’t have to give your current salary. Frame
+  it around the market value for the role and your level, and if pressed for a
+  number, offer a market-based range with your target at the bottom, and note
+  whether you want local currency or a remote/foreign-rate. What is the role
+  and location so I can help you draft the exact line you can use?
 
   you > problem is im badly underpaid where i am now, i think its about half what this role should pay
-  [stage B — The user is negotiating with a prospective employer about compensation and disclosed current underpayment; they want guidance on handling the offer process.]
+  [stage B — User is negotiating a prospective offer and reveals current pay is much lower than market; needs help with how to respond.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G7, S3b, G3, S3 — 1 Otema, 3 drafted]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S3b, G7, S2, S3a — 1 Otema, 3 drafted]
 
 Botema
-  What has the recruiter said about the budget or range so far?
+  You’re not imagining it—underpayment is real and it makes this negotiation
+  harder. I would not anchor on your current pay; instead, anchor on the
+  market value for this role and your level. Would you like me to tailor the
+  numbers to your city and role level, and give you a version for email or
+  in-person chat?
 
   you > she's also asked me to send a payslip to confirm it
-  [stage B — User is in live negotiation with recruiter; payslip request indicates a current pay disclosure step.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S3b, G3a, G7, S2 — 1 Otema, 3 drafted]
+  [stage B — The user is in Stage B and employer asked for a payslip]
+  [drew on S3b, S5, G3, G3a — 1 Otema, 3 drafted]
 
 Botema
-  Don’t send the payslip. What did they say about the budget or range so far,
-  and where do you want the range to land?
+  That request is real, but I wouldn’t disclose a payslip. I’d push back with
+  a market-based stance: “I don’t share my current payslip; I’d rather we
+  anchor on the market value for this role and my level. Could you share the
+  budgeted range for this position and confirm whether pay is in local
+  currency or USD?” Would you like this drafted for email or for a quick chat,
+  and what city/role is it so I tailor the wording?
 
   you > if i give her a higher number will they find out
-  [stage B — User asked whether giving a higher number will be discovered by employer during offer stage]
+  [stage B — Question about whether a higher number will be discovered is a negotiation tactic concern; belongs to stage B]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S3b, G6, S3a, S5 — 1 Otema, 3 drafted]
+  [drew on S3b, S3, G6, S3a — 1 Otema, 3 drafted]
 
 Botema
-  Yes, it can come out in some form—pay audits, payroll checks, or even
-  guesses from colleagues—so fabricating a higher figure isn’t a good move. If
-  pressed, say: “I’m not comfortable sharing my current pay; what range has
-  your budget allocated for this role?” What range has the recruiter given you
-  for this role, and how close is that to the market you’ve researched?
+  I wouldn’t. If you give a higher number, you risk losing credibility or
+  being boxed into a higher anchor you can’t defend, and there’s a real chance
+  they’ll question you later if they verify or compare. Want me to draft a
+  tight line for email or chat, and what city/role is this for so I tailor it?
 
   you > i dont want to seem awkward and have them just move on to the next candidate
-  [stage B — User is negotiating with a prospective employer and is worried about appearing awkward and losing the role; this is clearly stage B.]
+  [stage B — User wants guidance to avoid awkwardness and keep the candidate engaged during a live negotiation; this is a shift within stage B toward interview prep/negotiation tactics.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S3b, G3, S3a, S2 — 1 Otema, 3 drafted]
 
 Botema
-  That awkwardness is real, but you protect your future earnings by anchoring
-  to the role’s market value, not your current pay. Try: “I’d rather we anchor
-  this on the market value for this role; for similar roles here I’m looking
-  at a range of [low] to [high]. Is that within your budget?” If they push on
-  a payslip, push back with the same line and shift to the full package. What
-  range did they mention, and what’s most important to you in this offer
-  beyond base salary (equity, learning budget, remote days, etc.)?
+  That feeling is real, but it’s also a normal part of negotiating in our
+  market. Would you like me to tailor either version to your city and the
+  exact role, and tell me whether you want it for email or chat?
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     9 · Salary & Negotiation
-  covered_stages  B
-  touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
+  covered_stages  A, B
+  touched_facets  S1, G2, G10, G10a, G5, S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a
   closed_areas    —
-  role/location   prospective role being priced / —
-  where she is    She is currently employed in a role where she believes she is underpaid; the recruiter has asked for her current pay before they put together an offer.
-  trying to do    She is aiming for the role she really wants and wants to anchor the offer on the market value of the role rather than her current pay; she thinks her current pay is about half of what the role should pay. She is wondering whether giving a higher current-pay figure will be discovered by the recruiter; she has not sent a payslip and has asked about the budget or range for the role. She doesn't want to seem awkward and have them move on to the next candidate.
+  role/location   the role they want / —
+  where she is    She is currently in a job where she is badly underpaid, estimating the current pay is about half of what the target role should pay. She has been asked to send a payslip to confirm her current pay.
+  trying to do    She wants the role she really wants and to anchor negotiations on market value rather than her current pay. She has asked to send a payslip to confirm it as part of the process. What she has already tried: NONE. She doesn’t want to seem awkward and fears the recruiter might move on to the next candidate.
 
   Nothing was written to any database.
 ```

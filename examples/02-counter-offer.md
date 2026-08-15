@@ -1,6 +1,6 @@
 # She resigned and they suddenly found the money
 
-_Run 2026-08-15 18:45 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 19:09 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C throughout, and asks why the number only appeared once she was leaving.
 
@@ -12,31 +12,70 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I handed in my notice last week and now they've offered me 30% more to stay
-  [stage C — User is negotiating as a current employee after receiving a retention offer to stay; money conversation with their boss.]
+  [stage C — User is negotiating with current employer after handing in notice; money conversation initiated by employer]
   → enterDiscussionArea(9 · Salary & Negotiation)
-
-  Azure error: fetch failed
-
-  you > I'd asked for a raise twice before and got nothing
-  [stage C — User is already negotiating with their current employer; previously asked for a raise twice without success.]
-
-  Azure error: fetch failed
-
-  you > honestly the money was only part of why I was going
-  [stage leaving — The user signals that money is not the only reason for seeking change, suggesting confidence/blocker issues rather than pure salary tactics.]
-
-  → closeDiscussionArea() — classified as leaving → area 6 · Confidence & Imposter Syndrome
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G8, S4c, S4, S4a — 1 Otema, 3 drafted]
 
 Botema
-  Of course — let's get into confidence & imposter syndrome.
+  Counter-offers after you hand in your notice are common, but they rarely fix
+  the underlying reasons you started looking. If you stay, push for a written
+  deal: a clear update to your role and title, a defined path to progression,
+  and a salary review within 6–12 months (preferably tied to a stable currency
+  and with agreed timing). What mattered most to you when you handed in your
+  notice, and has this offer actually addressed that?
+
+  you > I'd asked for a raise twice before and got nothing
+  [stage C — User is in current-role pay negotiation; previous raise attempts failed; now facing a post-notice counter-offer.]
+  [azure error: fetch failed]
+
+Botema
+  Sorry — that one did not come through properly on my end. Could you say it
+  again, or put it a different way?
+
+  you > honestly the money was only part of why I was going
+  [stage C — User is still negotiating with current employer; new info that monetary only part; moves to stage C.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G8, G9, G9a, G1 — 0 Otema, 4 drafted]
+
+Botema
+  You’re right to push back—money is almost never the only driver. Does this
+  offer actually address those points, and what else matters most to you
+  beyond the money?
+
+  you > my new employer has already sent the contract
+  [stage B — User has received a contract from the new employer, so the situation has moved to actively negotiating with a prospective employer.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S5a, G7, S2, S3 — 2 Otema, 2 drafted]
+
+Botema
+  Nice. If the contract is already with you, don’t sign yet. What in the
+  contract feels unclear or non-negotiable to you right now?
+
+  you > so do I take it or not
+  [stage B — The user needs a decision on accepting a live offer after handing in notice; not market pricing.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G6, S5a, S3a, S5 — 1 Otema, 3 drafted]
+
+Botema
+  Not yet. Do not sign the contract as-is. What are your top 2–3 non-financial
+  terms you want included?
+
+  you > quit
 
   ── state ─────────────────────────────────────────────
-  active_area     none
-  covered_stages  C
-  touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
-  closed_areas    9
-  role/location   — / —
-  trying to do    She is trying to secure a raise at her current job. She has already tried asking for a raise twice, and both times were declined.
+  active_area     9 · Salary & Negotiation
+  covered_stages  C, B
+  touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a, S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G5
+  closed_areas    —
+  role/location   Unspecified / contract negotiation decision / —
+  where she is    She handed in her notice last week; they offered her a 30% raise to stay. The contract from the new employer has been sent.
+  trying to do    Money was only part of why she was going; she had asked for a raise twice before and got nothing.
 
   Nothing was written to any database.
 ```
@@ -44,9 +83,9 @@ Botema
 ## Checks
 
 - PASS — classified stage C
-- **FAIL** — questions why the money appeared only now
-- **FAIL** — treats money as not the whole reason
-- **FAIL** — every reply ends on a question
+- PASS — questions why the money appeared only now
+- PASS — treats money as not the whole reason
+- PASS — every reply ends on a question
 - PASS — never asks her to disclose her own pay
 - PASS — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms

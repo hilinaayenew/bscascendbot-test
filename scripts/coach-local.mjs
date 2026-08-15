@@ -391,16 +391,27 @@ function stripFigures(text) {
 
 // ── Azure ───────────────────────────────────────────────────────────────────
 
-async function callAzure(messages, { tools, maxTokens = 2000 } = {}) {
+async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1 } = {}) {
   const url = `${AZURE.endpoint.replace(/\/?$/, "/")}openai/deployments/${AZURE.deployment}/chat/completions?api-version=${AZURE.apiVersion}`;
   const body = { messages, max_completion_tokens: maxTokens };
   if (tools) { body.tools = tools; body.tool_choice = "required"; body.parallel_tool_calls = false; }
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "api-key": AZURE.apiKey },
-    body: JSON.stringify(body),
-  });
+  // Transient network failures happen — two in one five-turn run left two
+  // turns unanswered. One quiet retry before giving up.
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "api-key": AZURE.apiKey },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    if (attempt < 3) {
+      await new Promise((r) => setTimeout(r, 800 * attempt));
+      return callAzure(messages, { tools, maxTokens, attempt: attempt + 1 });
+    }
+    throw err;
+  }
   const data = await res.json();
   if (!res.ok) throw new Error(`Azure ${res.status}: ${JSON.stringify(data).slice(0, 300)}`);
 

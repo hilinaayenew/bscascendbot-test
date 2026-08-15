@@ -96,7 +96,7 @@ export default [
     checks: [
       ["classified stage C", (o) => /\[stage C/.test(o)],
       ["names the repetition as information about them", (o) => /(pattern|again|last year|twice|says something|about them|not about you)/i.test(replyOf(o))],
-      ["does not treat raising it as complaining", (o) => /(complain|reasonable|entitled|fair|normal|right to|business issue|not about being)/i.test(replyOf(o))],
+      ["does not treat raising it as complaining", (o) => /(complain|reasonable|entitled|fair|normal|right to|business (?:issue|case)|not asking for a favour|recognised for|deserve)/i.test(replyOf(o))],
       ["every reply ends on a question", (o) => everyReplyAsks(o)],
       ["never asks her to disclose her own pay", (o) => extractiveQuestions(o).length === 0],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],

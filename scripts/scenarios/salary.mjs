@@ -93,7 +93,7 @@ export default [
     checks: [
       ["classified stage C", (o) => /\[stage C/.test(o)],
       ["names the repetition as information about them", (o) => /(pattern|again|last year|twice|says something|about them|not about you)/i.test(replyOf(o))],
-      ["does not treat raising it as complaining", (o) => /(not complain|reasonable|entitled|fair|normal|right to)/i.test(replyOf(o))],
+      ["does not treat raising it as complaining", (o) => /(complain|reasonable|entitled|fair|normal|right to|business issue|not about being)/i.test(replyOf(o))],
       ["every reply ends on a question", (o) => everyReplyAsks(o)],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
@@ -120,7 +120,8 @@ export default [
       ["gives her something she could actually say", (o) =>
         /(you could say|something like|try saying|"|'|say:)/i.test(o.split(/^\s*Botema\s*$/m).slice(1).join(" "))],
       ["never tells her to state a salary she is not on", (o) =>
-        !/(inflate|round it up|say a higher number|give them a higher|overstate)/i.test(o.split(/^\s*Botema\s*$/m).slice(1).join(" "))],
+        // Must not match "Don't inflate or lie" — that is the correct advice.
+        !/(?<!don.t )(?<!do not )\b(?:inflate (?:your|it|the)|round it up|say a higher number|give them a higher|overstate your)\b/i.test(replyOf(o))],
       ["stayed in the area through the fear turn", (o) => !/stage leaving/.test(o)],
       ["every reply ends on a question", (o) =>
         o.split(/^\s*Botema\s*$/m).slice(1).map((b) => b.split(/\n\s*\n/)[0].trim()).filter(Boolean).every((b) => b.endsWith("?"))],

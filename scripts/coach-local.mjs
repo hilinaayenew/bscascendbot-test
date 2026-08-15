@@ -153,6 +153,7 @@ const STAGE_SUMMARY = areaConfig.stageSummary;
 const S_ORDER = areaConfig.realOrder;
 const AREA_TOPIC = areaConfig.topic;
 const SUPERSEDES = areaConfig.supersedes || [];
+const FALLBACK_QUESTION = areaConfig.fallbackQuestion || "What would you like to look at next?";
 
 function buildFacets() {
   const f = {};
@@ -219,7 +220,7 @@ const NOT_LEAVING = /\b(?:move on to the next|moving on to the next|move on with
 // keeps the question with her, rather than stranding her on the turn she
 // most needed answered.
 const COULD_NOT_ANSWER =
-  "Sorry — that one did not come through properly on my end. Say it again, or put it differently, and I will pick it up.";
+  "Sorry — that one did not come through properly on my end. Could you say it again, or put it a different way?";
 
 function saysLeaving(text) {
   if (NOT_LEAVING.test(text)) return false;
@@ -287,6 +288,16 @@ function stripImplausiblePeriods(text) {
   return kept.join(" ").trim();
 }
 
+// Mirrors stripAdsOversell in converser.ts.
+const ADS_OVERSELL = /\b(?:ads?|adverts?|advertisements?|listings?|job (?:ads?|posts?|postings?))\b[^.!?]{0,60}?\b(?:oversell|overstate|inflate[d]?|exaggerat\w+|higher than|show higher|more than (?:what|the company))\b|\b(?:oversell|overstate|inflated)\b[^.!?]{0,40}?\b(?:ads?|adverts?|listings?)\b/i;
+
+function stripAdsOversell(text) {
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  if (!sentences.some((s) => ADS_OVERSELL.test(s))) return text;
+  const kept = sentences.filter((s) => !ADS_OVERSELL.test(s) || s.trim().endsWith("?"));
+  return kept.length ? kept.join(" ").trim() : "";
+}
+
 function flattenInlineList(text) {
   if (/\n/.test(text)) return text;
   const bullets = text.match(/\s-\s(?=[A-Z0-9])/g);
@@ -317,21 +328,36 @@ function splitSentences(text) {
 }
 
 // Mirrors dropRepeatedSentences in converser.ts.
-function dropRepeatedSentences(text, previousReplies, threshold = 0.6) {
+function dropRepeatedSentences(text, previousReplies, threshold = 0.45) {
   if (!previousReplies.length) return text;
   const words = (s) => new Set(s.toLowerCase().replace(/[^a-z\s]/g, " ").split(/\s+/).filter((w) => w.length > 4));
   const seen = previousReplies.flatMap((r) => splitSentences(r)).map(words);
-  const kept = splitSentences(text).filter((sentence) => {
-    if (sentence.trim().endsWith("?")) return true;
-    const w = words(sentence);
-    if (w.size < 4) return true;
-    return !seen.some((before) => {
+  const repeats = (s) => {
+    const w = words(s);
+    if (w.size < 4) return false;
+    return seen.some((before) => {
       if (!before.size) return false;
       let shared = 0;
       w.forEach((x) => { if (before.has(x)) shared++; });
       return shared / w.size >= threshold;
     });
-  });
+  };
+  const kept = [];
+  for (const sentence of splitSentences(text)) {
+    if (!sentence.trim().endsWith("?")) {
+      if (!repeats(sentence)) kept.push(sentence);
+      continue;
+    }
+    // A quoted script merged with the closing question arrives as one
+    // sentence; exempting everything ending in "?" let a near-verbatim script
+    // through twice. Split the question off and judge the rest.
+    const lastBreak = sentence.search(/[.!”"]\s+[^.!?]*\?$/);
+    if (lastBreak === -1) { kept.push(sentence); continue; }
+    const body = sentence.slice(0, lastBreak + 1).trim();
+    const question = sentence.slice(lastBreak + 1).trim();
+    if (!repeats(body)) kept.push(sentence);
+    else if (question) kept.push(question);
+  }
   return kept.length ? kept.join(" ").trim() : "";
 }
 
@@ -942,9 +968,15 @@ async function main() {
       state.stallCount += 1;
       if (state.stallCount >= 2) { await closeArea("nothing new left to say — the stall rule"); break; }
     }
-    const plausible = stripImplausiblePeriods(stripImplausibleFigures(deduped || guarded));
+    const plausible = stripAdsOversell(stripImplausiblePeriods(stripImplausibleFigures(deduped || guarded)));
     if (plausible !== guarded) console.log(C.amber("  [implausible figure removed — outlier, mixed currency, or wrong period]"));
-    const { text, capped } = capSentences(flattenInlineList(plausible), search ? 5 : 3);
+    let { text, capped } = capSentences(flattenInlineList(plausible), search ? 5 : 3);
+    // Every reply must end on a question — it is how the coach leads. When the
+    // model does not manage one, append the area's own rather than strand her.
+    if (text && !text.trim().endsWith("?")) {
+      console.log(C.amber("  [no closing question — appended the area's]"));
+      text = text.trim() + " " + FALLBACK_QUESTION;
+    }
     if (capped) console.log(C.amber("  [sentence cap fired — the model wrote a rundown]"));
 
     const chosen = mostRelevant(STAGES[placed.stage].facets.map((f) => facets[f]).filter(Boolean), conversationQuery(input, history), 4, state.usedExamples);

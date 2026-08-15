@@ -48,11 +48,13 @@ export function jargonPerReply(out) {
   return Math.max(...replies.map((r) => (r.match(JARGON) || []).length));
 }
 
-// True when no two replies open with the same first six words. Observed on
-// freelance rates: four of five opened "I would always recommend".
+// True when no two replies open the same way. Compares the first FOUR words
+// with punctuation stripped: at six words and punctuation intact, "You're not
+// imagining it—pay offers" and "You're not imagining it—ads often" read as
+// different openers when they are plainly the same one.
 export function noRepeatedOpeners(out) {
   const openers = replyOf(out).split("\n\n").filter(Boolean)
-    .map((r) => r.trim().toLowerCase().split(/\s+/).slice(0, 6).join(" "));
+    .map((r) => r.trim().toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean).slice(0, 4).join(" "));
   return new Set(openers).size === openers.length;
 }
 

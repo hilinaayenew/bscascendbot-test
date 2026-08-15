@@ -1939,6 +1939,86 @@ NARROW_OPTIONS: &lt;option 1&gt; | &lt;option 2&gt; | &lt;option 3&gt;
     </div>
 
     <div class="section">
+      <div class="section-title">Prompts · Guarantees</div>
+      <h2 class="section-heading">What the Coach Will Never Do <span class="st live">LIVE</span></h2>
+      <p class="prompt-intro">The rules above say what the coach is <em>asked</em> to do. These say what it is <em>prevented</em> from doing — and the distinction matters, because half of them are enforced in code precisely because asking did not work. Every one exists because a real answer went wrong first.</p>
+
+      <div class="banner spec">
+        <strong>Read the "enforced by" column before trusting any row.</strong> A rule enforced by <em>prompt</em> is a request the model usually honours. A rule enforced by <em>code</em> is one it demonstrably would not honour, so the output is edited after generation. Treating the two alike is how you end up relying on a rule that has failed seven times.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>The coach will never…</th><th>Enforced by</th><th>What went wrong first</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>State a pay figure it cannot source</strong></td>
+              <td><code>NO_INVENTED_FIGURES</code> prompt<br>+ <code>stripUnsourcedFigures()</code></td>
+              <td>"Based on Nairobi market data… 210k–260k KES" — no web search existed. ISSUE-017</td>
+            </tr>
+            <tr>
+              <td><strong>Cite a source it does not have</strong></td>
+              <td>same, plus the grounded-mode gate</td>
+              <td>Cited "Glassdoor, 2026" on a search that returned <em>zero</em> citations. ISSUE-022</td>
+            </tr>
+            <tr>
+              <td><strong>Offer a figure she could not actually get</strong></td>
+              <td><code>stripImplausibleFigures()</code></td>
+              <td>"USD 200,000 (Crossover)" beside a Lagos salary — recruitment marketing as an anchor</td>
+            </tr>
+            <tr>
+              <td><strong>Convert a pay period</strong></td>
+              <td><code>stripImplausiblePeriods()</code></td>
+              <td>"NGN 299,513 per year" — the monthly figure, restated as annual. About €190 a year. ISSUE-023</td>
+            </tr>
+            <tr>
+              <td><strong>Claim job ads overstate pay</strong></td>
+              <td><code>stripAdsOversell()</code></td>
+              <td>Seen twice. It is the employer's argument for the low offer, and it contradicts Otema's S1</td>
+            </tr>
+            <tr>
+              <td><strong>Repeat advice she has already been given</strong></td>
+              <td><code>dropRepeatedSentences()</code></td>
+              <td>The same three-item checklist on four consecutive turns, including one where she admitted a fear</td>
+            </tr>
+            <tr>
+              <td><strong>Write a rundown, or a list</strong></td>
+              <td><code>capSentences()</code>, <code>capParagraphs()</code>, <code>flattenInlineList()</code></td>
+              <td>Told not to write lists, it wrote one inline with dashes instead. ISSUE-006, ISSUE-020</td>
+            </tr>
+            <tr>
+              <td><strong>Offer to call, email, or follow up</strong></td>
+              <td><code>NEVER_OFFER_TO_ACT</code> prompt</td>
+              <td>"I'm happy to discuss on a quick call if needed." It cannot call anyone</td>
+            </tr>
+            <tr>
+              <td><strong>Ask her to prove it before believing her</strong></td>
+              <td><code>STAND_WITH_HER</code> prompt</td>
+              <td>Asked about a male colleague earning more, it opened "confirm you truly have the same role"</td>
+            </tr>
+            <tr>
+              <td><strong>Stack jargon</strong></td>
+              <td><code>PLAIN_LANGUAGE</code> prompt<br>+ a density check in tests</td>
+              <td>"a milestone-based cash bonus, an equity refresh… USD pegging" — five terms in two sentences</td>
+            </tr>
+            <tr>
+              <td><strong>Search on something she never said</strong></td>
+              <td><code>mentionedByUser()</code></td>
+              <td>Classifier invented <code>location: "unspecified"</code> and searched three times for it</td>
+            </tr>
+            <tr>
+              <td><strong>End a reply without a question</strong></td>
+              <td><code>capSentences()</code> rescue<br>+ the area's <code>fallbackQuestion</code></td>
+              <td>Replies cut mid-clause, and one that simply stopped. The coach is supposed to lead</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flow-note"><strong>The pattern, stated once:</strong> when an instruction fails twice, write the check instead of rewording it a third time. That has now happened <strong>seven times</strong> — hedging, length, lists, outliers, pay periods, invented locations, repeated advice. Rewording is cheap and feels like progress. It has not once been the thing that worked. The corollary: a prompt rule you cannot test is one you should not rely on, which is why every code row above has unit tests.</div>
+    </div>
+
+    <div class="section">
       <div class="section-title">Prompts · Chataki (parked)</div><h2 class="section-heading">Chataki's Prompts — retained, not in use <span class="st changed">CHANGED</span></h2>
       <p class="prompt-intro">Kept for reference and for whenever she is reinstated. Since 15 August nothing routes to these — every request goes to Botema. The text below is still what <code>bsc-functions.ts</code> contains.</p>
       <div class="prompt-card">
@@ -2157,9 +2237,30 @@ If you've got a tech career question, bring it — I'll give you my honest take.
     {
       id: "ISSUE-023",
       title: "Search figures had their pay period silently converted",
-      description: "A grounded answer reported 'NGN 302,372 per year' for a Lagos mid-level backend role, when the underlying sources give roughly that figure PER MONTH. An annual figure restated as monthly, or the reverse, is not a formatting slip — it is a wrong answer someone could walk into a negotiation with, and it carries a real citation so it reads as verified. Mitigated by instructing the summarise call to copy the period exactly and never convert, and by asking the search call to report a fixed 'amount | period | source | year' shape. Both are instructions, so per the ISSUE-005 pattern expect this to need a code-level check comparing figures in the answer against figures in the raw search text.",
-      priority: "high", status: "open",
+      description: "RESOLVED 15 Aug. The instruction to never convert lost twice — NGN 299,513 and NGN 316,667 both reported as annual when they are the monthly Lagos figures, about EUR 190 a year. stripImplausiblePeriods() now rejects an annual claim below a per-currency floor: crude on purpose, since the job is catching a figure off by a factor of twelve, not judging whether a salary is good. It drops the sentence rather than rewriting the period, because guessing what was meant would assert a number nobody verified.",
+      priority: "high", status: "resolved",
       files: ["scripts/coach-local.mjs"], added: "2026-08-15", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-024",
+      title: "Scenario checks were silently failing — the results matrix carried no information",
+      description: "When the scenarios were split into scripts/scenarios/ per area, their check functions kept calling replyOf, everyReplyAsks, jargonPerReply and maxRepeatOverlap, which stayed in the runner's module scope. Every check threw ReferenceError; the runner's catch recorded each as a silent FAIL. examples/README.md read '0 of 5 passed' and meant nothing at all — worse than no tests, because it looked like a result. RESOLVED 15 Aug: helpers extracted to scripts/checks.mjs and imported by both. Verified 34 checks evaluate, 0 throw. Found by the area-tester agent, filed under Not reported as a harness problem.",
+      priority: "high", status: "resolved",
+      files: ["scripts/checks.mjs", "scripts/scenarios/salary.mjs"], added: "2026-08-15", phase: "Shipped"
+    },
+    {
+      id: "ISSUE-025",
+      title: "A fear of being dropped read as a request to change the subject",
+      description: "She typed 'i dont want to seem awkward and have them just move on to the next candidate' and the bare phrase 'move on' matched LEAVE_PHRASES. That check runs before any model call, so the area closed with no judgment applied — at the exact sentence the confidence facet G9 exists for. RESOLVED 15 Aug: every phrase must now express an intent to change subject on its own, plus a NOT_LEAVING guard for fear language checked first. Unit-tested across eleven cases. The same list is due to be ported to converser.ts, so fix it there before copying.",
+      priority: "high", status: "resolved",
+      files: ["scripts/coach-local.mjs"], added: "2026-08-15", phase: "Shipped"
+    },
+    {
+      id: "ISSUE-026",
+      title: "Advice kept applying after the conversation moved past it",
+      description: "Once a counter-offer is on the table she has already asked, already been refused and already resigned — but 'raise' and 'asked' still matched the raise-asking examples lexically, so she was sent away to assemble milestones for a situation she had left behind. RESOLVED 15 Aug with a supersedes rule in the area config: once G8 is drawn on, the nine raise-asking facets are removed from the pool outright. Down-weighting was not enough, because the closest lexical match still wins.",
+      priority: "medium", status: "resolved",
+      files: ["scripts/areas/salary.mjs", "scripts/coach-local.mjs"], added: "2026-08-15", phase: "Shipped"
     }
   ];
 

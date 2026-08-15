@@ -42,6 +42,12 @@ export default {
     C: "the conversation with your employer",
   },
 
+  // Used only when a reply comes back with no question at all. The coach is
+  // supposed to lead, and a reply that just stops leaves her holding nothing.
+  // Deliberately plain — the model's own question is always better when it
+  // manages one.
+  fallbackQuestion: "What is the situation you are weighing up right now?",
+
   // Facets that stop applying once the conversation has moved past them.
   //
   // Once a counter-offer is on the table she has already asked, already been

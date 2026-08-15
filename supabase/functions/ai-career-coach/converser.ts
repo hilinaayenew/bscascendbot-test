@@ -238,7 +238,7 @@ export function stripImplausiblePeriods(text: string): string {
  * where an exact-string match would miss it. The closing question is always
  * kept: questions legitimately recur, and dropping one strands the turn.
  */
-export function dropRepeatedSentences(text: string, previousReplies: string[], threshold = 0.6): string {
+export function dropRepeatedSentences(text: string, previousReplies: string[], threshold = 0.45): string {
   if (!previousReplies.length) return text;
 
   const contentWords = (s: string) =>
@@ -247,20 +247,62 @@ export function dropRepeatedSentences(text: string, previousReplies: string[], t
     );
 
   const seen = previousReplies.flatMap((r) => splitSentences(r)).map(contentWords);
-  const kept = splitSentences(text).filter((sentence) => {
-    if (sentence.trim().endsWith("?")) return true;
-    const words = contentWords(sentence);
-    if (words.size < 4) return true;
-    return !seen.some((before) => {
+  const repeats = (s: string) => {
+    const words = contentWords(s);
+    if (words.size < 4) return false;
+    return seen.some((before) => {
       if (!before.size) return false;
       let shared = 0;
       words.forEach((w) => { if (before.has(w)) shared++; });
       return shared / words.size >= threshold;
     });
-  });
+  };
+
+  const kept: string[] = [];
+  for (const sentence of splitSentences(text)) {
+    if (!sentence.trim().endsWith("?")) {
+      if (!repeats(sentence)) kept.push(sentence);
+      continue;
+    }
+
+    // Ends in a question — but that does not make the whole thing a question.
+    // splitSentences merges quoted material with what follows, so a repeated
+    // script and the closing question arrive as ONE sentence, and blanket-
+    // exempting anything ending in "?" let a near-verbatim script through
+    // twice. Split the trailing question off and judge the rest on its merits.
+    const lastBreak = sentence.search(/[.!”"]\s+[^.!?]*\?$/);
+    if (lastBreak === -1) { kept.push(sentence); continue; }
+
+    const body = sentence.slice(0, lastBreak + 1).trim();
+    const question = sentence.slice(lastBreak + 1).trim();
+    if (!repeats(body)) kept.push(sentence);
+    else if (question) kept.push(question);
+  }
 
   // If everything was a repeat, the turn genuinely had nothing new in it —
   // which is the stall condition, not something to paper over with filler.
+  return kept.length ? kept.join(" ").trim() : "";
+}
+
+/**
+ * Removes the claim that job adverts overstate what a role pays.
+ *
+ * Seen twice now, in different words: "ads often oversell what the company
+ * will actually pay" and "ads often show higher ranges than the actual offer".
+ * It is the employer's own argument for the low offer, handed to her at the
+ * moment she is deciding what to counter with — and it contradicts both
+ * KNOWLEDGE_BASE.salary ("local job ads that publish ranges are useful too")
+ * and Otema's S1 ("job boards give you a rough range").
+ *
+ * Rewriting the G3a draft to rule it out did not stop it, so it moves to code.
+ */
+const ADS_OVERSELL =
+  /\b(?:ads?|adverts?|advertisements?|listings?|job (?:ads?|posts?|postings?))\b[^.!?]{0,60}?\b(?:oversell|overstate|inflate[d]?|exaggerat\w+|higher than|show higher|more than (?:what|the company))\b|\b(?:oversell|overstate|inflated)\b[^.!?]{0,40}?\b(?:ads?|adverts?|listings?)\b/i;
+
+export function stripAdsOversell(text: string): string {
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  if (!sentences.some((s) => ADS_OVERSELL.test(s))) return text;
+  const kept = sentences.filter((s) => !ADS_OVERSELL.test(s) || s.trim().endsWith("?"));
   return kept.length ? kept.join(" ").trim() : "";
 }
 
@@ -498,7 +540,7 @@ export function resolveNarrowOrAnswer(raw: string): string {
     return withChoices("Which one would you like to focus on?", enumeratedOptions);
   }
 
-  const resolved = longFormMatch ? body : capSentences(capParagraphs(flattenInlineList(stripImplausiblePeriods(stripImplausibleFigures(body)))));
+  const resolved = longFormMatch ? body : capSentences(capParagraphs(flattenInlineList(stripAdsOversell(stripImplausiblePeriods(stripImplausibleFigures(body))))));
 
   // Last gate before the user sees it. Runs on every generation path — both
   // personas, advice and mindset alike — because this is the single funnel

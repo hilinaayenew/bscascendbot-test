@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods, dropRepeatedSentences } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods, dropRepeatedSentences, stripAdsOversell } from "./converser.ts";
 
 describe("pickRandom", () => {
   it("returns exactly n items when the pool is larger than n", () => {
@@ -540,5 +540,53 @@ describe("dropRepeatedSentences", () => {
     const raw = "Be careful here. Push for a formal written plan with fixed review dates and explicit targets. What now?";
     const out = dropRepeatedSentences(raw, earlier);
     expect(out).toContain("Be careful here.");
+  });
+});
+
+// ── The ads-oversell claim ──────────────────────────────────────────────────
+// Seen twice in different words. It is the employer's argument for the low
+// offer, and it contradicts both KNOWLEDGE_BASE.salary and Otema's S1.
+
+describe("stripAdsOversell", () => {
+  it("drops the observed phrasings", () => {
+    const a = "That gap is real—ads often oversell what the company will actually pay. What did they quote?";
+    expect(stripAdsOversell(a)).not.toContain("oversell");
+    expect(stripAdsOversell(a)).toContain("What did they quote?");
+
+    const b = "You're not imagining it—ads often show higher ranges than the actual offer. What's the number?";
+    expect(stripAdsOversell(b)).not.toContain("higher ranges");
+  });
+
+  it("leaves legitimate talk about job ads alone", () => {
+    const raw = "Local job ads with published ranges are one of the few honest signals. Have you looked at any?";
+    expect(stripAdsOversell(raw)).toBe(raw);
+  });
+
+  it("leaves the mismatch reading intact — that one is correct", () => {
+    const raw = "That isn't a negotiation, it's a mismatch: either they misunderstood the role or they're hoping you don't know. What did they say?";
+    expect(stripAdsOversell(raw)).toBe(raw);
+  });
+});
+
+describe("dropRepeatedSentences — quoted scripts", () => {
+  it("drops a repeated script hiding behind a closing question", () => {
+    // splitSentences merges the quote with what follows, so the script and the
+    // question arrive as one sentence. Exempting anything ending in "?" let a
+    // near-verbatim script through on two consecutive turns.
+    const before = [
+      'Push for a written commitment. Send a short note like: "Hi, I have completed X, Y, Z as discussed. Please confirm in writing by [date] the salary range and the milestones that trigger the raise." What did you deliver?',
+    ];
+    const raw =
+      'This is not complaining, it is about clarity on scope and pay. ' +
+      'Try: "Hi, I have completed X, Y, Z as discussed. Please confirm in writing by [date] the salary range and the milestones that trigger the raise." What date do you want to attach?';
+    const out = dropRepeatedSentences(raw, before);
+    expect(out).toContain("This is not complaining");
+    expect(out).not.toContain("Please confirm in writing");
+    expect(out.trim().endsWith("?")).toBe(true);
+  });
+
+  it("keeps a quoted script the first time it appears", () => {
+    const raw = 'Try saying: "Based on my research I am looking at X to Y." What range do you have?';
+    expect(dropRepeatedSentences(raw, ["Something entirely unrelated about mentors and networks."])).toBe(raw);
   });
 });

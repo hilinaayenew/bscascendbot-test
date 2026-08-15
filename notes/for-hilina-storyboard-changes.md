@@ -1,67 +1,115 @@
-# Notes for Hilina — changes to the storyboard
+# Notes for Hilina — building on the AI Career Coach
 
-A running log of what David changes in `storyboard.html` and what it means for the code.
-Newest entries at the top. Each entry says what changed, and what (if anything) needs building.
+Detail behind David's message. A running log of what changed and why, newest entries at the top.
+Read as far back as you need — the summary below covers everything.
+
+**This is not a deployment queue.** Nothing here is urgent to ship. It is a direction, and a set of
+worked examples showing how far the bot can be pushed beyond the answers BSC gave us.
 
 ---
 
 ## WHERE THIS STANDS — 15 August 2026
 
-**Nothing is deployed and nothing is committed.** Last commit is still `3db3190` (the README),
-with 15 files in the working tree. There are three different versions of this bot in play:
+Everything is on the **`david-sub-areas`** branch. Nothing is on main, nothing is deployed, and
+there is no rush to change that.
 
-| | What it is | State |
-|---|---|---|
-| **Live** | What users get today | The v3 bot, unchanged. No figure guard, no sentence cap, two personas, UK salary knowledge |
-| **Working tree** | `supabase/functions/ai-career-coach/` | Guards + content fixes, written and tested, **waiting for you** |
-| **Harness** | `scripts/coach-local.mjs` | The v4 area model and web search. Local only, never deployed |
+```
+git fetch && git checkout david-sub-areas
+```
 
-### The three things that need you specifically
+### The point of all this
 
-1. **Deploy the working-tree fixes.** `git push origin main` then
-   `npx supabase functions deploy ai-career-coach`. This is the highest-value action available:
-   **the live bot currently invents salary figures with fabricated citations** (ISSUE-017) and its
-   paragraph cap has never fired on most answers (ISSUE-020). Both are fixed in the working tree
-   and neither is live. 44 tests pass; lint is unchanged from HEAD.
-2. **Push the migration** — `supabase/migrations/20260815120000_area_state_and_location.sql`.
-   Written, not applied. Every column is nullable or defaulted so current code is untouched.
-   Nothing in v4 can start without it (ISSUE-008, ISSUE-014).
-3. **Write two more Area Flow tabs.** The storyboard's Area Flow tab now has sub-tabs; Salary is
-   done, and Getting Started (1) and Confidence (6) are scaffolded with a five-step guide each.
-   Why those two: Getting Started is the busiest area, and Confidence is the one most likely to
-   break the stage model — better to find that out on purpose.
+Otema's 54 answers are a starting point, not the product. The work below is an argument for what a
+bot built on top of them could be: it holds a subject open across a conversation, knows what it has
+and hasn't covered, notices when the person has moved on, admits what it doesn't know, and goes to
+the live web for the few questions where a real number matters.
 
-### What David is doing, and what he is not
+None of that came from BSC. All of it was built on top of what BSC gave us — which is the habit
+worth taking from this. When you get a set of answers, the question is not "how do I serve these",
+it is "what can I build that these make possible".
 
-David does not deploy — he works locally and hands over. `npm run coach` is his working
-implementation, not a prototype: it talks to real Azure, does real web searches, and holds real
-area state in memory. `npm run coach:scenarios` runs three five-turn conversations and writes
-transcripts to `examples/`, which are committed so a later change can be diffed against them.
+**Don't worry about duplicating code.** Claude writes it, and rewriting is cheap. Worry about the
+structure, and about knowing where everything lives. That is what the storyboard is for, and why it
+is central rather than documentation written after the fact.
 
-### The 10 open issues, grouped by what they block
+### What changed
 
-**Blocks v4 starting** — ISSUE-008 (area state) and ISSUE-014 (location). Both are in the
-migration; pushing it closes both.
+**Ten discussion areas.** The 57 training questions divide into ten areas. Salary & Negotiation
+(area 9) is worked through in full as the pattern; the rest are named but not built.
 
-**Blocks v4 shipping to users, not building it** — ISSUE-012. The 26 drafted answers exist with
-routing metadata but none are approved, so `approvedGeneratedExamples()` returns nothing. The
-area flow can be built and tested against Otema's five real answers; it just can't go in front of
-anyone until she has reviewed the drafts.
+**An internal flowchart for one area.** Salary has three stages — before an offer, an offer on the
+table, already in the job — and a coverage map of which answers belong to each. Crucially this is
+**not a router**: the conversation is wordalisation-driven throughout. One call places the person in
+a stage, the stage decides which answers get shown to the model, the model writes the reply. The
+first version I specified *was* a router with fixed edges between answers, and it was wrong — that
+kind of determinism has been outgrown at every previous layer of this coach.
 
-**Correctness, still open** — ISSUE-023: search results get their pay period silently converted,
-month reported as year, carrying a real citation so it reads as verified. High priority and the
-one I would not ship web search without.
+**26 answers that are not Otema's.** Filling the area properly needed answers she never gave. They
+live in a separate file, `botema-generated-examples.ts`, with a per-entry `reviewStatus`, and the
+only function that reads them filters to `approved` — so **none of them can reach a user** until she
+has been through them. That review step is what Sena's response reviewer should become.
 
-**Is the work itself, not a prerequisite** — ISSUE-013 and ISSUE-015 are Phase 2.
+**Web search, for three questions out of fifteen.** Only where a real, current number matters —
+what a role pays, freelance rates, cross-border pay. Two separate calls: one that searches, one that
+writes the answer in her voice from what came back. Everything else stays unsearched, because
+searching "how do I ask for a raise" adds latency and dilutes her voice for nothing.
 
-**Standing hazards** — ISSUE-019 (`bsc-functions.ts` is shared, not Chataki's — deleting it
-breaks the live coach), ISSUE-001 (the small model is not reliable; measured this session),
-ISSUE-003 (Persona Voice Kit roadmap), ISSUE-021 (the harness duplicates the figure guard).
+**Chataki removed from the design.** One bot for now. Her code is untouched and nothing was deleted,
+but the picker is gone and every request goes to Botema. Worth revisiting later as a different idea:
+one coach, with Chataki answering on some topics and Botema on others.
 
-### One thing to know before reading the storyboard
+### What I'd like you to do next
 
-It is a **target spec**, not documentation. Two-thirds of it describes a bot that does not exist.
-Check the LIVE / CHANGED / PROPOSED tag before treating any section as true of the running system.
+1. **Take two more areas through the same treatment.** The storyboard's Area Flow tab now has
+   sub-tabs — Salary is done, and **Getting Started (1)** and **Confidence (6)** are scaffolded with
+   a five-step guide on each. Those two on purpose: Getting Started is the busiest area, and
+   Confidence is the one most likely to break the stage model, because its stages almost certainly
+   aren't situational the way Salary's are. Better to find that out deliberately.
+
+2. **Expand past what you were given.** Salary went 5 real answers → 15 → 31 once the gaps were
+   mapped. Expect the same everywhere. A stage with two answers behind it will be thin and
+   repetitive — that is the signal to write more, not to merge the stage away.
+
+3. **Try things that seem too ambitious.** The web search took an afternoon and is genuinely useful.
+   Whatever you think is out of reach probably isn't.
+
+### How to try it
+
+```
+npm run coach              # talk to it — real model, real searches, nothing touches the DB
+npm run coach:scenarios    # three five-turn conversations, writes transcripts to examples/
+```
+
+`examples/` has three conversations if you'd rather just read. **Always test with five turns** — one
+or two make almost any area look fine; the problems only appear over a run.
+
+### Things worth knowing before you read the storyboard
+
+**It is a target spec now, not documentation.** Around two-thirds describes the bot we want rather
+than the one running. Every section is tagged LIVE / CHANGED / PROPOSED — check the tag.
+
+**`bsc-functions.ts` is shared, not Chataki's.** Botema imports three of its classes. Deleting it
+because the name looks like hers would break the live coach. (I did exactly this and had to undo it.)
+
+**The model will not follow an instruction it keeps losing.** Three times now a formatting rule had
+to move into code — the narrowing check, the length cap, and inline lists. When an instruction fails
+twice, write the check instead of rewording it a third time.
+
+### Open, whenever you get to them
+
+- **ISSUE-023** — search results sometimes have their pay period converted, month reported as year.
+  Wrong number, real citation, so it reads as verified. The one I'd fix before web search goes near
+  a user.
+- **ISSUE-017 / ISSUE-020** — the live bot invents salary figures with fabricated sources, and its
+  length cap has never fired on most answers. Both fixed on this branch. No urgency, but worth
+  carrying whenever you next deploy.
+- **The migration** `20260815120000_area_state_and_location.sql` is written and not applied. Nothing
+  in the area model can run without it. All columns nullable, so it changes nothing on its own.
+
+### Finally
+
+The framework you built is genuinely good, and easy to build on — none of the above would have been
+a day's work otherwise. Everything here is on top of that.
 
 ---
 

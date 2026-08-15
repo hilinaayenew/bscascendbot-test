@@ -113,6 +113,89 @@ a day's work otherwise. Everything here is on top of that.
 
 ---
 
+> **Note on Sena's file.** `notes/for-sena-generator-lessons.md` was removed in commit
+> `6ffb46b` ("testing agent implemented"). I have not restored it, since I cannot tell whether that
+> was deliberate. The full 353 lines are intact at `f944f0a` — `git show f944f0a:notes/for-sena-generator-lessons.md`
+> brings them back. One further entry was written overnight and is summarised at the end of this file
+> under "For Sena".
+
+## 2026-08-15 (overnight) — Tester findings worked through; prose profile added
+
+David set the area-tester agent running on salary, then left it with me. Everything below is on
+`david-sub-areas`. 73 tests pass.
+
+### The agent's constraints held
+
+Six findings at the cap and not over, every one citing both the bot line and the rule it broke,
+eight more weighed and rejected in `## Not reported`. It ran the conversations once and did not edit
+the storyboard. That is the design working — the anti-spiral constraints are in
+`.claude/agents/area-tester.md` and are the reusable part.
+
+### The worst finding was the harness, not the coach
+
+When the scenarios were split per area, their check functions kept calling `replyOf`,
+`everyReplyAsks`, `jargonPerReply` and `maxRepeatOverlap` — which stayed in the runner's module
+scope. Every check threw `ReferenceError`; the runner's `catch` recorded each as a silent FAIL.
+`examples/README.md` read **"0 of 5 passed"** and carried no information at all.
+
+That is worse than having no tests, because it looks like a result. Helpers now live in
+`scripts/checks.mjs` and both files import them — verified 34 checks evaluate, 0 throw. The agent
+found this and correctly filed it as a harness problem rather than a coach one.
+
+### Then the coach findings, in order
+
+- **A fear read as a request to leave.** "i dont want to seem awkward and have them just move on to
+  the next candidate" — the bare "move on" matched `LEAVE_PHRASES`, which runs *before* any model
+  call, so the area closed with no judgment applied, at the exact sentence the confidence facet
+  exists for. Every phrase must now express leaving on its own, plus a `NOT_LEAVING` guard for fear
+  language. Eleven cases unit-tested.
+- **Two conversations died on their final turn** — the tool-call path returned null where the
+  content path already retried. It retries now, and all three failure paths speak instead of
+  printing a stack trace.
+- **Advice that had stopped applying.** Once a counter-offer is live she has already asked, already
+  been refused, already resigned — but "raise" and "asked" still matched the raise-asking examples.
+  A `supersedes` rule in the area config now retires those nine facets outright; down-weighting was
+  not enough, because the closest lexical match still wins.
+- **Repetition, in code at last.** The same three-item checklist on four consecutive turns. The
+  instruction had lost four times out of five conversations. `dropRepeatedSentences()` compares
+  content words, so a *rephrasing* is caught. Then it turned out a repeated script was hiding behind
+  a closing question — the sentence splitter merges quoted material with what follows, and the
+  "always keep questions" rule was exempting the whole block. Fixed and tested.
+- **"Ads often oversell what the company will pay"** — the employer's own argument, handed to her
+  mid-decision, contradicting Otema's S1. Rewriting the draft did not stop it reappearing, so
+  `stripAdsOversell()` now removes it.
+- **A missing facet.** Nothing covered an employer *demanding* proof of current pay, so the model
+  improvised a "redacted summary" — still her number, and she had just said it was half the market
+  rate. New **S3b** says don't send it and put the range question back to them.
+
+### The storyboard gained what it was missing
+
+**"What the Coach Will Never Do"** on the Prompts tab: every guard, whether a **prompt** or a
+**check** enforces it, and the answer that went wrong first. That column is the point — half these
+rules are code precisely because asking did not work, and treating the two alike is how you end up
+relying on a rule that has failed. Sena's notes predicted this gap exactly.
+
+### David's to-do — storage about the individual
+
+Two prose fields, `situation` and `aims`, alongside the variables rather than instead of them.
+Written by a small call that runs only when the classifier says she added something. Columns are in
+the unpushed migration.
+
+Three things learned by watching it fail: write in the third person as a note ("She is a backend
+developer in Nairobi, three years in the role") rather than quoting her back at herself; accumulate
+rather than restarting from the latest message; and never store a placeholder, because "(no
+information provided)" sitting in a field reads as something known.
+
+### Where it stands
+
+Sweep went 0/5 → 3/5, and the two remaining failures traced to faulty *checks* rather than the
+coach — one matching the bare word "inflate" against the correct advice "don't inflate or lie", the
+other missing "isn't complaining" because it looked for "not complain". Both corrected.
+
+The count of instructions that have had to become code is now **eight**.
+
+---
+
 ## 2026-08-15 — An agent for testing an area
 
 `.claude/agents/area-tester.md` — invoke it and ask it to test an area. It runs five conversations
@@ -931,3 +1014,48 @@ close an area explicitly rather than drifting out of it. Rules 1–4 are unaffec
 Chataki still has zero seeded voice examples — `coach_wordalisations` is empty, cleared by
 `20260723150000_clear_coach_wordalisations_pending_real_data.sql`, pending her real questionnaire.
 Botema's 54 examples are unaffected by any of the above.
+
+---
+
+# For Sena
+
+Her own file was removed in `6ffb46b` (see the note near the top). This entry was written after
+that, and is parked here so it is not lost.
+
+## 2026-08-15 (overnight) — a storyboard cannot say what a converser will never do
+
+**What happened.** A tester agent ran five conversations against the salary area and reported six
+findings. Working through them added four more code-level guards. When it came to recording any of
+it in the storyboard, there was nowhere to put it — so we built a section by hand:
+**"What the Coach Will Never Do"**, a table of every rule with a column stating whether a **prompt**
+or a **check** enforces it.
+
+That column is the whole point. Eight rules in this project began as instructions and had to become
+code because the model would not honour them. A reader who cannot tell the two apart will trust a
+rule that has already failed eight times.
+
+**The generator has no vocabulary for any of this.** It describes what a converser knows
+(`dataSources`), what it will and won't answer (`scope`), what it says (prompts), and what functions
+it calls (`capabilities`, `flows`). It cannot describe:
+
+- what the converser will never do
+- which of those are enforced by prompt and which by code
+- what output went wrong first, and therefore why the rule exists
+- that a rule was tried as an instruction and lost
+
+**Candidate change, sharpened from the earlier entry.** A `guarantees` array, each entry carrying:
+a statement of what will never happen, `enforcedBy: "prompt" | "code"`, the identifier of the
+constant or function, and — most usefully — the observed output that prompted it. Rendered as a
+table. Most of ours are not BSC-specific: a health assistant needs the same no-invented-figures rule
+with different nouns.
+
+**A second observation, cheaper and possibly more valuable.** The single most damaging bug found
+overnight was a *test harness* failure, not a converser one: after the scenarios were split per
+area, every check threw `ReferenceError`, the runner swallowed it, and the results file read "0 of 5
+passed" while carrying no information whatsoever. Silent green — or in this case silent red — is
+worse than no tests.
+
+If the generator ever renders a Tests tab from real runs, it should distinguish **failed**,
+**passed**, and **did not execute**. Ours reported the third as the first for several hours, and
+only an agent reading the transcripts caught it.
+

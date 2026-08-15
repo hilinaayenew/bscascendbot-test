@@ -1,6 +1,6 @@
 # She resigned and they suddenly found the money
 
-_Run 2026-08-15 17:59 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 18:08 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C throughout, and asks why the number only appeared once she was leaving.
 
@@ -12,74 +12,67 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I handed in my notice last week and now they've offered me 30% more to stay
-  [stage C — They are negotiating with their current employer after resigning; this is a stage C money conversation.]
+  [stage C — User is negotiating with their current employer after giving notice; employer offered 30% to stay.]
   → enterDiscussionArea(9 · Salary & Negotiation)
+  [sentence cap fired — the model wrote a rundown]
   [drew on G8, S4c, S4, S4a — 1 Otema, 3 drafted]
 
 Botema
-  30% is a real signal they want you to stay, but these offers can be
-  temporary pressure tactics. If you stay, get it in writing: new base salary,
-  a title that matches the work, a 12‑month review with a clear promotion
-  path, and agreed benefits. What are the top reasons you wanted to leave, and
-  does this new offer actually address them long enough for you?
+  Counter-offers are real, but they rarely fix the deeper reasons you handed
+  in your notice. If you’re considering staying, push for a written package: a
+  clear new role/title, a salary that reflects the market and currency
+  reality, a defined timeline for review, and concrete growth opportunities or
+  a learning budget. What would you need to see in writing beyond the 30% to
+  feel confident staying?
 
   you > I'd asked for a raise twice before and got nothing
-  [stage C — User is negotiating pay with current employer after asking before; confirms they're in stage C]
+  [stage C — User has a history of asking for raises (twice denied) and is continuing pay discussion with employer; this is stage C (negotiation with current employer) and needs strategic guidance.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on G8, G9a, G1, G1a — 0 Otema, 4 drafted]
 
 Botema
-  If you’ve asked for a raise twice and got nothing, a 30% increase to stay is
-  a real signal they want to keep you, but it can be a temporary tactic. What
-  are the two most important reasons you wanted to leave, and would this offer
-  address them in a sustainable way?
+  That pattern is real and well documented—being offered change only after you
+  threaten to leave happens to many women in tech, you’re not imagining it.
+  Since you asked before and got nothing, treat the 30% as leverage for a
+  written package rather than a windfall. What one element do you need in
+  writing to feel confident staying: title, money, or growth?
 
   you > honestly the money was only part of why I was going
-  [stage C — Non-monetary factors driving the move; money isn't the sole concern, so the negotiation strategy should address career growth, work-life balance, recognition, etc.]
+  [stage C — User is negotiating with current employer after handing in notice; money isn't the sole factor, so stage C fits; message adds new information about non-monetary factors.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on G8, G9, G9a, G1b — 0 Otema, 4 drafted]
 
 Botema
-  You’re right—the money was part, but not the whole. What mattered more were
-  growth, ownership, and a respectful culture; if you stay, push for a formal
-  development plan, a clear path to promotion, and a written agreement that
-  those changes stay in place along with the new salary and title. What are
-  the two non-monetary factors that would actually persuade you to stay
-  long-term, and how would you want them reflected in a written offer?
+  You're right—the money is only part of why you were leaving. What
+  non-monetary factor matters most to you, and how would you want it captured
+  in writing?
 
   you > my new employer has already sent the contract
-  [stage B — undefined]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S5a, G6, G7, S2 — 1 Otema, 3 drafted]
+  [azure error: fetch failed]
 
 Botema
-  Nice that the contract is out, but don’t sign yet—make sure it codifies the
-  growth you wanted and the non-monetary factors. Which clause in the contract
-  looks most unclear to you right now?
+  Sorry — that one did not come through properly on my end. Could you say it
+  again, or put it a different way?
 
   you > so do I take it or not
-  [stage B — User has a concrete offer/contract and must decide whether to accept or negotiate, which is stage B (negotiation with a prospective employer).]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S5a, G6, G7a, S3 — 1 Otema, 3 drafted]
+  [azure error: fetch failed]
 
 Botema
-  Don’t sign yet. This is about long-term fit: the contract should lock in a
-  formal development plan, a clear path to promotion, and a binding 12-month
-  review with milestones, in addition to the base salary and title. What
-  exactly does the contract say about growth and promotion, and what would you
-  want added to make it acceptable?
+  Sorry — that one did not come through properly on my end. Could you say it
+  again, or put it a different way?
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     9 · Salary & Negotiation
-  covered_stages  C, B
-  touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a, S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G5
+  covered_stages  C
+  touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
   closed_areas    —
-  role/location   not specified / —
+  role/location   current role / —
+  where she is    She handed in her notice last week; the employer has offered her 30% more to stay. She says money was only part of why she was going.
+  trying to do    She had asked for a raise twice before and got nothing.
 
   Nothing was written to any database.
 ```
@@ -87,12 +80,12 @@ Botema
 ## Checks
 
 - PASS — classified stage C
-- **FAIL** — questions why the money appeared only now
+- PASS — questions why the money appeared only now
 - PASS — treats money as not the whole reason
 - PASS — every reply ends on a question
-- PASS — no two replies open the same way
+- **FAIL** — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms
-- PASS — no reply mostly restates the one before it
+- **FAIL** — no reply mostly restates the one before it
 
 ---
 

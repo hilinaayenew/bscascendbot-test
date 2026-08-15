@@ -23,10 +23,13 @@ import {
   NARROW_SELF_CHECK,
   LONG_FORM_ESCAPE_HATCH,
   resolveNarrowOrAnswer,
+  NO_INVENTED_FIGURES,
+  STAND_WITH_HER,
+  HISTORY_WINDOW,
 } from "./converser.ts";
 import { KNOWLEDGE_BASE, TOPIC_CATEGORIES, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 
-const ADVISE_SYSTEM_PROMPT = `You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. Default to a short, direct answer — a sentence or two, or a short paragraph at most. The knowledge below may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} Otherwise, only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper — ${LONG_FORM_ESCAPE_HATCH} Always end with a question that invites the user to share more about their situation. If the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.`;
+const ADVISE_SYSTEM_PROMPT = `You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. Default to a short, direct answer — a sentence or two, or a short paragraph at most. The knowledge below may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} Otherwise, only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper — ${LONG_FORM_ESCAPE_HATCH} ${NO_INVENTED_FIGURES} ${STAND_WITH_HER} Always end with a question that invites the user to share more about their situation. If the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.`;
 
 // Single Azure OpenAI chat-completions call. Returns null content (not a
 // thrown error) if the API responded OK but with no visible text — that
@@ -135,6 +138,12 @@ export class CaptureUserBackground extends ChangeContextFunction {
           type: "string",
           description: "What they want to achieve",
         },
+        challenges: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Specific obstacles they mention — e.g. no laptop, limited data, caring responsibilities, unreliable power, no local mentors",
+        },
       },
       required: [],
     };
@@ -146,6 +155,12 @@ export class CaptureUserBackground extends ChangeContextFunction {
     if (args.current_background) profile.current_background = String(args.current_background);
     if (args.target_role) profile.target_role = String(args.target_role);
     if (args.goals) profile.goals = String(args.goals);
+    // Additive, not replacing — challenges surface one at a time across a
+    // conversation, so a later mention shouldn't wipe an earlier one.
+    if (Array.isArray(args.challenges) && args.challenges.length) {
+      const incoming = (args.challenges as unknown[]).map(String);
+      profile.challenges = [...new Set([...(profile.challenges || []), ...incoming])];
+    }
 
     // Persist to database (best-effort, don't block on failure)
     try {
@@ -159,6 +174,7 @@ export class CaptureUserBackground extends ChangeContextFunction {
             current_background: profile.current_background,
             target_role: profile.target_role,
             goals: profile.goals,
+            challenges: profile.challenges,
             updated_at: new Date().toISOString(),
           });
       }
@@ -205,7 +221,7 @@ export class AdviseOnCareerTopic extends WordaliseFunction {
   }
 
   async generateResponse(prompt: string, _question: string): Promise<string> {
-    const history = this.converser.context.conversationHistory.slice(-6);
+    const history = this.converser.context.conversationHistory.slice(-HISTORY_WINDOW);
     const messages: OAIMessage[] = [
       {
         role: "system",
@@ -255,11 +271,11 @@ export class AddressMindsetChallenge extends WordaliseFunction {
   }
 
   async generateResponse(prompt: string, _question: string): Promise<string> {
-    const history = this.converser.context.conversationHistory.slice(-6);
+    const history = this.converser.context.conversationHistory.slice(-HISTORY_WINDOW);
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: `You are the BSC AI Career Coach addressing a mindset challenge. Be warm, honest, and grounded — but never open with a stock acknowledgment phrase like "I hear you," "That sounds hard," or "Great question." Get straight into a helpful, specific response; let the understanding come through in what you say, not a scripted opening line. Speak in first person. No markdown. Default to a short, direct response — one clear insight plus one next step is often enough. Only go longer if the situation genuinely needs more, or the user asks you to explain more or go deeper — ${LONG_FORM_ESCAPE_HATCH} End with a question that invites them to share more.`,
+        content: `You are the BSC AI Career Coach addressing a mindset challenge. Be warm, honest, and grounded — but never open with a stock acknowledgment phrase like "I hear you," "That sounds hard," or "Great question." Get straight into a helpful, specific response; let the understanding come through in what you say, not a scripted opening line. Speak in first person. No markdown. Default to a short, direct response — one clear insight plus one next step is often enough. Only go longer if the situation genuinely needs more, or the user asks you to explain more or go deeper — ${LONG_FORM_ESCAPE_HATCH} ${STAND_WITH_HER} End with a question that invites them to share more.`,
       },
       ...history,
       { role: "user", content: prompt },

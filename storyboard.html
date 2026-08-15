@@ -123,6 +123,10 @@
   .card ul li::before { content: "–"; position: absolute; left: 0; color: var(--ink-muted); }
   .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.03em; }
   .pill.chataki { background: var(--accent-light); color: var(--accent); }
+  /* Parked persona — present in the code, absent from the product. Muted
+     rather than colour-coded, so it doesn't read as a live option. */
+  .card.parked { border-top: 4px solid var(--border); opacity: 0.82; }
+  .pill.parked { background: var(--border); color: var(--ink-muted); }
   .pill.botema { background: var(--teal-light); color: var(--teal); }
 
   /* Flow states */
@@ -200,6 +204,136 @@
   .flow-note { width: 100%; background: var(--paper); border: 1px dashed var(--border); border-radius: 6px; padding: 7px 12px; font-size: 0.73rem; color: var(--ink-muted); font-style: italic; text-align: center; margin-top: 10px; }
   @media (max-width: 680px) { .flows-grid, .grid-2 { grid-template-columns: 1fr; } .flow { flex-direction: column; } .flow-arrow { transform: rotate(90deg); align-self: center; } }
 
+  /* ── Area Flow tab ────────────────────────────────────────────────────
+     The within-area graph. Deliberately NOT one big node-and-arrow diagram:
+     15 facets with ~45 edges drawn literally is a hairball nobody can read.
+     Instead: a stage-level map that IS drawn (few enough nodes to be legible),
+     and the facet-level edges as chips on each card — which is also the exact
+     data structure someone has to build. */
+  .stage-map { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 12px; overflow-x: auto; }
+  .stage-map svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  .sm-box { fill: var(--accent-pale); stroke: var(--accent); stroke-width: 1.5; }
+  .sm-box-alt { fill: var(--paper); stroke: var(--border); stroke-width: 1.5; }
+  .sm-label { fill: var(--accent); font-family: "SF Mono", Consolas, monospace; font-size: 10px; font-weight: 700; letter-spacing: .06em; }
+  .sm-title { fill: var(--ink); font-family: "Iowan Old Style", Georgia, serif; font-size: 13px; font-weight: 600; }
+  .sm-sub { fill: var(--ink-muted); font-size: 10.5px; }
+  .sm-edge { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+  .sm-edge-soft { stroke: var(--ink-muted); stroke-width: 1.2; fill: none; stroke-dasharray: 4 3; }
+  .sm-edge-label { fill: var(--ink-muted); font-size: 9.5px; font-style: italic; }
+
+  /* Key for the facet codes — the stage boxes can only fit IDs, so the
+     diagram is unreadable without this sitting directly beneath it. */
+  .key { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 10px; padding: 15px 17px; margin-bottom: 12px; }
+  .key-intro { font-size: .81rem; color: var(--ink-muted); margin-bottom: 12px; line-height: 1.6; }
+  .key-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 6px 18px; }
+  .key-grid div { font-size: .8rem; display: flex; align-items: baseline; gap: 8px; }
+  .key-grid .chip { flex-shrink: 0; min-width: 30px; text-align: center; }
+
+  /* Sub-tabs — one per discussion area inside the Area Flow tab. Each area's
+     page is long, so these are what make it navigable rather than a scroll.
+     Deliberately lighter than the main tab bar: pills rather than underlines,
+     so the hierarchy reads at a glance. */
+  .sub-tab-bar { display: flex; flex-wrap: wrap; gap: 7px; padding: 5px; background: var(--paper-raised); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 26px; }
+  .sub-tab-btn {
+    border: 1px solid transparent; background: transparent; border-radius: 7px; cursor: pointer;
+    padding: 7px 13px; font-family: inherit; font-size: .8rem; font-weight: 600; color: var(--ink-muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sub-tab-btn:hover { color: var(--accent); background: var(--accent-pale); }
+  .sub-tab-btn.active { background: var(--accent); color: #fff; }
+  .sub-tab-btn .sn { font-family: "SF Mono", Consolas, monospace; font-size: .66rem; opacity: .75; }
+  .sub-tab-btn .todo { font-family: "SF Mono", Consolas, monospace; font-size: .58rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; background: var(--amber-light); color: var(--amber); }
+  .sub-tab-btn.active .todo { background: rgba(255,255,255,.22); color: #fff; }
+  .sub-panel { display: none; }
+  .sub-panel.active { display: block; }
+
+  /* Scaffold for an area nobody has written yet */
+  .scaffold { background: var(--paper-raised); border: 1px dashed var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 13px; }
+  .scaffold h4 { font-size: .87rem; font-weight: 700; margin-bottom: 5px; }
+  .scaffold p { font-size: .82rem; color: var(--ink-muted); line-height: 1.6; }
+  .scaffold .hint { font-size: .78rem; color: var(--ink-muted); font-style: italic; margin-top: 7px; padding-left: 11px; border-left: 2px solid var(--border); }
+
+  /* W marker — facets allowed to reach the live web. Deliberately loud and
+     rare: three of fifteen. If this stops looking exceptional, it's spreading. */
+  .wsearch { font-family: "SF Mono", Consolas, monospace; font-size: .58rem; font-weight: 700; letter-spacing: .04em; padding: 1px 6px; border-radius: 3px; background: var(--teal); color: #fff; flex-shrink: 0; }
+  .wsearch.cond { background: transparent; color: var(--teal); border: 1px solid var(--teal); }
+
+  /* Build plan */
+  .phase { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+  .phase-head { display: flex; align-items: baseline; gap: 11px; padding: 13px 17px; background: var(--accent-pale); border-bottom: 1px solid var(--border); }
+  .phase-head .pnum { font-family: "SF Mono", Consolas, monospace; font-size: .66rem; font-weight: 700; letter-spacing: .08em; color: var(--accent); }
+  .phase-head h3 { font-family: "Iowan Old Style", Georgia, serif; font-size: 1.05rem; font-weight: 600; }
+  .phase-head .pgate { margin-left: auto; font-size: .7rem; font-weight: 700; padding: 2px 9px; border-radius: 10px; background: var(--red-light); color: var(--red); white-space: nowrap; }
+  .phase-head .pgate.clear { background: var(--teal-light); color: var(--teal); }
+  .phase-body { padding: 15px 17px; display: flex; flex-direction: column; gap: 11px; }
+  .phase-body p { font-size: .85rem; }
+  .steps { display: flex; flex-direction: column; gap: 7px; }
+  .step-row { display: flex; gap: 10px; align-items: baseline; font-size: .83rem; padding-left: 2px; }
+  .step-row .sr-n { font-family: "SF Mono", Consolas, monospace; font-size: .64rem; font-weight: 700; color: var(--accent); flex-shrink: 0; min-width: 20px; }
+  .step-row code { font-family: "SF Mono", Consolas, monospace; font-size: .76rem; }
+  .depends { font-size: .78rem; color: var(--ink-muted); font-style: italic; padding-top: 9px; border-top: 1px dashed var(--border); }
+
+  /* Response branches — the missing level. A closing question is a decision
+     point, and each likely reply either routes to a facet we have or exposes
+     content we don't. Rendered per-facet so the gaps cluster visibly. */
+  .branch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+  .bcard { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .bcard-head { padding: 11px 14px; background: var(--paper); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+  .bcard-head .bh-top { display: flex; align-items: baseline; gap: 8px; }
+  .bcard-head .bh-q { font-size: .83rem; font-style: italic; color: var(--ink); }
+  .ctype { font-family: "SF Mono", Consolas, monospace; font-size: .55rem; font-weight: 700; letter-spacing: .05em; padding: 1px 6px; border-radius: 3px; margin-left: auto; flex-shrink: 0; }
+  .ctype.branching { background: var(--accent-light); color: var(--accent); }
+  .ctype.refining { background: var(--teal-light); color: var(--teal); }
+  .branches { display: flex; flex-direction: column; }
+  .branch { display: flex; align-items: baseline; gap: 9px; padding: 8px 14px; border-bottom: 1px solid var(--border); font-size: .8rem; }
+  .branch:last-child { border-bottom: none; }
+  .branch .said { flex: 1; color: var(--ink-muted); }
+  .branch .said::before { content: "“"; }
+  .branch .said::after { content: "”"; }
+  .branch.isnew { background: var(--amber-light); }
+  .branch.isnew .said { color: var(--ink); font-weight: 600; }
+  .tgt { font-family: "SF Mono", Consolas, monospace; font-size: .62rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+  .tgt.have { background: var(--accent-light); color: var(--accent); }
+  .tgt.exit { background: var(--red-light); color: var(--red); }
+  .tgt.need { background: var(--amber); color: #fff; }
+  .tgt.drafted { background: transparent; color: var(--amber); border: 1px solid var(--amber); }
+  @media (max-width: 700px) { .branch-grid { grid-template-columns: 1fr; } }
+
+  /* Full text of every facet — the page asks a reader to trust edges between
+     answers, so the answers themselves have to be on the same page. */
+  .full-list { display: flex; flex-direction: column; gap: 14px; }
+  .full-facet { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 10px; padding: 15px 17px; display: flex; flex-direction: column; gap: 8px; }
+  .full-facet.real { border-left: 3px solid var(--teal); }
+  .full-facet.drafted { border-left: 3px solid var(--amber); }
+  .ff-top { display: flex; align-items: baseline; gap: 9px; }
+  .ff-top h4 { font-size: .89rem; font-weight: 700; }
+  .ff-q { font-size: .84rem; font-weight: 600; color: var(--ink-muted); }
+  .ff-a { font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: .97rem; line-height: 1.65; padding-left: 13px; border-left: 2px solid var(--accent); }
+  .full-facet.drafted .ff-a { border-left-color: var(--amber); }
+
+  .stage-band { display: flex; align-items: baseline; gap: 10px; margin: 26px 0 12px; padding-bottom: 7px; border-bottom: 1px solid var(--border); }
+  .stage-band .sb-id { font-family: "SF Mono", Consolas, monospace; font-size: .66rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .stage-band h3 { font-family: "Iowan Old Style", Georgia, serif; font-size: 1.05rem; font-weight: 600; }
+  .stage-band .sb-note { font-size: .76rem; color: var(--ink-muted); font-style: italic; margin-left: auto; }
+
+  .facet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+  .facet { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; display: flex; flex-direction: column; gap: 7px; }
+  .facet.real { border-left: 3px solid var(--teal); }
+  .facet.drafted { border-left: 3px solid var(--amber); }
+  .facet-top { display: flex; align-items: baseline; gap: 8px; }
+  .facet-id { font-family: "SF Mono", Consolas, monospace; font-size: .66rem; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+  .facet-top h4 { font-size: .87rem; font-weight: 700; line-height: 1.3; }
+  .src { font-family: "SF Mono", Consolas, monospace; font-size: .58rem; font-weight: 700; letter-spacing: .05em; padding: 1px 6px; border-radius: 3px; margin-left: auto; flex-shrink: 0; }
+  .src.real { background: var(--teal-light); color: var(--teal); }
+  .src.drafted { background: var(--amber-light); color: var(--amber); }
+  .facet .closer { font-size: .8rem; color: var(--ink); font-style: italic; padding-left: 9px; border-left: 2px solid var(--border); }
+  .facet .edges { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+  .edges .elabel { font-family: "SF Mono", Consolas, monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-muted); margin-right: 2px; }
+  .chip { font-family: "SF Mono", Consolas, monospace; font-size: .63rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: var(--accent-light); color: var(--accent); white-space: nowrap; }
+  .chip.self { background: var(--paper); color: var(--ink-muted); border: 1px solid var(--border); }
+  .chip.exit { background: var(--red-light); color: var(--red); }
+  @media (max-width: 700px) { .facet-grid { grid-template-columns: 1fr; } }
+
   /* Data source cards */
   .ex-card { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
   .ex-head { padding: 9px 16px; font-size: 0.78rem; font-weight: 700; display: flex; gap: 10px; align-items: center; }
@@ -213,6 +347,44 @@
 
   .banner { border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; font-size: 0.84rem; }
   .banner.info { background: var(--teal-light); color: var(--teal); border: 1px solid var(--teal); }
+  .banner.spec { background: var(--amber-light); color: var(--amber); border: 1px solid var(--amber); }
+
+  /* Status markers — this document is now a TARGET SPEC, so every claim has to
+     say whether it describes the deployed bot or the one we want. Without this
+     the reader can't tell a description from a request. */
+  .st {
+    display: inline-block; font-family: "SF Mono", Consolas, monospace; font-size: 0.6rem; font-weight: 700;
+    letter-spacing: 0.06em; padding: 2px 7px; border-radius: 4px; vertical-align: middle; white-space: nowrap;
+  }
+  .st.live { background: var(--teal-light); color: var(--teal); border: 1px solid var(--teal); }
+  .st.proposed { background: var(--amber-light); color: var(--amber); border: 1px solid var(--amber); }
+  .st.changed { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; padding: 14px 18px; background: var(--paper-raised); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 30px; font-size: 0.79rem; }
+  .legend div { display: flex; align-items: center; gap: 8px; }
+  .section-heading .st { margin-left: 8px; }
+
+  /* Discussion areas — the ten sub-headers the whole model now turns on */
+  .areas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .area-card { background: var(--paper-raised); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 10px; padding: 14px 16px; }
+  .area-card .area-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 3px; }
+  .area-card h4 { font-size: 0.9rem; font-weight: 700; }
+  .area-card .area-count { font-family: "SF Mono", Consolas, monospace; font-size: 0.68rem; color: var(--ink-muted); white-space: nowrap; }
+  .area-card .area-key { font-family: "SF Mono", Consolas, monospace; font-size: 0.68rem; color: var(--ink-muted); margin-bottom: 8px; }
+  .area-card ul { list-style: none; font-size: 0.79rem; color: var(--ink-muted); }
+  .area-card ul li { padding: 2px 0 2px 13px; position: relative; }
+  .area-card ul li::before { content: "·"; position: absolute; left: 2px; font-size: 1.1rem; line-height: 1; color: var(--accent); }
+  @media (max-width: 680px) { .areas-grid { grid-template-columns: 1fr; } }
+
+  /* Three-state area lifecycle */
+  .lifecycle { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .lc-state { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .lc-head { padding: 11px 15px; font-size: 0.82rem; font-weight: 700; background: var(--accent-pale); color: var(--accent); border-bottom: 1px solid var(--border); }
+  .lc-body { padding: 13px 15px; }
+  .lc-body p { font-size: 0.79rem; color: var(--ink-muted); margin-bottom: 8px; }
+  .lc-body ul { list-style: none; font-size: 0.79rem; }
+  .lc-body ul li { padding: 3px 0 3px 13px; position: relative; }
+  .lc-body ul li::before { content: "·"; position: absolute; left: 2px; font-size: 1.1rem; line-height: 1; color: var(--accent); }
+  @media (max-width: 760px) { .lifecycle { grid-template-columns: 1fr; } }
 
   /* Issues tab */
   .issue-card { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
@@ -260,9 +432,11 @@
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('overview', this)">Overview</button>
     <button class="tab-btn" onclick="switchTab('flows', this)">Function Flows</button>
+    <button class="tab-btn" onclick="switchTab('areaflow', this)">Area Flow</button>
+    <button class="tab-btn" onclick="switchTab('plan', this)">Build Plan</button>
     <button class="tab-btn" onclick="switchTab('data', this)">Data Sources &amp; Training Data</button>
     <button class="tab-btn" onclick="switchTab('prompts', this)">Prompts &amp; Instructions</button>
-    <button class="tab-btn" onclick="switchTab('issues', this)" id="issues-tab-btn" style="display:none">Issues To Check</button>
+    <button class="tab-btn" onclick="switchTab('issues', this)" id="issues-tab-btn">Issues To Check</button>
   </div>
 
   <!-- OVERVIEW -->
@@ -274,73 +448,223 @@
         <span style="height:55%"></span><span style="height:30%"></span><span style="height:70%"></span>
         <span style="height:40%"></span><span style="height:60%"></span><span style="height:20%"></span>
       </div>
-      <span class="badge">Product Storyboard · v3</span>
+      <span class="badge">Target Spec · v4</span>
       <h1>BSC AI Career Coach</h1>
-      <p>A chat-based tech career coaching assistant for Ascendency, offering two switchable personas that answer using a topic-tagged knowledge base, real few-shot voice examples, and a routing decision made entirely by the AI's own judgment — backed by code-level safety nets that catch what that judgment misses.</p>
+      <p>A chat-based tech career coaching assistant for Ascendency. The coach's 57 training questions are grouped into ten <strong>discussion areas</strong>; a conversation enters one area, stays inside it for as long as it's useful, then deliberately closes it before opening another — so the user works through one subject at a time instead of receiving scattered one-off answers.</p>
+    </div>
+
+    <div class="banner spec">
+      <strong>This is a target spec, not a description of the deployed bot.</strong> Up to v3 this document recorded what the code already did. From v4 it also records what we want it to do — the area-based conversation model below is a design request, not shipped behaviour. Every section is tagged so you can tell which is which: build from the <span class="st proposed">PROPOSED</span> and <span class="st changed">CHANGED</span> items, and treat <span class="st live">LIVE</span> as already working.
+    </div>
+
+    <div class="legend">
+      <div><span class="st live">LIVE</span> Deployed and working today</div>
+      <div><span class="st changed">CHANGED</span> Exists, but should behave differently</div>
+      <div><span class="st proposed">PROPOSED</span> Doesn't exist yet — needs building</div>
     </div>
 
     <div class="section">
-      <div class="section-title">Overview · Personas</div><h2 class="section-heading">Two Personas</h2>
+      <div class="section-title">Overview · The coach</div><h2 class="section-heading">One Coach <span class="st live">LIVE</span></h2>
+      <p class="prompt-intro">There were two switchable personas until 15 August 2026. Chataki has been parked to simplify while the area model is built, and every conversation now goes to Botema.</p>
       <div class="grid-2">
-        <div class="card chataki">
-          <div class="pill chataki">Chataki · default coach</div>
-          <h3>A real voice too — placeholder until she's onboarded</h3>
-          <p class="subtitle">Staff-authored for now · 0 examples currently — table cleared, pending her questionnaire</p>
-          <ul>
-            <li>Meant to be modeled on a real person's voice, same as Botema</li>
-            <li>Her own questionnaire hasn't been collected yet — an earlier placeholder set was seeded, then cleared once it turned out to be Botema-specific, not shared</li>
-            <li>Coach still functions with a more generic tone until real answers are seeded</li>
-            <li>Voice examples live in Postgres (<code>coach_wordalisations</code>) — currently empty</li>
-          </ul>
-        </div>
         <div class="card botema">
-          <div class="pill botema">Botema · real-voice coach</div>
+          <div class="pill botema">Botema · the coach</div>
           <h3>Modeled on a real mentor's actual words</h3>
           <p class="subtitle">Otema's own answers · 54 examples, all source-traced</p>
           <ul>
             <li>Every example traces to something Otema actually wrote</li>
             <li>Voice examples live in code (<code>botema-examples.ts</code>)</li>
+            <li>Direct, warm, aware of African tech markets — <code>BOTEMA_SYSTEM_PROMPT</code></li>
+            <li>A further 26 drafted answers exist but are unreviewed, so none are served yet</li>
+          </ul>
+        </div>
+        <div class="card parked">
+          <div class="pill parked">Chataki · parked</div>
+          <h3>Nothing deleted — just unreachable</h3>
+          <p class="subtitle">Removed from the user experience only, 15 Aug 2026</p>
+          <ul>
+            <li><code>bsc-coach.ts</code> is untouched and all seven classes in <code>bsc-functions.ts</code> remain</li>
+            <li>She never had a real voice collected — <code>coach_wordalisations</code> is empty, so she ran on knowledge and prompt alone</li>
+            <li>Reinstating her is an import plus a branch in <code>index.ts</code>, plus the widget picker</li>
+            <li>Careful: <strong><code>bsc-functions.ts</code> is shared, not hers</strong> — Botema imports three of its classes, so deleting it would break the live coach</li>
           </ul>
         </div>
       </div>
     </div>
 
     <div class="section">
-      <div class="section-title">Overview · State</div><h2 class="section-heading">Conversation Flow</h2>
-      <div class="flow">
-        <div class="flow-state">
-          <div class="state-box">
-            <h4>STATE 1 · No Context</h4>
-            <p>No topic or profile captured yet</p>
-          </div>
+      <div class="section-title">Overview · Discussion Areas</div>
+      <h2 class="section-heading">The Ten Discussion Areas <span class="st changed">CHANGED</span></h2>
+      <p class="prompt-intro">The 57 training questions in <code>bsc-coach-training-questions.csv</code> group into ten areas — these are the sub-headers a conversation moves between. Eight map one-to-one onto topics that already exist in <code>KNOWLEDGE_BASE</code>; the grouping is <span class="st changed">CHANGED</span> rather than <span class="st live">LIVE</span> because today these are flat, interchangeable tags on a single answer, not places a conversation can be <em>inside</em>.</p>
+      <div class="areas-grid">
+
+        <div class="area-card">
+          <div class="area-top"><h4>1 · Getting Started</h4><span class="area-count">Q1–8</span></div>
+          <div class="area-key">getting_started</div>
           <ul>
-            <li>Broad/ambiguous asks get a narrowing question first</li>
-            <li>AI writes its own tailored options, not fixed ones</li>
-            <li>Greeting and out-of-scope messages handled instantly</li>
+            <li>No background at all — where to begin</li>
+            <li>Self-teaching vs bootcamp vs degree</li>
+            <li>Beginner-friendly languages, realistic timelines</li>
+            <li>Transferable skills, free resources, which area fits</li>
           </ul>
         </div>
-        <div class="flow-arrow">→<div class="arrow-label">Topic or profile set</div></div>
-        <div class="flow-state">
-          <div class="state-box">
-            <h4>STATE 2 · Context Captured</h4>
-            <p>Topic in focus and/or profile known</p>
-          </div>
+
+        <div class="area-card">
+          <div class="area-top"><h4>2 · Further Education</h4><span class="area-count">Q9–15</span></div>
+          <div class="area-key">further_education</div>
           <ul>
-            <li>Answers stay tightly focused on that one facet</li>
-            <li>Profile (career stage, background, goals) informs tone</li>
-            <li>Follow-ups build on the last 6 messages of history</li>
+            <li>Whether a master's is needed, and which fields benefit</li>
+            <li>Choosing a programme; before or after experience</li>
+            <li>Certifications vs degrees</li>
+            <li>Funding, scholarships for women, studying while working</li>
           </ul>
         </div>
+
+        <div class="area-card">
+          <div class="area-top"><h4>3 · Career Paths &amp; Roadmaps</h4><span class="area-count">Q16–23</span></div>
+          <div class="area-key">career_paths</div>
+          <ul>
+            <li>Roadmaps: software dev, data/ML, UX/UI, cybersecurity</li>
+            <li>Product management, cloud/DevOps, project management</li>
+            <li>Specialisations within engineering and how to choose</li>
+          </ul>
+        </div>
+
+        <div class="area-card">
+          <div class="area-top"><h4>4 · Mentorship</h4><span class="area-count">Q24–29</span></div>
+          <div class="area-key">mentorship</div>
+          <ul>
+            <li>Finding, choosing and approaching a mentor</li>
+            <li>Getting value from sessions; mentor vs sponsor</li>
+            <li>Sustaining the relationship; what BSC itself offers</li>
+          </ul>
+        </div>
+
+        <div class="area-card">
+          <div class="area-top"><h4>5 · Wellbeing &amp; Balance</h4><span class="area-count">Q30–35</span></div>
+          <div class="area-key">wellbeing</div>
+          <ul>
+            <li>Boundaries in a demanding role; flexible working</li>
+            <li>Family responsibilities alongside career growth</li>
+            <li>Burnout while learning; staying motivated</li>
+            <li>Mental health through a career transition</li>
+          </ul>
+        </div>
+
+        <div class="area-card">
+          <div class="area-top"><h4>6 · Confidence &amp; Imposter Syndrome</h4><span class="area-count">Q36–40</span></div>
+          <div class="area-key">mindset</div>
+          <ul>
+            <li>Not belonging; feeling less competent than colleagues</li>
+            <li>Speaking up in meetings, presenting work</li>
+            <li>Applying when you feel under-qualified</li>
+            <li>Internalising achievements instead of dismissing them</li>
+          </ul>
+        </div>
+
+        <div class="area-card">
+          <div class="area-top"><h4>7 · Job Search &amp; Applications</h4><span class="area-count">Q41, 42, 44, 45</span></div>
+          <div class="area-key">cv_job_search</div>
+          <ul>
+            <li>CVs that stand out; overall search strategy</li>
+            <li>Getting hired with no industry experience</li>
+            <li>Using LinkedIn</li>
+          </ul>
+        </div>
+
+        <div class="area-card">
+          <div class="area-top"><h4>8 · Interview Preparation</h4><span class="area-count">Q43</span></div>
+          <div class="area-key">interview_prep</div>
+          <ul>
+            <li>Preparing for a technical interview</li>
+            <li>Thin on training questions — one, against a full knowledge topic</li>
+          </ul>
+        </div>
+        <div class="area-card">
+          <div class="area-top"><h4>9 · Salary &amp; Negotiation</h4><span class="area-count">Q46–50</span></div>
+          <div class="area-key">salary</div>
+          <ul>
+            <li>Finding your market rate</li>
+            <li>Negotiating a first offer without awkwardness</li>
+            <li>Handling the current-salary question; asking for a rise</li>
+            <li>Benefits beyond base salary</li>
+          </ul>
+        </div>
+
+        <div class="area-card">
+          <div class="area-top"><h4>10 · AI &amp; the Future of Tech Work</h4><span class="area-count">Q51–57</span></div>
+          <div class="area-key">ai_impact</div>
+          <ul>
+            <li>Is learning tech still worth it; future-proofing skills</li>
+            <li>Using AI tools to learn faster</li>
+            <li>AI in hiring; ethics of building AI systems</li>
+            <li>Breaking into AI/ML without a maths background</li>
+          </ul>
+        </div>
+
       </div>
+      <div class="flow-note" style="margin-top:16px;">One judgment call to confirm: area 7 previously merged the code's separate <code>cv_job_search</code> and <code>interview_prep</code> topics, because only Q43 covers interviews — too thin to sustain its own discussion. Splitting it back out would give ten areas.</div>
     </div>
 
     <div class="section">
-      <div class="section-title">Overview · Live Examples</div><h2 class="section-heading">Example Conversations</h2>
+      <div class="section-title">Overview · State</div>
+      <h2 class="section-heading">Area Lifecycle — Enter, Stay, Leave <span class="st proposed">PROPOSED</span></h2>
+      <p class="prompt-intro">This replaces the old two-state model (no-context → context-captured). The difference that matters: <strong>being inside an area is a state the bot holds and can leave</strong>, not just a tag on the last answer. A conversation should be able to work through salary properly, close it off, and then open mentorship as a fresh subject — with the coach aware that salary was already covered.</p>
+      <div class="lifecycle">
+
+        <div class="lc-state">
+          <div class="lc-head">STATE A · Outside any area</div>
+          <div class="lc-body">
+            <p>Opening messages, or the moment just after an area was closed.</p>
+            <ul>
+              <li>Greeting and out-of-scope handled as they are today</li>
+              <li>A message pointing clearly at one area enters it directly</li>
+              <li>A broad ask gets a narrowing question whose options <strong>are the areas themselves</strong></li>
+              <li>Returning users are offered areas they haven't covered yet</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="lc-state">
+          <div class="lc-head">STATE B · Inside an area</div>
+          <div class="lc-body">
+            <p>One area is open. This is where most of the conversation happens.</p>
+            <ul>
+              <li>Answers are drawn from that area's knowledge and its questions only</li>
+              <li>Follow-ups are read as belonging to this area unless clearly not</li>
+              <li>The coach can offer a natural next facet from the same area</li>
+              <li>Facets covered are recorded, so nothing is repeated on return</li>
+              <li>An off-area question triggers the exit check rather than a silent jump</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="lc-state">
+          <div class="lc-head">STATE C · Closing the area</div>
+          <div class="lc-body">
+            <p>An explicit hand-off, so a switch is never accidental.</p>
+            <ul>
+              <li>Triggered by the user asking to move on, or an off-area question</li>
+              <li>Also offered by the coach once an area's main facets are covered</li>
+              <li>Briefly sums up what was covered before closing</li>
+              <li>Then offers the remaining areas — returning to State A</li>
+              <li>Re-entering a closed area resumes it rather than starting over</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+      <div class="flow-note" style="margin-top:16px;">The gap to close: today the only stored context is <code>career_topic</code> — a single overwritable field with no memory of what was already discussed, and no concept of an area being open or closed. See ISSUE-008 and ISSUE-009.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Overview · Live Examples</div><h2 class="section-heading">Example Conversations <span class="st live">LIVE</span></h2>
+      <p class="prompt-intro">Three of these were recorded from Chataki before she was parked. The routing behaviour they show — narrowing, negation handling, the paragraph cap — is shared, so they still describe what happens; the decline wording has been updated to Botema's, which genuinely differs.</p>
       <div class="grid-2">
 
         <div class="widget-mock">
-          <div class="widget-titlebar chataki">
-            <span class="wt-title"><span class="wt-dot-avatar"></span>Chataki · AI Career Coach</span>
+          <div class="widget-titlebar botema">
+            <span class="wt-title"><span class="wt-dot-avatar"></span>Botema · AI Career Coach</span>
             <span class="wt-controls"><span class="wt-ctrl">–</span><span class="wt-ctrl">□</span><span class="wt-ctrl">×</span></span>
           </div>
           <div class="scenario-strip">Broad ask gets narrowed, not answered wholesale</div>
@@ -358,14 +682,14 @@
         </div>
 
         <div class="widget-mock">
-          <div class="widget-titlebar chataki">
-            <span class="wt-title"><span class="wt-dot-avatar"></span>Chataki · AI Career Coach</span>
+          <div class="widget-titlebar botema">
+            <span class="wt-title"><span class="wt-dot-avatar"></span>Botema · AI Career Coach</span>
             <span class="wt-controls"><span class="wt-ctrl">–</span><span class="wt-ctrl">□</span><span class="wt-ctrl">×</span></span>
           </div>
           <div class="scenario-strip">Negation is understood, not overridden by keywords</div>
           <div class="chat-window">
             <div class="bubble user">I want a field that is not related to tech</div>
-            <div class="bubble bot">That's a bit outside what I can help with — I'm the BSC AI Career Coach, focused specifically on tech career guidance. If there's a tech career question on your mind, I'd love to help.</div>
+            <div class="bubble bot">That one's outside my lane — I'm Botema, your BSC Career Coach, and I stick to tech careers. If you've got a tech career question, bring it — I'll give you my honest take.</div>
           </div>
           <div class="pipeline">
             <span class="step">input</span><span class="sep">→</span><span class="step hit">routing rule 1 — tech-specific scope</span><span class="sep">→</span><span class="step">answerOutOfScope</span>
@@ -373,8 +697,8 @@
         </div>
 
         <div class="widget-mock">
-          <div class="widget-titlebar chataki">
-            <span class="wt-title"><span class="wt-dot-avatar"></span>Chataki · AI Career Coach</span>
+          <div class="widget-titlebar botema">
+            <span class="wt-title"><span class="wt-dot-avatar"></span>Botema · AI Career Coach</span>
             <span class="wt-controls"><span class="wt-ctrl">–</span><span class="wt-ctrl">□</span><span class="wt-ctrl">×</span></span>
           </div>
           <div class="scenario-strip">Specific ask, answered directly and short</div>
@@ -403,27 +727,54 @@
         </div>
 
       </div>
+
+      <h2 class="section-heading" style="margin-top:34px;">A Full Area Transition <span class="st proposed">PROPOSED</span></h2>
+      <p class="prompt-intro">The four examples above are real, current behaviour. This one is the target — one area worked through, closed deliberately, and another opened, with the closed area remembered.</p>
+      <div class="widget-mock">
+        <div class="widget-titlebar botema">
+            <span class="wt-title"><span class="wt-dot-avatar"></span>Botema · AI Career Coach</span>
+          <span class="wt-controls"><span class="wt-ctrl">–</span><span class="wt-ctrl">□</span><span class="wt-ctrl">×</span></span>
+        </div>
+        <div class="scenario-strip">Enter area 8 → stay → close → enter area 4</div>
+        <div class="chat-window">
+          <div class="bubble user">how do I negotiate salary</div>
+          <div class="bubble bot">Walk in with a number already decided — the awkwardness passes in a minute, the extra pay lasts years. We're on <strong>Salary &amp; Negotiation</strong> now. Do you have a range in mind?</div>
+          <div class="bubble user">not really, how do I even find out what's fair?</div>
+          <div class="bubble bot">Check three sources and take the middle: local job ads with published ranges, people in your network doing the same role, and a global site adjusted for your market. What role are you pricing?</div>
+          <div class="bubble user">what about benefits?</div>
+          <div class="bubble bot">Ask about the ones that convert to money or time — training budget, remote days, healthcare, review timing. That's most of salary covered. Want to keep going here, or move on?</div>
+          <div class="bubble user">actually I think I need a mentor first</div>
+          <div class="bubble bot">Makes sense — we covered market rate, opening the conversation, and benefits, so that's there when you need it. Opening <strong>Mentorship</strong>. What's making you want one right now — direction, or someone to check your thinking against?</div>
+        </div>
+        <div class="pipeline">
+          <span class="step hit">enterDiscussionArea(salary)</span><span class="sep">→</span><span class="step">continueInArea</span><span class="sep">→</span><span class="step">continueInArea</span><span class="sep">→</span><span class="step hit">closeDiscussionArea</span><span class="sep">→</span><span class="step hit">enterDiscussionArea(mentorship)</span>
+        </div>
+      </div>
+      <div class="flow-note" style="margin-top:12px;">Note what "what about benefits?" does here — alone it's ambiguous, but inside an open area it needs no clarifying question. That disambiguation is the practical payoff of holding the state.</div>
     </div>
 
     <div class="section">
       <div class="section-title">Overview · Routing</div><h2 class="section-heading">How the Bot Decides What to Do</h2>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>What the user says</th><th>Function called</th><th>Type</th><th>What happens</th></tr></thead>
+          <thead><tr><th>What the user says</th><th>Function called</th><th>Type</th><th>Status</th><th>What happens</th></tr></thead>
           <tbody>
-            <tr><td>"what's the capital of France" / "not related to tech"</td><td><strong>answerOutOfScope</strong></td><td><span class="func-badge instruct">INSTRUCTIONS</span></td><td>Fixed decline — must be about a TECH career specifically, not careers generically</td></tr>
-            <tr><td>"I feel like an imposter"</td><td><strong>addressMindsetChallenge</strong></td><td><span class="func-badge wordalise">WORDALISE</span></td><td>Validating but non-scripted response, blends mindset + wellbeing knowledge</td></tr>
-            <tr><td>"I'm a nurse with 5 years' experience wanting to move into health tech"</td><td><strong>captureUserBackground</strong></td><td><span class="func-badge change">CHANGE_CONTEXT</span></td><td>Persists profile fields, chains to a re-engagement question</td></tr>
-            <tr><td>"hi" / "what can you do"</td><td><strong>howCoachWorks</strong></td><td><span class="func-badge instruct">INSTRUCTIONS</span></td><td>Fixed explainer, no AI call</td></tr>
-            <tr><td>"help me learn tech" / "what materials should I use"</td><td><strong>inviteUserContext</strong></td><td><span class="func-badge engage">ENGAGE</span></td><td>AI writes its own tailored question + options, same call as routing</td></tr>
-            <tr><td>"how do I write a CV" / "salary negotiation"</td><td><strong>updateCareerTopic</strong></td><td><span class="func-badge change">CHANGE_CONTEXT</span></td><td>Sets topic via enum, chains to adviseOnCareerTopic</td></tr>
+            <tr><td>"what's the capital of France" / "not related to tech"</td><td><strong>answerOutOfScope</strong></td><td><span class="func-badge instruct">INSTRUCTIONS</span></td><td><span class="st live">LIVE</span></td><td>Fixed decline — must be about a TECH career specifically, not careers generically</td></tr>
+            <tr><td>"hi" / "what can you do"</td><td><strong>howCoachWorks</strong></td><td><span class="func-badge instruct">INSTRUCTIONS</span></td><td><span class="st changed">CHANGED</span></td><td>Fixed explainer, no AI call — should now also name the ten areas as an opening menu</td></tr>
+            <tr><td>"I'm a nurse with 5 years' experience wanting to move into health tech"</td><td><strong>captureUserBackground</strong></td><td><span class="func-badge change">CHANGE_CONTEXT</span></td><td><span class="st live">LIVE</span></td><td>Persists profile fields, chains to a re-engagement question</td></tr>
+            <tr><td>"help me learn tech" / "what materials should I use"</td><td><strong>inviteUserContext</strong></td><td><span class="func-badge engage">ENGAGE</span></td><td><span class="st changed">CHANGED</span></td><td>Still AI-written, but when no area is open the options should be the areas themselves</td></tr>
+            <tr><td>"how do I negotiate salary" — while outside any area</td><td><strong>enterDiscussionArea</strong></td><td><span class="func-badge change">CHANGE_CONTEXT</span></td><td><span class="st proposed">PROPOSED</span></td><td>Replaces updateCareerTopic. Opens the area, marks it active, chains to the advice function</td></tr>
+            <tr><td>"what about benefits?" — while salary is open</td><td><strong>continueInArea</strong></td><td><span class="func-badge wordalise">WORDALISE</span></td><td><span class="st proposed">PROPOSED</span></td><td>Answers within the open area and records the facet as covered; no area change</td></tr>
+            <tr><td>"ok, let's talk about mentors instead"</td><td><strong>closeDiscussionArea</strong></td><td><span class="func-badge change">CHANGE_CONTEXT</span></td><td><span class="st proposed">PROPOSED</span></td><td>Sums up the open area, closes it, then offers areas — including the one just requested</td></tr>
+            <tr><td>"I feel like an imposter"</td><td><strong>addressMindsetChallenge</strong></td><td><span class="func-badge wordalise">WORDALISE</span></td><td><span class="st changed">CHANGED</span></td><td>Unchanged in tone, but should now open area 6 rather than answering outside the model</td></tr>
           </tbody>
         </table>
       </div>
+      <div class="flow-note" style="margin-top:14px;">Deliberate consequence: <code>updateCareerTopic</code> — the current default route — is retired. Every substantive answer now happens inside a named, open area.</div>
     </div>
 
     <div class="section">
-      <div class="section-title">Overview · Scope</div><h2 class="section-heading">What the Bot Can and Cannot Answer</h2>
+      <div class="section-title">Overview · Scope</div><h2 class="section-heading">What the Bot Can and Cannot Answer <span class="st live">LIVE</span></h2>
       <div class="grid-2">
         <div class="scope-card can">
           <div class="scope-head">Can answer</div>
@@ -453,7 +804,57 @@
 
   <!-- FUNCTION FLOWS -->
   <div id="tab-flows" class="tab-panel">
+    <div class="banner spec">
+      <strong>Flows A–C are the new area model and don't exist yet.</strong> Flows 1–5 below them describe the deployed bot. Where the two disagree, the new flows win — Flow 1 in particular is superseded by Flow A.
+    </div>
     <div class="flows-grid">
+
+      <div class="flow-diagram">
+        <div class="flow-diagram-header"><span>Flow A – Entering an Area</span><span class="ftype">PROPOSED</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">Message points at one area</div><div class="step-desc">"how do I negotiate salary" — and no area is currently open</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind router">routing</span><div class="step-title">Routing picks the area</div><div class="step-desc">Same tool_choice: required call as today, but selecting from the ten areas instead of ten flat topics</div><div class="step-ref">bsc-coach.ts / botema-coach.ts — rule 6</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind fn">function</span><div class="step-title">enterDiscussionArea(area)</div><div class="step-desc">Writes active_area and opened_at to the profile, then chains into the advice function</div><div class="step-ref">new — replaces updateCareerTopic</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind data">knowledge lookup</span><div class="step-title">Area knowledge + matching examples</div><div class="step-desc">Scoped to this area only — unchanged mechanism, narrower input</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Answer, plus a signal the area is open</div><div class="step-desc">Short answer ending in a question that stays inside the area</div></div>
+          <div class="flow-note">Opening an area is explicit. The user should be able to tell which subject they're now in.</div>
+        </div>
+      </div>
+
+      <div class="flow-diagram">
+        <div class="flow-diagram-header"><span>Flow B – Staying Inside an Area</span><span class="ftype">PROPOSED</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">Follow-up while an area is open</div><div class="step-desc">"what about benefits?" — ambiguous alone, unambiguous inside salary</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind router">routing</span><div class="step-title">Routing is told which area is open</div><div class="step-desc">Bias toward staying: only leave on a clear signal, so an ambiguous follow-up is read as belonging here</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind fn">function</span><div class="step-title">continueInArea(facet)</div><div class="step-desc">Answers, and appends the facet to covered_facets so it isn't repeated later</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind safety">safety net</span><div class="step-title">Existing narrowing + paragraph cap still apply</div><div class="step-desc">Unchanged — but narrowing options are now drawn from within the open area</div><div class="step-ref">converser.ts → resolveNarrowOrAnswer()</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Answer, optionally offering the next facet</div><div class="step-desc">e.g. after market rate → "want to look at how to open the negotiation itself?"</div></div>
+        </div>
+      </div>
+
+      <div class="flow-diagram full-width">
+        <div class="flow-diagram-header"><span>Flow C – Closing an Area and Opening Another</span><span class="ftype">PROPOSED</span></div>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="fs-kind input">input</span><div class="step-title">A leave signal</div><div class="step-desc">Explicit ("let's talk about something else"), an off-area question, or the coach judging the area's main facets covered</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind router">routing</span><div class="step-title">Distinguish leaving from wandering</div><div class="step-desc">The hard case: a genuinely new subject must close the area, while a loosely-worded follow-up must not. When uncertain, ask rather than switch silently</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind fn">function</span><div class="step-title">closeDiscussionArea()</div><div class="step-desc">Marks the area closed, keeps covered_facets for a later return, clears active_area</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Sum up, then offer what's next</div><div class="step-desc">One line on what was covered, then the remaining areas as options — back to State A</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind fn">function</span><div class="step-title">Re-entry resumes, never restarts</div><div class="step-desc">Coming back to a closed area picks up from covered_facets instead of re-covering the basics</div></div>
+          <div class="flow-note">This is the whole point of the model: transitions are visible and deliberate, not silent topic drift.</div>
+        </div>
+      </div>
 
       <div class="flow-diagram">
         <div class="flow-diagram-header"><span>Flow 1 – Topic Advice</span><span class="ftype">CHANGE_CONTEXT → WORDALISE</span></div>
@@ -469,6 +870,8 @@
           <div class="flow-step"><span class="fs-kind call">azure openai call</span><div class="step-title">Generation call</div><div class="step-desc">Auto-retries once at double the token budget if the reasoning model returns empty content</div><div class="step-ref">callAzure() / callAzureOnce()</div></div>
           <div class="flow-connector"></div>
           <div class="flow-step"><span class="fs-kind safety">safety net</span><div class="step-title">resolveNarrowOrAnswer()</div><div class="step-desc">Catches hedged multi-track answers and multi-paragraph rundowns before they reach the user</div><div class="step-ref">converser.ts</div></div>
+          <div class="flow-connector"></div>
+          <div class="flow-step"><span class="fs-kind safety">safety net</span><div class="step-title">stripUnsourcedFigures()</div><div class="step-desc">Removes any currency figure or claimed source — the coach has no pay data, so both are invented. Falls back to teaching the method</div><div class="step-ref">converser.ts — added 15 Aug</div></div>
           <div class="flow-connector"></div>
           <div class="flow-step"><span class="fs-kind output">output</span><div class="step-title">Reply saved &amp; returned</div><div class="step-desc">Short, single-facet answer ending in a question</div></div>
         </div>
@@ -546,10 +949,820 @@
     </div>
   </div>
 
+  <!-- AREA FLOW · SALARY -->
+  <div id="tab-areaflow" class="tab-panel">
+
+    <div class="sub-tab-bar">
+      <button class="sub-tab-btn active" onclick="switchSubTab('area9', this)"><span class="sn">09</span>Salary &amp; Negotiation</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('area1', this)"><span class="sn">01</span>Getting Started <span class="todo">TO WRITE</span></button>
+      <button class="sub-tab-btn" onclick="switchSubTab('area6', this)"><span class="sn">06</span>Confidence <span class="todo">TO WRITE</span></button>
+    </div>
+
+    <div id="sub-area9" class="sub-panel active">
+
+    <div class="section">
+      <div class="section-title">Area Flow · Area 9</div>
+      <h2 class="section-heading">Inside Salary &amp; Negotiation <span class="st proposed">PROPOSED</span></h2>
+      <p class="prompt-intro">What happens during <strong>STATE B · Inside an area</strong>. Every answer ends with a question, and that question hands off to another facet <em>we already have an answer for</em> — so the conversation is led rather than left open. This is the first of ten; the other nine follow the same shape once this one is agreed.</p>
+
+      <div class="banner spec">
+        <strong>Read this before the diagrams: the graph is a coverage map, not a router.</strong> An earlier draft of this page specified deterministic facet-to-facet routing — S1 leads to S2, S2 leads to S3. That was wrong, and wrong in a way this project has been caught by before: every deterministic layer in this coach has been outgrown, from <code>isBroadStartingAsk</code> to the keyword pre-check that rule 5 replaced. A fifteen-node edge table is a keyword regex in better clothes, and it breaks the first time someone says something that sits between two facets.
+        <br><br>
+        <strong>What actually happens inside an area:</strong> for every user message, one classification call places them in a stage — or finds they are leaving. The stage decides which of Otema's answers are injected as few-shot grounding, and the model writes a fresh reply from that material. Structure comes from the stage; the words come from the model. This is the wordalisation pattern the coach already uses in <code>loadFewShotExamples()</code>, keyed on stage instead of topic — so it is a smaller change than a router, not a bigger one.
+        <br><br>
+        So the facets and edges below record <em>what material each stage can draw on</em>. They are never consulted to decide what to say.
+      </div>
+
+      <div class="banner info">
+        <strong>What the mapping bought us.</strong> All 31 answers already end in a question, and several of those closers already point at another facet. Mapping them found the 16 replies with nothing behind them — which is why the drafted pool exists. That work stands: it is what tells you whether a stage can actually carry a conversation. It just isn't a route.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area</h2>
+      <div class="stage-map">
+        <svg viewBox="0 0 700 285" role="img" aria-label="Three stages — before an offer, an offer on the table, already in the job — flowing left to right, with a return path back to the start, plus two boxes that attach across stages.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+            </marker>
+          </defs>
+
+          <rect class="sm-box" x="15" y="25" width="175" height="85" rx="9" />
+          <text class="sm-label" x="30" y="46">STAGE A</text>
+          <text class="sm-title" x="30" y="66">Before there's an offer</text>
+          <text class="sm-sub" x="30" y="85">S1 · G2 · G10</text>
+
+          <rect class="sm-box" x="262" y="25" width="175" height="85" rx="9" />
+          <text class="sm-label" x="277" y="46">STAGE B</text>
+          <text class="sm-title" x="277" y="66">An offer on the table</text>
+          <text class="sm-sub" x="277" y="85">S2 · S3 · S5 · G3 · G6 · G7</text>
+
+          <rect class="sm-box" x="510" y="25" width="175" height="85" rx="9" />
+          <text class="sm-label" x="525" y="46">STAGE C</text>
+          <text class="sm-title" x="525" y="66">Already in the job</text>
+          <text class="sm-sub" x="525" y="85">S4 · G1 · G4 · G8</text>
+
+          <g style="color:var(--accent)">
+            <line class="sm-edge" x1="192" y1="67" x2="255" y2="67" marker-end="url(#ah)" />
+            <line class="sm-edge" x1="440" y1="67" x2="503" y2="67" marker-end="url(#ah)" />
+            <polyline class="sm-edge" points="597,112 597,158 102,158 102,115" marker-end="url(#ah)" />
+          </g>
+          <text class="sm-edge-label" x="197" y="60">offer arrives</text>
+          <text class="sm-edge-label" x="445" y="60">took the job</text>
+          <text class="sm-edge-label" x="290" y="152">looking again — re-enters at pricing</text>
+
+          <rect class="sm-box-alt" x="15" y="198" width="325" height="62" rx="9" stroke-dasharray="5 4" />
+          <text class="sm-label" x="30" y="219" style="fill:var(--ink-muted)">CROSS-CUTTING</text>
+          <text class="sm-title" x="30" y="238">G9 · The fear of seeming difficult</text>
+          <text class="sm-sub" x="30" y="253">attaches to any facet in Stage B or C</text>
+
+          <rect class="sm-box-alt" x="360" y="198" width="325" height="62" rx="9" stroke-dasharray="5 4" />
+          <text class="sm-label" x="375" y="219" style="fill:var(--ink-muted)">SIDE TRACK</text>
+          <text class="sm-title" x="375" y="238">G5 · Freelance &amp; contract rates</text>
+          <text class="sm-sub" x="375" y="253">priced differently — reached from S1 or G7</text>
+        </svg>
+      </div>
+      <div class="key">
+        <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's five real answers, numbered in question-bank order (S1–S5 = Q46–Q50). <span class="chip">G</span> is one of the ten drafted answers. So the ID tells you the provenance before you look anything up.</p>
+        <div class="key-grid">
+          <div><span class="chip">S1</span> What should I be earning?</div>
+          <div><span class="chip">S2</span> Negotiating a first offer</div>
+          <div><span class="chip">S3</span> "What are you currently on?"</div>
+          <div><span class="chip">S4</span> Asking for a rise</div>
+          <div><span class="chip">S5</span> Benefits beyond base</div>
+          <div><span class="chip">G1</span> A colleague earns more</div>
+          <div><span class="chip">G2</span> Pricing a non-tech background</div>
+          <div><span class="chip">G3</span> The offer is too low</div>
+          <div><span class="chip">G4</span> They said no</div>
+          <div><span class="chip">G5</span> Freelance &amp; contract rates</div>
+          <div><span class="chip">G6</span> Equity instead of salary</div>
+          <div><span class="chip">G7</span> Paid from abroad — currency</div>
+          <div><span class="chip">G8</span> They counter-offered when I resigned</div>
+          <div><span class="chip">G9</span> "Will I seem difficult?"</div>
+          <div><span class="chip">G10</span> Unpaid or low-paid first role</div>
+        </div>
+      </div>
+      <div class="flow-note">Only the stage-level flow is drawn. Fifteen facets with ~45 edges rendered literally is a hairball nobody can read — so the facet-level edges live on the cards below, which is also the exact structure someone has to build.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 15 Facets and Where Each Leads</h2>
+      <p class="prompt-intro">Each card shows the question the answer currently ends on, and the facets that closer may hand off to. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still unreviewed. The bot picks <em>one</em> target based on what the user says — the chips are the permitted set, not a sequence.</p>
+
+      <div class="stage-band"><span class="sb-id">Stage A</span><h3>Before there's an offer</h3><span class="sb-note">pricing yourself, nothing live yet</span></div>
+      <div class="facet-grid">
+        <div class="facet real">
+          <div class="facet-top"><span class="facet-id">S1</span><h4>What should I be earning?</h4><span class="wsearch ">W</span><span class="src real">OTEMA</span></div>
+          <p class="closer">"What role and location?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S2</span><span class="chip">G2</span><span class="chip">G7</span><span class="chip">G1</span><span class="chip self">stays</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G2</span><h4>Pricing a non-tech background</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"What field are you coming from?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip">S2</span><span class="chip">G10</span><span class="chip self">stays</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G10</span><h4>Unpaid or low-paid first role</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"What's actually on offer, and for how long?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">G2</span><span class="chip">S1</span><span class="chip exit">→ Area 7</span></div>
+        </div>
+      </div>
+
+      <div class="stage-band"><span class="sb-id">Stage B</span><h3>An offer on the table</h3><span class="sb-note">a live negotiation — the densest part of the area</span></div>
+      <div class="facet-grid">
+        <div class="facet real">
+          <div class="facet-top"><span class="facet-id">S2</span><h4>Negotiating a first offer</h4><span class="src real">OTEMA</span></div>
+          <p class="closer">"Do you have a range in mind?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip">S3</span><span class="chip">S5</span><span class="chip">G3</span><span class="chip">G9</span><span class="chip self">stays</span></div>
+        </div>
+        <div class="facet real">
+          <div class="facet-top"><span class="facet-id">S3</span><h4>"What are you currently on?"</h4><span class="src real">OTEMA</span></div>
+          <p class="closer">"Is this an active conversation right now?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S2</span><span class="chip">S1</span><span class="chip self">stays</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G3</span><h4>The offer is too low</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"How far below your range are they?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip">G9</span><span class="chip">S2</span><span class="chip exit">→ Area 7</span></div>
+        </div>
+        <div class="facet real">
+          <div class="facet-top"><span class="facet-id">S5</span><h4>Benefits beyond base</h4><span class="src real">OTEMA</span></div>
+          <p class="closer">"Which matters most to you?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">G6</span><span class="chip">G7</span><span class="chip">S2</span><span class="chip self">stays</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G6</span><h4>Equity instead of salary</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"What stage is this company at?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip">G3</span><span class="chip self">stays</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G7</span><h4>Paid from abroad — currency</h4><span class="wsearch cond">W?</span><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"Where is the company based?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">G5</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+        </div>
+      </div>
+
+      <div class="stage-band"><span class="sb-id">Stage C</span><h3>Already in the job</h3><span class="sb-note">the money conversation you have to start yourself</span></div>
+      <div class="facet-grid">
+        <div class="facet real">
+          <div class="facet-top"><span class="facet-id">S4</span><h4>Asking for a rise</h4><span class="src real">OTEMA</span></div>
+          <p class="closer">"What's prompting this?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">G1</span><span class="chip">G4</span><span class="chip">S1</span><span class="chip self">stays</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G1</span><h4>A colleague earns more</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"How did you find out about the gap?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S4</span><span class="chip">S1</span><span class="chip">G9</span><span class="chip self">stays</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G4</span><h4>They said no</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"What reason did they give you?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip">G8</span><span class="chip">G1</span><span class="chip exit">→ Area 7</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G8</span><h4>They counter-offered when I resigned</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"What made you start looking in the first place?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S4</span><span class="chip">G4</span><span class="chip exit">→ Area 3</span></div>
+        </div>
+      </div>
+
+      <div class="stage-band"><span class="sb-id">Cross-cutting</span><h3>Reachable from anywhere in B or C</h3><span class="sb-note">a blocker, not a stage</span></div>
+      <div class="facet-grid">
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G9</span><h4>"Will I seem difficult?"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"Has someone actually said this to you, or is it a worry you're carrying?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">S2</span><span class="chip">S4</span><span class="chip">G1</span><span class="chip exit">→ Area 6</span></div>
+        </div>
+        <div class="facet drafted">
+          <div class="facet-top"><span class="facet-id">G5</span><h4>Freelance and contract rates</h4><span class="wsearch ">W</span><span class="src drafted">DRAFTED</span></div>
+          <p class="closer">"Who's your first client likely to be?"</p>
+          <div class="edges"><span class="elabel">leads to</span><span class="chip">G7</span><span class="chip">S1</span><span class="chip self">stays</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Area Flow · Response branches</div>
+      <h2 class="section-heading">What Happens After the Question <span class="st proposed">PROPOSED</span></h2>
+      <p class="prompt-intro">The level below the facet graph. Each closing question is a decision point, and the user's reply decides what comes next — but a reply only leads somewhere if we have an answer waiting. Rows shaded amber are replies with <strong>nothing behind them</strong>: content that has to be written or asked of Otema before the flow works.</p>
+
+      <div class="banner info">
+        <strong>Two kinds of closing question, and only one of them branches.</strong> <span class="ctype refining">REFINING</span> closers gather detail to give a better version of the same answer — "What role and location?" doesn't move anywhere, it sharpens where you already are. <span class="ctype branching">BRANCHING</span> closers genuinely fork the conversation, and those are the ones that need an answer per branch. Mistaking one for the other is how you end up with a question that leads nowhere.
+      </div>
+
+      <div class="branch-grid">
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">S1</span><span class="ctype refining">REFINING</span></div><p class="bh-q">"What role and location?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">Backend developer, Nairobi</span><span class="tgt have">S1 sharper</span></div>
+            <div class="branch"><span class="said">It's remote for a company abroad</span><span class="tgt have">G7</span></div>
+            <div class="branch"><span class="said">I'm coming from teaching</span><span class="tgt have">G2</span></div>
+            <div class="branch"><span class="said">I don't know what role yet</span><span class="tgt exit">→ Area 3</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">S2</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"Do you have a range in mind?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">No, none</span><span class="tgt have">S1</span></div>
+            <div class="branch isnew"><span class="said">Yes — but I don't know how to actually say it out loud</span><span class="tgt drafted">DRAFTED</span></div>
+            <div class="branch"><span class="said">I have one but it feels greedy</span><span class="tgt have">G9</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">S3</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"Is this an active conversation right now?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">Yes, they asked me today</span><span class="tgt have">S2</span></div>
+            <div class="branch"><span class="said">No, I'm just preparing</span><span class="tgt have">S1</span></div>
+            <div class="branch isnew"><span class="said">I already told them what I'm on</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">S4</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"What's prompting this?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">A colleague earns more than me</span><span class="tgt have">G1</span></div>
+            <div class="branch isnew"><span class="said">I've taken on much more work, same title</span><span class="tgt drafted">DRAFTED</span></div>
+            <div class="branch isnew"><span class="said">It's been three years without any increase</span><span class="tgt drafted">DRAFTED</span></div>
+            <div class="branch isnew"><span class="said">My salary doesn't stretch like it used to</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">S5</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"Which matters most to you?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">The equity, I think</span><span class="tgt have">G6</span></div>
+            <div class="branch"><span class="said">How and where I get paid</span><span class="tgt have">G7</span></div>
+            <div class="branch isnew"><span class="said">Working from home — that's worth more than money to me</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G1</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"How did you find out about the gap?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">He told me himself</span><span class="tgt have">S4</span></div>
+            <div class="branch isnew"><span class="said">I saw a document I wasn't meant to see</span><span class="tgt drafted">DRAFTED</span></div>
+            <div class="branch isnew"><span class="said">I don't know for certain — I just suspect it</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G2</span><span class="ctype refining">REFINING</span></div><p class="bh-q">"What field are you coming from?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">Nursing / teaching / banking</span><span class="tgt have">G2 sharper</span></div>
+            <div class="branch"><span class="said">Nothing — I've not worked before</span><span class="tgt have">G10</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G3</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"How far below your range are they?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">About ten percent under</span><span class="tgt have">G3 → S5</span></div>
+            <div class="branch"><span class="said">I don't actually have a range</span><span class="tgt have">S1</span></div>
+            <div class="branch isnew"><span class="said">It's less than half what I expected</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G4</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"What reason did they give you?"</p></div>
+          <div class="branches">
+            <div class="branch isnew"><span class="said">They said my performance isn't there yet</span><span class="tgt drafted">DRAFTED</span></div>
+            <div class="branch isnew"><span class="said">They said there's no budget</span><span class="tgt drafted">DRAFTED</span></div>
+            <div class="branch isnew"><span class="said">They said to wait for the review cycle</span><span class="tgt drafted">DRAFTED</span></div>
+            <div class="branch isnew"><span class="said">They didn't really give one</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G5</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"Who's your first client likely to be?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">Someone overseas</span><span class="tgt have">G7</span></div>
+            <div class="branch"><span class="said">A local business</span><span class="tgt have">G5 sharper</span></div>
+            <div class="branch"><span class="said">I don't have one yet</span><span class="tgt exit">→ Area 7</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G6</span><span class="ctype refining">REFINING</span></div><p class="bh-q">"What stage is this company at?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">Early — they've just raised</span><span class="tgt have">G6 sharper</span></div>
+            <div class="branch"><span class="said">They won't tell me the percentage</span><span class="tgt have">G6 → G3</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G7</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"Where is the company based?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">Germany / the US / the UK</span><span class="tgt have">G7 sharper</span></div>
+            <div class="branch isnew"><span class="said">They're insisting on paying in local currency</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G8</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"What made you start looking?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">Honestly, just the money</span><span class="tgt have">S4</span></div>
+            <div class="branch"><span class="said">My manager, the environment</span><span class="tgt exit">→ Area 5</span></div>
+            <div class="branch"><span class="said">There's nowhere to grow here</span><span class="tgt exit">→ Area 3</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G9</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"Has someone actually said this to you, or is it a worry you're carrying?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">It's just a worry</span><span class="tgt have">S2</span></div>
+            <div class="branch isnew"><span class="said">Someone did call me difficult for asking</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+        <div class="bcard">
+          <div class="bcard-head"><div class="bh-top"><span class="facet-id">G10</span><span class="ctype branching">BRANCHING</span></div><p class="bh-q">"What's actually on offer, and for how long?"</p></div>
+          <div class="branches">
+            <div class="branch"><span class="said">Three months, and I'd build a real project</span><span class="tgt have">G10 → G2</span></div>
+            <div class="branch"><span class="said">It's open-ended</span><span class="tgt have">G10 sharper</span></div>
+            <div class="branch isnew"><span class="said">They say it might turn into a paid role</span><span class="tgt drafted">DRAFTED</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="banner spec" style="margin-top:22px;">
+        <strong>All 16 dead ends are now drafted — and none of them are servable yet.</strong> Mapping the branches found 16 of 44 realistic replies leading nowhere, including all four of G4's, which is what prompted this. Every one has since been written into <code>botema-generated-examples.ts</code> with a <code>facet</code>, <code>respondsTo</code> and <code>userSaid</code> so the router can match a reply to its follow-up. All 16 are <code>unreviewed</code>, so <code>approvedGeneratedExamples()</code> still returns nothing for them — the flow doesn't actually close until Otema has been through them in the response reviewer.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Area Flow · Capture</div>
+      <h2 class="section-heading">Refining Closers Should Write to the Profile <span class="st changed">CHANGED</span></h2>
+      <p class="prompt-intro">A refining closer asks for a fact about the user. Today that fact is used once, in the next generation call, and then falls out of the six-message history. It should be persisted the same way <code>captureUserBackground</code> already does — which means a refining closer is really a <span class="func-badge change">CHANGE_CONTEXT</span> that happens to end in an answer, not a separate kind of thing.</p>
+
+      <div class="banner info">
+        <strong>The mechanism already exists — the routing rule blocks it.</strong> <code>captureUserBackground</code> already upserts to <code>coach_user_profiles</code> and chains into a WORDALISE, which is exactly the shape needed. But routing rule 3 fires it only when the user "explicitly shares detailed personal info", and says outright: <em>"Do NOT use this for short replies like 'I'm new' or 'I'm a beginner'."</em> An answer to our own question is precisely that kind of short reply — so "Backend developer, Nairobi" would not trigger capture, and the fact evaporates. The rule needs to treat replies to a refining closer as capture, not as chat.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Closer</th><th>What it learns</th><th>Durable?</th><th>Where it goes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>S1</strong> "What role and location?"</td><td>The role they're pricing</td><td>Durable</td><td><code>target_role</code> — column exists</td></tr>
+            <tr><td><strong>S1</strong> "…and location?"</td><td>Which market they're in</td><td>Durable</td><td><span class="st proposed">no column exists</span> — see ISSUE-014</td></tr>
+            <tr><td><strong>G2</strong> "What field are you coming from?"</td><td>Their non-tech background</td><td>Durable</td><td><code>current_background</code> — column exists</td></tr>
+            <tr><td><strong>G6</strong> "What stage is this company at?"</td><td>Facts about one employer</td><td>Situational</td><td>Area state only — not the profile</td></tr>
+            <tr><td><strong>G3</strong> "How far below your range?"</td><td>Facts about one offer</td><td>Situational</td><td>Area state only — not the profile</td></tr>
+            <tr><td><strong>S2</strong> "Do you have a range in mind?"</td><td>Their number for this negotiation</td><td>Situational</td><td>Area state only — not the profile</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flow-note">The split that matters: facts about <em>the person</em> are durable and belong in <code>coach_user_profiles</code>, where they improve every future conversation. Facts about <em>one offer or one employer</em> are situational — they belong to the open area and should go when it closes. Persisting a company's funding stage as though it were a property of the user would quietly corrupt the profile.</div>
+
+      <div class="banner spec">
+        <strong>Location has nowhere to go, and salary advice depends on it more than anything else.</strong> <code>coach_user_profiles</code> has <code>career_stage</code>, <code>current_background</code>, <code>target_role</code>, <code>goals</code> and <code>challenges</code> — no location. Routing rule 3 even names location as a thing worth capturing, and Otema's own S1 answer turns on whether a role pays local or globally-benchmarked rates. Adding the column needs a migration, so it needs asking for first.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Area Flow · Leaving</div><h2 class="section-heading">When to Suggest a Different Area</h2>
+      <p class="prompt-intro">Following on isn't always right. These are the cases where the honest move is to stop leading deeper into salary and offer somewhere else — the Flow C hand-off, triggered from inside the area rather than by the user asking.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>What's happening</th><th>What it actually means</th><th>Offer instead</th></tr></thead>
+          <tbody>
+            <tr><td>They're pricing a job they don't have</td><td>The precondition for the whole area is missing — no offer, no employer, no live conversation</td><td><strong>Area 7</strong> · Job Search &amp; Applications</td></tr>
+            <tr><td>G9 comes round again with nothing new</td><td>The blocker is self-worth, not negotiating tactics. More technique won't touch it</td><td><strong>Area 6</strong> · Confidence &amp; Imposter Syndrome</td></tr>
+            <tr><td>Every answer is "I don't know what's normal here"</td><td>They need a person, not a method. Otema's own S1 answer says peer and mentor conversations are the strongest signal in thin markets</td><td><strong>Area 4</strong> · Mentorship</td></tr>
+            <tr><td>They can't say what role they're pricing</td><td>The question underneath is which job to aim for, not what it pays</td><td><strong>Area 3</strong> · Career Paths &amp; Roadmaps</td></tr>
+            <tr><td>Two turns with no new information, or a facet revisited with nothing added</td><td>The area is done, whether or not every facet was covered</td><td>Sum up and offer the remaining areas</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flow-note">The last row is the one most likely to be got wrong. "No new information" has to mean the <em>user</em> added nothing — not that the bot ran out of facets. Ending an area early because the coach exhausted its own material is exactly the failure this model exists to prevent.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Area Flow · To build</div><h2 class="section-heading">What This Needs</h2>
+      <div class="grid-2">
+        <div class="scope-card can">
+          <div class="scope-head">Already true</div>
+          <div class="scope-body">
+            <div class="scope-item"><strong>Every answer ends in a question</strong><div class="example">All 15, real and drafted — the handoff mechanism exists</div></div>
+            <div class="scope-item"><strong>Several closers already imply an edge</strong><div class="example">"Do you have a range in mind?" → S1; "Is this an active conversation?" → S2</div></div>
+            <div class="scope-item"><strong>Examples are already topic-filtered</strong><div class="example">loadFewShotExamples() narrows by topic — facet-level is the same idea, one level down</div></div>
+          </div>
+        </div>
+        <div class="scope-card cant">
+          <div class="scope-head">Doesn't exist yet</div>
+          <div class="scope-body">
+            <div class="scope-item"><strong>Facet IDs on the examples</strong><div class="example">Answers are tagged by topic only — nothing identifies S1 vs S2 within salary</div></div>
+            <div class="scope-item"><strong>The edge table itself</strong><div class="example">The chips above are the data; they need to live somewhere the router can read</div></div>
+            <div class="scope-item"><strong>Memory of which facets were covered</strong><div class="example">ISSUE-008 — without covered_facets the bot re-offers what it just answered</div></div>
+            <div class="scope-item"><strong>A stall detector</strong><div class="example">"Two turns with no new information" needs defining in code, not just prose</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">All 31 Answers in Full</h2>
+      <p class="prompt-intro">The complete question and answer behind every facet above, in ID order. <span class="src real">OTEMA</span> answers are her real words from the questionnaire. <span class="src drafted">DRAFTED</span> answers are AI-written in her voice and <strong>unreviewed</strong> — they are not served to anyone until she has approved them in the response reviewer.</p>
+      <div class="full-list">
+        <div class="full-facet real">
+          <div class="ff-top"><span class="facet-id">S1</span><h4>What should I be earning?</h4><span class="src real">OTEMA</span></div>
+          <p class="ff-q">How do I find out what salary I should be earning in my current or target tech role?</p>
+          <p class="ff-a">Job boards give you a rough range, but direct conversations with peers or mentors in similar roles are often your most accurate signal, since public salary data is still thin in many African markets. Also check whether a role pays local rates or globally-benchmarked remote rates — the gap can be large. What role and location?</p>
+        </div>
+        <div class="full-facet real">
+          <div class="ff-top"><span class="facet-id">S2</span><h4>Negotiating a first offer</h4><span class="src real">OTEMA</span></div>
+          <p class="ff-q">How do I negotiate my first tech job salary without feeling awkward or rude?</p>
+          <p class="ff-a">Treat it as a normal, expected part of the process, not a confrontation — ask what range was set aside for the role, then ask for a day to think it over before responding. Do your research on the market rate first. Do you have a range in mind?</p>
+        </div>
+        <div class="full-facet real">
+          <div class="ff-top"><span class="facet-id">S3</span><h4>&quot;What are you currently on?&quot;</h4><span class="src real">OTEMA</span></div>
+          <p class="ff-q">What do I say when an employer asks for my current salary or expectations?</p>
+          <p class="ff-a">Turn it around and ask what range they've set aside for the role — that tells you more than giving your own number first, and you can always ask for a day to think it over. Is this an active conversation right now?</p>
+        </div>
+        <div class="full-facet real">
+          <div class="ff-top"><span class="facet-id">S4</span><h4>Asking for a rise</h4><span class="src real">OTEMA</span></div>
+          <p class="ff-q">How do I ask for a pay rise in my current tech role?</p>
+          <p class="ff-a">Document your concrete impact ahead of time, research what your role pays elsewhere, and schedule a dedicated conversation rather than raising it casually. Bring facts, not just a general sense that you deserve more. What's prompting this?</p>
+        </div>
+        <div class="full-facet real">
+          <div class="ff-top"><span class="facet-id">S5</span><h4>Benefits beyond base</h4><span class="src real">OTEMA</span></div>
+          <p class="ff-q">What benefits and perks should I negotiate beyond base salary in a tech offer?</p>
+          <p class="ff-a">Signing bonus, equity, a learning budget, equipment, or even your title — titles affect your future earning trajectory more than people expect. For remote African-based roles, also check whether pay is in local currency or USD, given currency volatility. Which matters most to you?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G1</span><h4>A colleague earns more</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I found out a male colleague in the same role earns more than me. What do I do?</p>
+          <p class="ff-a">First get clear that it really is the same role and the same scope — that's the ground you'll be standing on. Then take it to your manager as a market-alignment conversation rather than a complaint about him: what you deliver, what the role pays, what you're asking for. In most of our markets there's no pay transparency law to lean on, so your documented contribution is the leverage you have. How did you find out about the gap?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G2</span><h4>Pricing a non-tech background</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I'm switching from a non-tech career. How do I price myself for my first tech role?</p>
+          <p class="ff-a">Price the role, not your history — start from what this job pays someone doing it well. Your previous years aren't worth nothing, but they're worth what they let you do faster, so name those things specifically instead of asking for credit for the time itself. Employers here will try to price you as a fresh graduate; don't accept that framing if you're bringing real domain knowledge with you. What field are you coming from?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G3</span><h4>The offer is too low</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">The offer is well below what I was expecting. Do I counter or walk away?</p>
+          <p class="ff-a">Counter once, properly — a number and a reason, not an apology. If they genuinely can't move on base, ask what else is open: a review at six months put in writing, a learning budget, remote days. I know how hard it is to walk away when jobs feel scarce, but a badly-set first salary follows you into every role after it, because the next employer asks what you're on now. How far below your range are they?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G4</span><h4>They said no</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I asked for a pay rise and they said no. What now?</p>
+          <p class="ff-a">Don't leave that conversation without an answer to one question: what would need to be true for this to happen, and when do we revisit it? Get it in writing if you can. A no with no path attached is information about the company, not about you — and if nothing has changed by the date you agreed, start looking, because in my experience that's usually when people finally get moved. What reason did they give you?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G5</span><h4>Freelance &amp; contract rates</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">How do I set my rate as a freelancer or contractor?</p>
+          <p class="ff-a">Work out what you need to earn in a year, then divide by realistic billable days — not 250, more like 150 once you account for finding the work and doing your own admin. That gives you a floor, not a target. Then check what the client's market pays, because an agency in Lagos and a client in Berlin are two different rate cards for identical work. Undercharging at the start is very hard to walk back with the same client. Who's your first client likely to be?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G6</span><h4>Equity instead of salary</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">A startup offered me equity instead of a higher salary. How do I know what it's worth?</p>
+          <p class="ff-a">Ask three things before you value it at anything: what percentage of the whole company is it, what's the vesting schedule, and has anyone actually sold shares yet. If they won't answer the first one, treat the equity as zero and negotiate on cash. I've watched too many people take a real pay cut for paper that never converted, especially at companies with no clear path to raising again. What stage is this company at?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G7</span><h4>Paid from abroad — currency</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I've been offered a remote role paid from abroad. Should I ask for local currency or USD?</p>
+          <p class="ff-a">Push to be paid in the stable currency if that's what the client earns in — it's the single most valuable thing you can negotiate on a remote role, and it usually costs them nothing to agree to. Get the payment method written into the contract as well, because &quot;we'll sort out transfers later&quot; quietly becomes your problem, not theirs. Check who carries the transfer fees too. Where is the company based?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G8</span><h4>They counter-offered when I resigned</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I resigned and my employer came back with a counter-offer. Should I take it?</p>
+          <p class="ff-a">Be careful with this one. If it took a resignation letter to get you a fair number, ask yourself why that number wasn't offered before you handed it in. Most people who accept a counter-offer have left anyway within the year, because what was actually wrong usually wasn't only the money. Take it if it fixes the real problem, not just the salary line. What made you start looking in the first place?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G9</span><h4>&quot;Will I seem difficult?&quot;</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I'm worried I'll be seen as difficult or ungrateful if I negotiate.</p>
+          <p class="ff-a">Negotiating is not being difficult, and I want you to hear that plainly — it's an expected part of the process, and the people who suggest otherwise tend to benefit from your silence. Keep the conversation about the role and the market rather than about you personally, and it becomes very hard to read as a demand. If an employer holds a reasonable, well-researched ask against you, they've told you something useful about what working there would be like. Has someone actually said this to you, or is it a worry you're carrying?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G10</span><h4>Unpaid or low-paid first role</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">Should I take an unpaid or very low-paid role to get my first bit of experience?</p>
+          <p class="ff-a">Only if it's time-boxed and written down — what you'll learn, what you'll have built by the end, and the date it either ends or converts to paid. Unpaid work with no end date and nothing in your portfolio at the end of it is just unpaid work. And if you can't afford to do it, don't let anyone frame that as a lack of commitment; plenty of people get in without that route. What's actually on offer, and for how long?</p>
+        </div>
+
+        <div class="stage-band" style="grid-column:1/-1"><span class="sb-id">Branches</span><h3>The 16 follow-up answers</h3><span class="sb-note">all drafted, all unreviewed</span></div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">S2a</span><h4>after <strong>S2</strong> — "Yes — but I don't know how to actually say it out loud"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I have a range in mind, but I don't know how to actually say it out loud.</p>
+          <p class="ff-a">Say it flat, with no hedge attached: &quot;Based on what I've researched for this role, I'm looking at X to Y.&quot; Don't explain it, don't apologise for it, and then stop talking — the silence afterwards is theirs to fill, not yours. Practise it out loud once before the call, because the first time you hear yourself say the number shouldn't be in the actual conversation. What range are you working with?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">S3a</span><h4>after <strong>S3</strong> — "I already told them what I'm on"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I already told them what I'm currently earning. Can I still recover?</p>
+          <p class="ff-a">It's recoverable, but you have to move the anchor deliberately rather than hope they forget it: &quot;I gave you my current figure earlier — since then I've looked at what this role pays in the market, and that's the number I'd like us to work from.&quot; You're not retracting, you're reframing. Do it in writing if things have gone quiet, so it lands before they build the offer. Has the offer come through yet?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">S4a</span><h4>after <strong>S4</strong> — "I've taken on much more work, same title"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I've taken on a lot more work but my title hasn't changed.</p>
+          <p class="ff-a">Write down what you've picked up that wasn't in your original role — actual tasks, not a general feeling — and take that list in with you. The ask isn't &quot;I'm doing more&quot;, it's &quot;my role has changed, and I'd like the title and the salary to match what I'm actually doing.&quot; Push on the title as hard as the money, because that's what your next employer will price you on. What have you taken on?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">S4b</span><h4>after <strong>S4</strong> — "It's been three years without any increase"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">It's been three years and I've never had an increase.</p>
+          <p class="ff-a">Three years is long enough that the real question is whether they've been relying on you not to ask. Go in with the market rate for what you do now, not a percentage of what you were paid then — those two numbers have drifted a long way apart. If they can't tell you why it hasn't moved in three years, that's your answer about whether it's going to. Have you raised it with them before?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">S4c</span><h4>after <strong>S4</strong> — "My salary doesn't stretch like it used to"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">My salary hasn't changed but everything costs more now.</p>
+          <p class="ff-a">That's a real argument, but keep it about the value of the role rather than your household — &quot;my salary has stayed flat while costs have moved, and I'd like us to look at what this role is worth now&quot; lands better than what you can no longer afford. Where the currency is unstable, negotiate the review interval as well as the number: an annual review in a fast-moving market is already behind before it happens. How much has it shifted where you are?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">S5a</span><h4>after <strong>S5</strong> — "Working from home — that's worth more than money to me"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">Working from home matters more to me than the money does.</p>
+          <p class="ff-a">Then negotiate it properly instead of hoping it stays informal — get the days written into the contract, not agreed in a conversation with your manager. Verbal flexibility disappears the moment that manager changes. And be specific: &quot;three days remote&quot; is something you can hold them to, &quot;flexible working&quot; means nothing once someone new is reading it. How many days do you actually want?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G1a</span><h4>after <strong>G1</strong> — "I saw a document I wasn't meant to see"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I found out about the pay gap by seeing a document I wasn't meant to see.</p>
+          <p class="ff-a">Then you can't use the document, but you can absolutely use what it told you. Don't reference it at all — go in with market research instead and ask for what the role is worth. You'll arrive at the same place without putting yourself in the wrong, which is the position they'd otherwise move the conversation to. I know that feels unfair when the proof is sitting right there. Do you know what the market rate for your role actually is?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G1b</span><h4>after <strong>G1</strong> — "I don't know for certain — I just suspect it"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">I think I'm underpaid compared to colleagues but I can't prove it.</p>
+          <p class="ff-a">Don't build the conversation on the suspicion — build it on your own market value, which you can evidence. If you are underpaid, that conversation fixes it whether or not the suspicion was right, and if you're not, you've lost nothing. If you do want to know, people in the same role at other companies will tell you what they earn far more readily than your own colleagues will. What's making you think there's a gap?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G3a</span><h4>after <strong>G3</strong> — "It's less than half what I expected"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">The offer is less than half what I expected.</p>
+          <p class="ff-a">That isn't a negotiation, it's a mismatch — either they've misunderstood the role or they're hoping you don't know what it pays. Ask them straight what range the role was budgeted at; the answer tells you which of the two it is. Don't counter into a gap that size, and don't read it as information about your worth. What did they say the role actually involves?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G4a</span><h4>after <strong>G4</strong> — "They said my performance isn't there yet"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">They turned down my raise because they said my performance isn't good enough.</p>
+          <p class="ff-a">Then make them be specific, because &quot;performance&quot; on its own isn't something you can act on: what would good look like, by when, and who decides? Ask for it in writing. If they can name concrete things, you have a real path and a date to hold them to. If they can't — and often they can't — then it was never really about your performance, and you've learned something more useful than a raise. What did they actually point to?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G4b</span><h4>after <strong>G4</strong> — "They said there's no budget"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">They said there's no budget for a raise.</p>
+          <p class="ff-a">Budget is a timing answer rather than a no, so pin the timing down: when does the next cycle open, and what would you need to have done by then? Get it in the diary while you're both still in the room. Then ask what isn't budget-constrained — title, training, remote days often sit in a completely different pot. When does budget actually get set?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G4c</span><h4>after <strong>G4</strong> — "They said to wait for the review cycle"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">They told me to wait until the review cycle.</p>
+          <p class="ff-a">Fine — but &quot;wait&quot; needs a date and a number attached, or it simply repeats next year. Agree what you'll have demonstrated by then and what the increase would be if you do, then send a short note afterwards confirming what you both said. That note is what turns it from a brush-off into a commitment. When is the cycle?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G4d</span><h4>after <strong>G4</strong> — "They didn't really give one"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">They said no to my raise and didn't really give a reason.</p>
+          <p class="ff-a">That's the most useful no of the lot, even though it doesn't feel like it. Ask once more, plainly: &quot;I'd like to understand the reasoning, so I know what to work on.&quot; If there still isn't an answer, the decision wasn't about your work, and no amount of improving will move it. Start looking, and don't carry it as something you did wrong on the way out. How long have you been there?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G7a</span><h4>after <strong>G7</strong> — "They're insisting on paying in local currency"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">The company abroad is insisting on paying me in local currency.</p>
+          <p class="ff-a">Then negotiate the mechanism rather than the currency itself: ask for the figure to be reviewed against the dollar at a set interval, or pegged and adjusted when it moves past a threshold. Companies that won't shift on currency will often agree to that, because it costs them nothing until it matters. Whichever you land on, get it into the contract rather than an email. How volatile has it been where you are?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G9a</span><h4>after <strong>G9</strong> — "Someone did call me difficult for asking"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">Someone actually called me difficult for asking about pay.</p>
+          <p class="ff-a">I'm sorry that happened — and I want to be clear that it says everything about them and nothing about you. Asking about money is not difficult behaviour, and that word gets reached for with women far more than with men doing exactly the same thing. Keep asking, keep it about the role and the market, and take note of who used it, because it tells you what progression in that place is going to look like. Was this the person who decides your salary?</p>
+        </div>
+        <div class="full-facet drafted">
+          <div class="ff-top"><span class="facet-id">G10a</span><h4>after <strong>G10</strong> — "They say it might turn into a paid role"</h4><span class="src drafted">DRAFTED</span></div>
+          <p class="ff-q">They say the unpaid role might turn into a paid one.</p>
+          <p class="ff-a">&quot;Might&quot; needs turning into something you can hold: what has to be true for it to become paid, and by what date? Get that written down before you start, not once you're already in. And ask whether anyone there has actually made that jump before — if nobody has, treat &quot;might&quot; as &quot;no&quot; and decide whether the experience alone is worth it. Has anyone there done it?</p>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <div id="sub-area1" class="sub-panel">
+      <div class="section">
+        <div class="section-title">Area Flow · Area 1</div>
+        <h2 class="section-heading">Inside Getting Started <span class="st proposed">TO WRITE</span></h2>
+        <p class="prompt-intro">For Hilina. Salary &amp; Negotiation is worked through in full on the first tab — use it as the pattern, not as a template to copy. <strong>It is the busiest area — most people arrive here first, so it is where the model will be judged.</strong></p>
+
+        <div class="banner spec">
+          <strong>Do the stages first, and do them honestly.</strong> Everything else follows from them. Salary's three stages are <em>situational</em> — before an offer, offer on the table, already in the job — because that is what actually separates one salary conversation from another. Getting Started may not divide situationally at all: the distinguishing thing might be how much the person has already decided. If the stages are wrong, no amount of good content will rescue the area.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 1 · Step 1</div><h2 class="section-heading">Name the stages</h2>
+        <div class="scaffold">
+          <h4>What separates one conversation in this area from another?</h4>
+          <p>Two to four stages. Each needs a description that names <em>what distinguishes it from the others</em>, not just what it is about — the salary classifier flipped between two stages until the descriptions said "prospective employer" versus "already work there".</p>
+          <p class="hint">Write each as: who the person is, what has already happened to them, and the giveaway words that place them here.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 1 · Step 2</div><h2 class="section-heading">Sort the existing answers into stages</h2>
+        <div class="scaffold">
+          <h4>How do Q1–8 divide up?</h4>
+          <p>Every answer belongs to at least one stage; some belong to several. This mapping is the coverage map — it decides which material the model is shown when someone is at that point, and nothing else.</p>
+          <p class="hint">A stage with only one or two answers behind it will produce thin, repetitive replies. That is the signal to draft more, not to merge the stage away.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 1 · Step 3</div><h2 class="section-heading">Find the dead ends</h2>
+        <div class="scaffold">
+          <h4>For each answer's closing question, what will people actually reply?</h4>
+          <p>Three or four realistic replies each. Mark the ones with no answer waiting — in Salary this found 16 dead ends out of 44 replies, including every branch of "they said no". A question that promises help and can't follow through is worse than not asking.</p>
+          <p class="hint">Drafted answers go in <code>botema-generated-examples.ts</code>, never straight into Otema's file, and stay <code>unreviewed</code> until she has seen them.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 1 · Step 4</div><h2 class="section-heading">Decide what leaves, and what searches</h2>
+        <div class="scaffold">
+          <h4>When should the coach suggest a different area?</h4>
+          <p>Name the cases where staying is the wrong answer — a missing precondition, a blocker that belongs elsewhere, a question this area simply cannot help with. Salary has five.</p>
+          <p class="hint">Then mark any facet <code>W</code> that needs the live web. Salary has three of fifteen. If your area has more than a couple, check whether the knowledge base has a gap that search would be papering over.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 1 · Step 5</div><h2 class="section-heading">Run it before saying it's done</h2>
+        <div class="scaffold">
+          <h4><code>npm run coach</code>, five turns minimum</h4>
+          <p>Add the area to <code>STAGES</code> in <code>scripts/coach-local.mjs</code> and talk to it. One or two turns will make almost any area look fine; the problems — wrong stage, repetition, a conversation that stops leading anywhere — only show up over five.</p>
+          <p class="hint">Then add three scenarios to <code>scripts/coach-scenarios.mjs</code> so the behaviour is pinned and a later change can be diffed against it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="sub-area6" class="sub-panel">
+      <div class="section">
+        <div class="section-title">Area Flow · Area 6</div>
+        <h2 class="section-heading">Inside Confidence &amp; Imposter Syndrome <span class="st proposed">TO WRITE</span></h2>
+        <p class="prompt-intro">For Hilina. Salary &amp; Negotiation is worked through in full on the first tab — use it as the pattern, not as a template to copy. <strong>It is the one most likely to break the model — and better to find that out on purpose.</strong></p>
+
+        <div class="banner spec">
+          <strong>Do the stages first, and do them honestly.</strong> Everything else follows from them. Salary's three stages are <em>situational</em> — before an offer, offer on the table, already in the job — because that is what actually separates one salary conversation from another. Confidence almost certainly does not have situational stages. The stages here may be about what the feeling attaches to — the work, the room, or the person — and if the stage idea fails anywhere, it fails here first. That is worth knowing early. If the stages are wrong, no amount of good content will rescue the area.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 6 · Step 1</div><h2 class="section-heading">Name the stages</h2>
+        <div class="scaffold">
+          <h4>What separates one conversation in this area from another?</h4>
+          <p>Two to four stages. Each needs a description that names <em>what distinguishes it from the others</em>, not just what it is about — the salary classifier flipped between two stages until the descriptions said "prospective employer" versus "already work there".</p>
+          <p class="hint">Write each as: who the person is, what has already happened to them, and the giveaway words that place them here.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 6 · Step 2</div><h2 class="section-heading">Sort the existing answers into stages</h2>
+        <div class="scaffold">
+          <h4>How do Q36–40 divide up?</h4>
+          <p>Every answer belongs to at least one stage; some belong to several. This mapping is the coverage map — it decides which material the model is shown when someone is at that point, and nothing else.</p>
+          <p class="hint">A stage with only one or two answers behind it will produce thin, repetitive replies. That is the signal to draft more, not to merge the stage away.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 6 · Step 3</div><h2 class="section-heading">Find the dead ends</h2>
+        <div class="scaffold">
+          <h4>For each answer's closing question, what will people actually reply?</h4>
+          <p>Three or four realistic replies each. Mark the ones with no answer waiting — in Salary this found 16 dead ends out of 44 replies, including every branch of "they said no". A question that promises help and can't follow through is worse than not asking.</p>
+          <p class="hint">Drafted answers go in <code>botema-generated-examples.ts</code>, never straight into Otema's file, and stay <code>unreviewed</code> until she has seen them.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 6 · Step 4</div><h2 class="section-heading">Decide what leaves, and what searches</h2>
+        <div class="scaffold">
+          <h4>When should the coach suggest a different area?</h4>
+          <p>Name the cases where staying is the wrong answer — a missing precondition, a blocker that belongs elsewhere, a question this area simply cannot help with. Salary has five.</p>
+          <p class="hint">Then mark any facet <code>W</code> that needs the live web. Salary has three of fifteen. If your area has more than a couple, check whether the knowledge base has a gap that search would be papering over.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area 6 · Step 5</div><h2 class="section-heading">Run it before saying it's done</h2>
+        <div class="scaffold">
+          <h4><code>npm run coach</code>, five turns minimum</h4>
+          <p>Add the area to <code>STAGES</code> in <code>scripts/coach-local.mjs</code> and talk to it. One or two turns will make almost any area look fine; the problems — wrong stage, repetition, a conversation that stops leading anywhere — only show up over five.</p>
+          <p class="hint">Then add three scenarios to <code>scripts/coach-scenarios.mjs</code> so the behaviour is pinned and a later change can be diffed against it.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BUILD PLAN -->
+  <div id="tab-plan" class="tab-panel">
+
+    <div class="section">
+      <div class="section-title">Build Plan · v4</div>
+      <h2 class="section-heading">Three Workstreams, One Order</h2>
+      <p class="prompt-intro">Capture what the user tells us, fill the answers that aren't there, and let a small number of questions reach the live web. They look independent and aren't: <strong>web search can't ask "what does a backend developer earn in Lagos?" without knowing the role and the city</strong> — which is exactly what the capture work persists. The ordering below is forced by that dependency, not chosen.</p>
+
+      <div class="phase">
+        <div class="phase-head"><span class="pnum">PHASE 1</span><h3>One migration, unblocking everything</h3><span class="pgate">Written — needs pushing</span></div>
+        <div class="phase-body">
+          <p>Nothing else in v4 works without somewhere to put state. All of it lands in a single migration rather than several, since each one costs a round of asking. <strong>The migration is written — <code>20260815120000_area_state_and_location.sql</code> — and has not been applied.</strong> Every column is nullable or defaulted, so existing rows stay valid and current code is untouched until Phase 2 reads them.</p>
+          <div class="steps">
+            <div class="step-row"><span class="sr-n">1.1</span><span>Add <code>active_area</code>, <code>covered_facets</code>, <code>closed_areas</code> to <code>coach_user_profiles</code> — ISSUE-008</span></div>
+            <div class="step-row"><span class="sr-n">1.2</span><span>Add <code>location</code> to the same table — ISSUE-014</span></div>
+            <div class="step-row"><span class="sr-n">1.3</span><span>Document <code>challenges</code> as unpopulated rather than dropping it — ISSUE-016</span></div>
+            <div class="step-row"><span class="sr-n">1.4</span><span>Create <code>coach_market_lookups</code>, the shared cache Phase 4 needs</span></div>
+          </div>
+          <p class="depends">Gate: AGENT.md requires asking before any migration touches the shared database, so <code>supabase db push</code> is David's to run. This is the only phase waiting on a decision rather than work.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head"><span class="pnum">PHASE 2</span><h3>Capture as it arrives</h3><span class="pgate clear">Code only</span></div>
+        <div class="phase-body">
+          <p>The mechanism exists — <code>captureUserBackground</code> already upserts and chains. The problem is a routing rule that refuses to fire it on exactly the replies we now care about.</p>
+          <div class="steps">
+            <div class="step-row"><span class="sr-n">2.1</span><span>Amend routing rule 3 so a reply to a question the coach just asked counts as capture, not chat — ISSUE-015</span></div>
+            <div class="step-row"><span class="sr-n">2.2</span><span>Make refining closers chain a profile write after answering</span></div>
+            <div class="step-row"><span class="sr-n">2.3</span><span>Keep the durable/situational split: role, location and background persist; one employer's funding stage does not</span></div>
+            <div class="step-row"><span class="sr-n">2.4</span><span>Write <code>covered_facets</code> on every answered facet, so nothing is re-offered</span></div>
+          </div>
+          <p class="depends">Depends on Phase 1 for the columns. Testable in Vitest — this is pure logic, unlike the routing behaviour.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head"><span class="pnum">PHASE 3</span><h3>Fill the 16 missing answers</h3><span class="pgate">Needs Otema</span></div>
+        <div class="phase-body">
+          <p>Every dead-end branch on the Area Flow tab. Drafted into the generated store first, then reviewed — never straight into her real answers.</p>
+          <div class="steps">
+            <div class="step-row"><span class="sr-n">3.1</span><span><strong>Done</strong> — all 16 drafted into <code>botema-generated-examples.ts</code> as <code>unreviewed</code>, G4's four included</span></div>
+            <div class="step-row"><span class="sr-n">3.2</span><span><strong>Done</strong> — each carries <code>facet</code>, <code>respondsTo</code> and <code>userSaid</code>; the real examples still need the same treatment</span></div>
+            <div class="step-row"><span class="sr-n">3.3</span><span>Send to Otema through the response reviewer as approve / edit / reject</span></div>
+            <div class="step-row"><span class="sr-n">3.4</span><span>Promote whatever she approves or edits into <code>botema-examples.ts</code></span></div>
+          </div>
+          <p class="depends">Independent of Phases 1 and 2 — this can run in parallel, and should, because it's the one with a person in the loop.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head"><span class="pnum">PHASE 4</span><h3>Web search, for three facets only</h3><span class="pgate clear">Working in the harness</span></div>
+        <div class="phase-body">
+          <p><strong>Built and working locally.</strong> Azure's <em>Responses</em> API does have a web-enabled mode — <code>tools: [{ type: "web_search" }]</code> — so no external provider is needed after all. Two deliberately separate calls: one that only searches and reports, one ordinary chat completion that says what it found in her voice. Keeping them apart preserves the raw search text, so the summary can be checked against what was actually returned.</p>
+          <div class="steps">
+            <div class="step-row"><span class="sr-n">4.1</span><span><strong>Done</strong> — no provider needed; Azure Responses API with the <code>web_search</code> tool</span></div>
+            <div class="step-row"><span class="sr-n">4.2</span><span><strong>Done in the harness</strong> — <code>searchMarketRate(role, location, refinement)</code>. Needs porting to the edge function</span></div>
+            <div class="step-row"><span class="sr-n">4.3</span><span><strong>In memory locally</strong>, keyed on role + location + refinement. <code>coach_market_lookups</code> is in the migration for the shared version</span></div>
+            <div class="step-row"><span class="sr-n">4.4</span><span>Inject results as a grounding block: figures may come only from here, each carrying its source and date</span></div>
+            <div class="step-row"><span class="sr-n">4.5</span><span><strong>Done, then found broken</strong> — the guard came off whenever a search <em>ran</em> rather than whenever it <em>returned</em> anything (ISSUE-022). A search with no citations now counts as no search</span></div>
+            <div class="step-row"><span class="sr-n">4.6</span><span><strong>Measured:</strong> <code>max_tool_calls: 1</code> cuts 10 searches / 69s to 1 search / 29s with the same citations. An instruction to search once was worse — the parameter works, the prompt does not</span></div>
+            <div class="step-row"><span class="sr-n">4.7</span><span><strong>Open —</strong> pay periods get silently converted, month reported as year (ISSUE-023)</span></div>
+          </div>
+          <p class="depends">Depends on Phase 1 and 2 for <code>location</code>. Without a city the query is unanswerable, and a search for "developer salary" with no market is worse than no search.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Build Plan · Web search</div><h2 class="section-heading">Which Questions Reach the Web, and Why</h2>
+      <p class="prompt-intro">Three of fifteen. The test is simple: does answering well require a fact that <em>changes over time or by place</em>, and that a credible source actually publishes? Method and mindset fail that test — searching them adds latency and dilutes Otema's voice for nothing.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Facet</th><th>Search?</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td><strong>S1</strong> · What should I be earning?</td><td><span class="wsearch">W</span></td><td>The market-rate question — a number that varies by city and year. This is the facet that produced the invented Nairobi figure</td></tr>
+            <tr><td><strong>G5</strong> · Freelance &amp; contract rates</td><td><span class="wsearch">W</span></td><td>Same shape as S1 — day rates differ by market and move</td></tr>
+            <tr><td><strong>G7</strong> · Paid from abroad</td><td><span class="wsearch cond">W?</span></td><td>Conditional and narrow: current exchange-rate context only. The advice itself is method and stays unsearched</td></tr>
+            <tr><td><strong>S2 S3 S4 S5 G1 G2 G3 G4 G6 G8 G10</strong></td><td>—</td><td>Method. How to open a negotiation, how to answer the current-salary question, what to do when they say no. None of it changes because the web changed</td></tr>
+            <tr><td><strong>G9</strong> · "Will I seem difficult?"</td><td><strong>Never</strong></td><td>Not a question the web can answer. Searching a person's worry about themselves is the wrong instinct, whatever it returns</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flow-note">If the W list grows past a handful, that's the signal something has gone wrong — either we're searching questions that don't need it, or the knowledge base has a gap that search is quietly papering over.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Build Plan · Risk</div><h2 class="section-heading">The Honest Risk in Phase 4</h2>
+      <div class="banner spec">
+        <strong>Better sourcing may not mean better numbers.</strong> Public salary data for African markets is thin — which is precisely what Otema says in S1, and why she points people at peers and mentors instead. A search will happily return Glassdoor and PayScale pages with poor coverage and stale figures. Replace an invented number with a badly-sourced one and we've made things worse, because a citation makes it look more trustworthy than the guess did.
+      </div>
+      <div class="grid-2" style="margin-top:16px;">
+        <div class="scope-card can">
+          <div class="scope-head">What good looks like</div>
+          <div class="scope-body">
+            <div class="scope-item"><strong>Every figure carries a source and a date</strong><div class="example">"Per [source], updated [month]" — never a bare number</div></div>
+            <div class="scope-item"><strong>Failing loudly is a success case</strong><div class="example">"I couldn't find reliable data for Kampala — here's how to find out yourself" is a correct answer, not a fallback</div></div>
+            <div class="scope-item"><strong>Her voice is unchanged</strong><div class="example">Search supplies facts, not phrasing — the answer still sounds like Otema</div></div>
+          </div>
+        </div>
+        <div class="scope-card cant">
+          <div class="scope-head">What to watch for</div>
+          <div class="scope-body">
+            <div class="scope-item"><strong>Aggregator coverage gaps</strong><div class="example">Thin or absent for most African cities, and rarely dated</div></div>
+            <div class="scope-item"><strong>Latency and cost</strong><div class="example">Adds a round trip; the cache is what keeps it affordable</div></div>
+            <div class="scope-item"><strong>Scope creep in the W list</strong><div class="example">Three facets is the design. Ten would mean something else went wrong</div></div>
+            <div class="scope-item"><strong>Contradicting Otema</strong><div class="example">If search asserts confidence where she says data is thin, she is the one to believe</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
   <!-- DATA SOURCES -->
   <div id="tab-data" class="tab-panel">
     <div class="banner info">
-      <strong>Same provenance standard, different stage.</strong> Both personas are meant to be modeled on a real person's actual voice — Chataki just doesn't have her questionnaire collected yet. A staff-authored placeholder set was seeded into <code>coach_wordalisations</code>, then cleared by a later migration once it turned out to be Botema-specific rather than shared — so the table is currently empty, and Chataki runs with a more generic tone until her real questionnaire is collected and seeded. Botema is already there — every example traces to something Otema actually wrote. The same standard will apply to Chataki once her real answers land.
+      <strong>One voice, and a hard line around it.</strong> Everything Botema says is grounded in Otema's real questionnaire answers — nothing in <code>botema-examples.ts</code> was invented on her behalf, and ISSUE-002 records what happened the one time that slipped. Since 15 August a second file, <code>botema-generated-examples.ts</code>, holds AI-drafted answers written in her voice to cover gaps she never answered. They are kept in a separate file with a per-entry review gate, and <strong>none of them are served</strong> until she has approved them. <code>coach_wordalisations</code> was Chataki's source and is now unused as well as empty.
     </div>
 
     <div class="section">
@@ -559,7 +1772,8 @@
           <thead><tr><th>Source</th><th>Used by</th><th>What it does</th><th>Provenance</th></tr></thead>
           <tbody>
             <tr><td><code>bsc-knowledge.ts → KNOWLEDGE_BASE</code></td><td>adviseOnCareerTopic (both personas)</td><td>10 topic guides (getting_started, career_paths, salary, ai_impact, etc.)</td><td><span class="func-badge instruct">Staff-authored</span></td></tr>
-            <tr><td><code>coach_wordalisations</code> (Postgres)</td><td>Chataki's adviseOnCareerTopic / addressMindsetChallenge</td><td>0 rows currently — cleared by <code>20260723150000_clear_coach_wordalisations_pending_real_data.sql</code></td><td><span class="func-badge instruct">Empty — pending real voice</span></td></tr>
+            <tr><td><code>coach_wordalisations</code> (Postgres)</td><td>Nothing — was Chataki's, unused since she was parked</td><td>0 rows — cleared by <code>20260723150000_clear_coach_wordalisations_pending_real_data.sql</code>. Botema overrides <code>loadFewShotExamples()</code>, so nothing reads it</td><td><span class="func-badge instruct">Empty and unused</span></td></tr>
+            <tr><td><code>botema-generated-examples.ts</code></td><td>Nothing yet — gated on review</td><td>26 AI-drafted answers in her voice: 10 area facets + 16 response branches. All <code>unreviewed</code></td><td><span class="func-badge change">Drafted — needs Otema</span></td></tr>
             <tr><td><code>botema-examples.ts → BOTEMA_EXAMPLES</code></td><td>Botema's adviseOnCareerTopic / addressMindsetChallenge</td><td>54 voice examples, source-traced to Otema's real questionnaire</td><td><span class="func-badge wordalise">Real-person, verified</span></td></tr>
             <tr><td><code>coach_user_profiles</code> (Postgres)</td><td>All WORDALISE functions</td><td>Career stage, background, target role, goals — persisted across sessions</td><td><span class="func-badge change">User-provided</span></td></tr>
           </tbody>
@@ -568,11 +1782,17 @@
     </div>
 
     <div class="section">
-      <div class="section-title">Data · Chataki</div><h2 class="section-heading">Sample examples — none currently seeded</h2>
+      <div class="section-title">Data · Drafted</div><h2 class="section-heading">The generated pool — written, not yet hers</h2>
       <div class="ex-card">
-        <div class="ex-head staff">coach_wordalisations · 0 rows</div>
+        <div class="ex-head staff">botema-generated-examples.ts · 26 entries · 0 approved</div>
         <div class="ex-body ex-full">
-          <p class="ex-text">A staff-authored placeholder set (matched to the shared training-question bank) was seeded here, then deleted by <code>20260723150000_clear_coach_wordalisations_pending_real_data.sql</code> after it turned out to be Botema-specific rather than shared. Chataki currently runs with zero few-shot examples — still functional, just less voice-consistent — until her real questionnaire answers are collected and seeded.</p>
+          <p class="ex-text">AI-drafted answers in Otema's voice, covering questions her questionnaire never asked — the four salary gaps, then six more facets, then the 16 response branches. Every entry carries <code>reviewStatus</code>, and the only exported reader, <code>approvedGeneratedExamples()</code>, filters to <code>approved</code>. There is deliberately no export that skips that filter, so an empty result today is the correct state rather than a bug. Once Otema approves or edits an answer it should be promoted into <code>botema-examples.ts</code> and removed from here — at that point it is genuinely her words.</p>
+        </div>
+      </div>
+      <div class="ex-card">
+        <div class="ex-head staff">coach_wordalisations · 0 rows · unused</div>
+        <div class="ex-body ex-full">
+          <p class="ex-text">Was Chataki's voice source. A staff-authored placeholder set was seeded, then deleted by <code>20260723150000_clear_coach_wordalisations_pending_real_data.sql</code> once it turned out to be Botema-specific rather than shared. Now that Chataki is parked, nothing reads the table at all — Botema overrides <code>loadFewShotExamples()</code> and never reaches it. Left in place rather than dropped, since reinstating her would need it.</p>
         </div>
       </div>
     </div>
@@ -614,8 +1834,11 @@
   <!-- PROMPTS & INSTRUCTIONS -->
   <div id="tab-prompts" class="tab-panel">
     <div class="section">
-      <div class="section-title">Prompts · Intro</div><h2 class="section-heading">What's Actually Sent to the Model</h2>
+      <div class="section-title">Prompts · Intro</div><h2 class="section-heading">What's Actually Sent to the Model <span class="st live">LIVE</span></h2>
       <p class="prompt-intro">Not a paraphrase — this is the literal text sent as the <code>system</code> message for each call, pulled directly from the source files. Routing rules are identical for both personas except the coach's own name; generation prompts differ by persona and are shown separately.</p>
+      <div class="banner spec">
+        <strong>Everything on this tab is current text, and all of it predates the area model.</strong> Rule 6 routes to a flat topic, so it becomes <code>enterDiscussionArea</code>. Rule 5's narrowing options become the ten areas when no area is open, and facets within the area when one is. Two rules don't exist yet and need writing: stay in the open area unless the user clearly leaves it, and close an area explicitly rather than drifting out of it. Rules 1–4 are unaffected.
+      </div>
     </div>
 
     <div class="section">
@@ -657,16 +1880,21 @@ NARROW_OPTIONS: &lt;option 1&gt; | &lt;option 2&gt; | &lt;option 3&gt;
 (3-5 short options tailored to their message, each under 6 words, separated by " | ")</pre>
       </div>
       <div class="prompt-card">
+        <div class="prompt-head shared">NO_INVENTED_FIGURES <span class="ph-note">converser.ts — added 15 Aug, after the invented-salary incident</span></div>
+        <pre class="code">You have no live pay data and no web access, so never state a specific salary, rate or currency figure, and never claim to be citing market data, surveys or research — you have none. If someone asks what a role pays, tell them how to find out instead: what to compare, who to ask, and what makes a source trustworthy. Being honest that reliable public data is thin in many markets is a better answer than a confident number.</pre>
+      </div>
+      <div class="prompt-card">
         <div class="prompt-head shared">LONG_FORM_ESCAPE_HATCH <span class="ph-note">converser.ts — exported constant</span></div>
         <pre class="code">If — and only if — the user explicitly asked for something that genuinely needs a longer, multi-paragraph answer (a full draft, a full rewrite, or they asked you to explain more or go deeper), start your reply with the exact marker LONG_FORM_OK alone on its own first line, then continue with your full answer as normal on the following lines. Do not include this marker for an ordinary short answer — it should be rare, not the default.</pre>
       </div>
     </div>
 
     <div class="section">
-      <div class="section-title">Prompts · Chataki</div><h2 class="section-heading">Persona-Specific Generation Prompts</h2>
+      <div class="section-title">Prompts · Chataki (parked)</div><h2 class="section-heading">Chataki's Prompts — retained, not in use <span class="st changed">CHANGED</span></h2>
+      <p class="prompt-intro">Kept for reference and for whenever she is reinstated. Since 15 August nothing routes to these — every request goes to Botema. The text below is still what <code>bsc-functions.ts</code> contains.</p>
       <div class="prompt-card">
         <div class="prompt-head chataki">adviseOnCareerTopic <span class="ph-note">bsc-functions.ts — ADVISE_SYSTEM_PROMPT</span></div>
-        <pre class="code">You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. Default to a short, direct answer — a sentence or two, or a short paragraph at most. The knowledge below may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. [NARROW_SELF_CHECK inserted here] Otherwise, only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper — [LONG_FORM_ESCAPE_HATCH inserted here] Always end with a question that invites the user to share more about their situation. If the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.</pre>
+        <pre class="code">You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. Default to a short, direct answer — a sentence or two, or a short paragraph at most. The knowledge below may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. [NARROW_SELF_CHECK inserted here] Otherwise, only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper — [LONG_FORM_ESCAPE_HATCH inserted here] [NO_INVENTED_FIGURES inserted here] Always end with a question that invites the user to share more about their situation. If the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.</pre>
       </div>
       <div class="prompt-card">
         <div class="prompt-head chataki">addressMindsetChallenge <span class="ph-note">bsc-functions.ts — generateResponse()</span></div>
@@ -688,7 +1916,7 @@ If there's a tech career question on your mind, I'd love to help with that. What
       </div>
       <div class="prompt-card">
         <div class="prompt-head botema">adviseOnCareerTopic <span class="ph-note">botema-coach.ts — BOTEMA_SYSTEM_PROMPT + this, appended</span></div>
-        <pre class="code">Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. [NARROW_SELF_CHECK inserted here] [LONG_FORM_ESCAPE_HATCH inserted here] Otherwise, if the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.</pre>
+        <pre class="code">Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. [NARROW_SELF_CHECK inserted here] [LONG_FORM_ESCAPE_HATCH inserted here] [NO_INVENTED_FIGURES inserted here] Otherwise, if the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.</pre>
       </div>
       <div class="prompt-card">
         <div class="prompt-head botema">addressMindsetChallenge <span class="ph-note">botema-coach.ts — BOTEMA_SYSTEM_PROMPT + this, appended</span></div>
@@ -726,7 +1954,7 @@ If you've got a tech career question, bring it — I'll give you my honest take.
     {
       id: "ISSUE-001",
       title: "Small routing model isn't perfectly reliable on its own",
-      description: "The coach uses a small, cost-efficient model rather than a large frontier model. Its own judgment for 'does this need narrowing?' isn't fully consistent — mitigated by rule-5 wording plus the code-level narrowing safety net (Flow 2b), but not eliminated without a larger, costlier model.",
+      description: "The coach uses a small, cost-efficient model rather than a large frontier model. Its own judgment for 'does this need narrowing?' isn't fully consistent — mitigated by rule-5 wording plus the code-level narrowing safety net (Flow 2b), but not eliminated without a larger, costlier model. MEASURED 15 Aug: the stage classifier gave a different answer on the same input across runs — 'my manager refused my raise' came back as stage C once and stage B the next time, and the B reading produced offer-negotiation advice (sign-on bonus, lock it into the offer) for someone already employed. The wrong stage does not fail loudly; it quietly gives the wrong kind of advice. Sharpening the stage descriptions to name the distinguishing fact (prospective employer versus current one) fixed it across two consecutive full sweeps. The lesson is that stage descriptions must state what separates the stages, not just what each one is.",
       priority: "medium", status: "open",
       files: ["bsc-coach.ts", "botema-coach.ts"], added: "2026-08-04", phase: "Ongoing"
     },
@@ -771,6 +1999,118 @@ If you've got a tech career question, bring it — I'll give you my honest take.
       description: "\"Unrelated to careers\" let non-tech career questions slip through as in-scope, since they ARE about a career — just not a tech one. Tightened both the routing rule and the generation-time check to require TECH careers specifically.",
       priority: "medium", status: "resolved",
       files: ["bsc-coach.ts", "botema-coach.ts", "bsc-functions.ts"], added: "2026-08-04", phase: "This project"
+    },
+    {
+      id: "ISSUE-008",
+      title: "No persisted state for which area is open",
+      description: "The area model needs to know which area is active, when it opened, which facets have been covered, and which areas were closed earlier. coach_user_profiles stores none of that — the only context field is a single overwritable career_topic. Needs a migration adding active_area, covered_facets and closed_areas before Flows A–C can work at all. Blocks everything else in v4.",
+      priority: "high", status: "open",
+      files: ["coach_user_profiles", "index.ts"], added: "2026-08-14", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-009",
+      title: "Six-message history window is too short to hold an area session",
+      description: "RESOLVED 15 Aug — both halves. HISTORY_WINDOW raised from 6 to 10 (and HISTORY_FETCH to 20 so the slice always has a full window), which buys headroom; and covered_facets on coach_user_profiles is the durable record, since a compact list of facet IDs expands back into what was covered for a few tokens and never falls out of a window. Six messages was three exchanges, shorter than a worked-through area, so the coach reached the close having lost sight of how the area opened.",
+      priority: "high", status: "resolved",
+      files: ["index.ts"], added: "2026-08-14", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-010",
+      title: "Leaving the area — solved with a classifier plus two code-level nets",
+      description: "RESOLVED 15 Aug, and verified locally against real gpt-5-nano. Three layers. (1) leaving is one outcome of the same stage-classification call, so it costs no extra request. (2) An explicit leave-phrase check that fires before any model call — cheap, deterministic, and the one case where ignoring the user would be insulting. (3) A stall counter: the same stage twice with nothing new closes the area. All three exercised in scripts/coach-local.mjs. One bug found and fixed in the process: the classifier can only pick a destination from the areas it is shown, so offering three sent a mentorship question to Confidence.",
+      priority: "medium", status: "resolved",
+      files: ["bsc-coach.ts", "botema-coach.ts", "converser.ts"], added: "2026-08-14", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-011",
+      title: "Area 7 split — Interview Preparation is its own area",
+      description: "RESOLVED 15 Aug — David decided cv_job_search and interview_prep stay separate. There are now TEN areas: Job Search takes Q41, 42, 44, 45 and Interview Preparation takes Q43 alone. Salary renumbered 8 to 9 and AI 9 to 10 throughout. Interview Prep rests on a single training question against a full knowledge topic, so it is the thinnest area and the first candidate for drafted answers.",
+      priority: "low", status: "resolved",
+      files: ["bsc-knowledge.ts", "bsc-coach-training-questions.csv"], added: "2026-08-14", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-012",
+      title: "Closing questions have no answers behind their likely replies",
+      description: "Every answer ends with a question, but nothing covers what the user says back. Mapping the replies for Area 8 found 16 of 44 realistic responses lead nowhere. G4 (\"they said no\") is the clearest case — all four plausible reasons (performance, no budget, wait for review, no reason given) have no answer at all. A question that promises help and then can't follow through is worse than not asking. If Area 8 needs ~16 more answers, the other ten areas likely need a comparable number each.",
+      priority: "high", status: "open",
+      files: ["botema-examples.ts", "botema-generated-examples.ts"], added: "2026-08-15", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-013",
+      title: "Refining and branching closers need telling apart",
+      description: "Some closing questions gather detail to sharpen the same answer (\"What role and location?\"); others genuinely fork the conversation (\"What reason did they give you?\"). Only the second kind needs an answer per branch. Area 8 splits 12 branching to 3 refining. Treating them alike means either writing content nobody needs, or leaving real forks unanswered.",
+      priority: "medium", status: "open",
+      files: ["botema-examples.ts"], added: "2026-08-15", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-014",
+      title: "No location column, though salary advice depends on it most",
+      description: "coach_user_profiles stores career_stage, current_background, target_role, goals and challenges — but not location. S1 asks \"What role and location?\", routing rule 3 names location as capturable, and Otema's own answer turns on whether a role pays local or globally-benchmarked remote rates. The answer is asked for, used once, then lost. Needs a migration, so it needs asking for first.",
+      priority: "high", status: "open",
+      files: ["coach_user_profiles", "bsc-functions.ts"], added: "2026-08-15", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-015",
+      title: "Routing rule 3 explicitly blocks capturing answers to our own questions",
+      description: "captureUserBackground already persists to coach_user_profiles and chains into a WORDALISE — the right shape for a refining closer. But rule 3 fires it only on unprompted disclosure and says \"Do NOT use this for short replies\". A reply to a refining closer is exactly a short reply, so \"Backend developer, Nairobi\" wouldn't be captured. The rule needs to distinguish an unprompted aside from an answer to a question the coach just asked.",
+      priority: "medium", status: "open",
+      files: ["bsc-coach.ts", "botema-coach.ts"], added: "2026-08-15", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-016",
+      title: "challenges column is declared but never written",
+      description: "RESOLVED 15 Aug — captureUserBackground now takes a challenges array and persists it. Written additively with a de-dupe rather than replacing, since obstacles surface one at a time across a conversation and a later mention should not wipe an earlier one.",
+      priority: "low", status: "resolved",
+      files: ["bsc-functions.ts", "coach_user_profiles"], added: "2026-08-15", phase: "Cleanup"
+    },
+    {
+      id: "ISSUE-017",
+      title: "The coach invented a salary figure and cited a source it doesn't have",
+      description: "Observed in production: \"Based on Nairobi market data for a junior developer with 2 years, I'm targeting 210k-260k KES base.\" There is no web search and no pay data anywhere in the function — the figure was invented and the citation fabricated. It also broke the bot's own stated scope (no specific salary numbers) and contradicted Otema, whose own answer says public data is thin in African markets. RESOLVED 15 Aug with both halves: the NO_INVENTED_FIGURES instruction, and stripUnsourcedFigures() inside resolveNarrowOrAnswer(), which every generation path already funnels through. 8 regression tests including the exact production string.",
+      priority: "high", status: "resolved",
+      files: ["converser.ts", "bsc-functions.ts", "botema-coach.ts"], added: "2026-08-15", phase: "Shipped"
+    },
+    {
+      id: "ISSUE-018",
+      title: "Salary knowledge was written for the UK, for an African audience",
+      description: "KNOWLEDGE_BASE.salary asserted \"in the UK, you are not legally required to disclose this\" and priced its worked example in pounds, while Otema's examples pull toward African markets — so the same prompt carried two jurisdictions. RESOLVED 15 Aug: rewritten to say public data is thin and often stale for African cities, to treat global aggregators as a rough ceiling rather than an answer, and to point at peers, mentors and local ads with published ranges. Added local-versus-globally-benchmarked remote pay and review intervals under currency instability.",
+      priority: "medium", status: "resolved",
+      files: ["bsc-knowledge.ts"], added: "2026-08-15", phase: "Shipped"
+    },
+    {
+      id: "ISSUE-019",
+      title: "Chataki parked — watch for anyone deleting the shared bsc-* files",
+      description: "As of 15 Aug every request goes to Botema; the picker is gone from AICoachWidget.tsx and index.ts ignores the bot field. Nothing was deleted — bsc-coach.ts is intact and so are all seven classes in bsc-functions.ts. The trap: the naming suggests bsc-functions.ts is Chataki's, but Botema imports UpdateCareerTopic, CaptureUserBackground and InviteUserContext from it, so removing that file would break the live coach. Only 4 of its 7 classes are hers. Renaming it to shared-functions.ts would make this obvious.",
+      priority: "medium", status: "open",
+      files: ["index.ts", "AICoachWidget.tsx", "bsc-functions.ts", "bsc-coach.ts"], added: "2026-08-15", phase: "Single coach"
+    },
+    {
+      id: "ISSUE-020",
+      title: "The paragraph cap never fired on a single-paragraph rundown",
+      description: "capParagraphs() splits on blank lines, so an answer written as one unbroken paragraph passed through however long it ran — and one unbroken paragraph is what gpt-5-nano returns most of the time. Found by running the local harness: 'how do I negotiate salary' came back as an eight-sentence tour of market research, anchoring, the value case, the current-salary question and the full benefits package. ISSUE-006 intended to stop exactly that and could not see it. RESOLVED 15 Aug with capSentences(), which keeps the opening answer and the closing question and drops the tour between them. It deliberately ignores text with real paragraph structure or a list, since capParagraphs has already judged those. 6 new tests.",
+      priority: "high", status: "resolved",
+      files: ["converser.ts"], added: "2026-08-15", phase: "Shipped"
+    },
+    {
+      id: "ISSUE-021",
+      title: "The local harness duplicates the figure guard instead of importing it",
+      description: "scripts/coach-local.mjs is plain Node and converser.ts is Deno TypeScript, so the harness carries its own copy of the currency and fabricated-source patterns. Two copies will drift. Options: run the harness through a TS loader, extract the pure helpers into a .js file both can import, or accept the duplication and add a test that asserts the two agree. Low urgency while the harness is a local toy, real the moment anyone trusts it to reflect production behaviour.",
+      priority: "low", status: "open",
+      files: ["scripts/coach-local.mjs", "converser.ts"], added: "2026-08-15", phase: "Cleanup"
+    },
+    {
+      id: "ISSUE-022",
+      title: "Grounded mode switched the invented-figure guard off unconditionally",
+      description: "When a W-marked facet retrieves data, the figure guard steps aside so real numbers can be cited. But it stepped aside whenever a search RAN, not whenever a search RETURNED anything. Observed: a fintech follow-up search came back with 0 citations and the answer still cited 'Glassdoor, 2026' — a fabricated citation, arriving through the door opened for real data, which is worse than the original bug because it now looks sourced. Fixed in the harness: a search with no citations, or one reporting NO RELIABLE DATA, is treated as no search at all and the guard stays on. The edge function will need the same rule when Phase 4 ports across.",
+      priority: "high", status: "resolved",
+      files: ["scripts/coach-local.mjs"], added: "2026-08-15", phase: "v4 area model"
+    },
+    {
+      id: "ISSUE-023",
+      title: "Search figures had their pay period silently converted",
+      description: "A grounded answer reported 'NGN 302,372 per year' for a Lagos mid-level backend role, when the underlying sources give roughly that figure PER MONTH. An annual figure restated as monthly, or the reverse, is not a formatting slip — it is a wrong answer someone could walk into a negotiation with, and it carries a real citation so it reads as verified. Mitigated by instructing the summarise call to copy the period exactly and never convert, and by asking the search call to report a fixed 'amount | period | source | year' shape. Both are instructions, so per the ISSUE-005 pattern expect this to need a code-level check comparing figures in the answer against figures in the raw search text.",
+      priority: "high", status: "open",
+      files: ["scripts/coach-local.mjs"], added: "2026-08-15", phase: "v4 area model"
     }
   ];
 
@@ -847,6 +2187,17 @@ If you've got a tech career question, bring it — I'll give you my honest take.
     state[id][field] = value;
     saveState(state);
     renderIssues();
+  }
+
+  // Sub-tabs inside the Area Flow tab — one discussion area each. Scoped to
+  // the Area Flow panel so it can't collide with the main tab bar.
+  function switchSubTab(id, btn) {
+    const panel = document.getElementById('tab-areaflow');
+    panel.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+    panel.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sub-' + id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function switchTab(id, btn) {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList } from "./converser.ts";
 
 describe("pickRandom", () => {
   it("returns exactly n items when the pool is larger than n", () => {
@@ -200,5 +200,153 @@ describe("LONG_FORM_ESCAPE_HATCH", () => {
   it("is a non-empty instruction string mentioning the marker", () => {
     expect(LONG_FORM_ESCAPE_HATCH).toContain("LONG_FORM_OK");
     expect(LONG_FORM_ESCAPE_HATCH.length).toBeGreaterThan(20);
+  });
+});
+
+// ── Invented-figure guard ───────────────────────────────────────────────────
+// Regression cover for the production output:
+//   "Based on Nairobi market data for a junior developer with 2 years,
+//    I'm targeting 210k-260k KES base, plus 13th month and learning budget."
+// The coach has no pay data and no web access, so any figure is invented and
+// any cited source is fabricated.
+
+describe("stripUnsourcedFigures", () => {
+  it("strips the observed Nairobi hallucination", () => {
+    const raw =
+      "Based on Nairobi market data for a junior developer with 2 years, I'm targeting 210k-260k KES base. " +
+      "Walk in with a number already decided. What range do you have in mind?";
+    const out = stripUnsourcedFigures(raw);
+    expect(out).not.toContain("KES");
+    expect(out).not.toContain("Nairobi market data");
+    expect(out).toContain("Walk in with a number already decided.");
+  });
+
+  it("catches currency symbols as well as codes", () => {
+    expect(hasUnsourcedFigure("I'd ask for $2,000 a month")).toBe(true);
+    expect(hasUnsourcedFigure("aim for ₦500,000")).toBe(true);
+    expect(hasUnsourcedFigure("around £45,000 base")).toBe(true);
+    expect(hasUnsourcedFigure("try for 260k KES")).toBe(true);
+  });
+
+  it("catches a claimed source even with no number attached", () => {
+    expect(hasUnsourcedFigure("According to recent salary surveys, rates are rising.")).toBe(true);
+    expect(hasUnsourcedFigure("Based on market data for your city, push higher.")).toBe(true);
+  });
+
+  it("falls back to teaching the method when nothing survives", () => {
+    const raw = "Based on market data, the range is 210k-260k KES.";
+    expect(stripUnsourcedFigures(raw)).toBe(NO_RELIABLE_PAY_DATA);
+  });
+
+  it("leaves ordinary advice untouched", () => {
+    const raw =
+      "Turn it around and ask what range they've set aside for the role. " +
+      "Do you have a number in mind?";
+    expect(stripUnsourcedFigures(raw)).toBe(raw);
+  });
+
+  it("does not fire on plain numbers that aren't money", () => {
+    const raw =
+      "Divide by realistic billable days — not 250, more like 150 once you account for admin. " +
+      "Who's your first client likely to be?";
+    expect(stripUnsourcedFigures(raw)).toBe(raw);
+    expect(hasUnsourcedFigure("about 10 percent below your range")).toBe(false);
+    expect(hasUnsourcedFigure("three years without an increase")).toBe(false);
+  });
+
+  it("steps aside once a facet has genuinely grounded data", () => {
+    const raw = "Per Payscale (March 2026), the band is 210k-260k KES.";
+    expect(stripUnsourcedFigures(raw, true)).toBe(raw);
+  });
+
+  it("runs as part of resolveNarrowOrAnswer, on every generation path", () => {
+    const raw = "Based on market data, aim for 260k KES. Ask for a day to think it over.";
+    const out = resolveNarrowOrAnswer(raw);
+    expect(out).not.toContain("KES");
+    expect(out).toContain("Ask for a day to think it over.");
+  });
+});
+
+// ── Sentence cap ────────────────────────────────────────────────────────────
+// capParagraphs() splits on blank lines, so a single unbroken paragraph runs
+// as long as it likes. Observed locally against gpt-5-nano: an eight-sentence
+// tour of the whole salary topic in answer to one question.
+
+describe("capSentences", () => {
+  it("cuts the single-paragraph rundown capParagraphs can't see", () => {
+    const raw =
+      "Do your market research first. Talk to two or three peers in the same role. " +
+      "Check local job ads for published ranges. Decide a floor and a target before you talk. " +
+      "Anchor with a range rather than a single number. Back it with the value you bring. " +
+      "Negotiate the whole package, not just base. What role are you targeting?";
+    const out = capSentences(raw);
+    expect(out).toContain("Do your market research first.");
+    expect(out).toContain("What role are you targeting?");
+    expect(out).not.toContain("Negotiate the whole package");
+    expect(out.split(/(?<=[.!?])\s+/)).toHaveLength(4);
+  });
+
+  it("always keeps the closing question", () => {
+    const raw = "One. Two. Three. Four. Five. Six. So what's your situation?";
+    expect(capSentences(raw).endsWith("So what's your situation?")).toBe(true);
+  });
+
+  it("leaves a short answer alone", () => {
+    const raw = "Walk in with a number already decided. Do you have a range in mind?";
+    expect(capSentences(raw)).toBe(raw);
+  });
+
+  it("keeps out of the way of real paragraph structure", () => {
+    const raw = "First para is long enough to matter here. Second sentence. Third one too. Fourth.\n\nA closing question?";
+    expect(capSentences(raw)).toBe(raw);
+  });
+
+  it("does not truncate a deliberate list", () => {
+    const raw = "Here are the steps:\n- research the range\n- decide a floor\n- ask for a day\n- confirm in writing\n- follow up";
+    expect(capSentences(raw)).toBe(raw);
+  });
+
+  it("keeps a long answer that has no closing question from losing its end", () => {
+    const raw = "One. Two. Three. Four. Five. Six.";
+    const out = capSentences(raw);
+    expect(out).toBe("One. Two. Three. Four.");
+  });
+});
+
+// ── Inline lists ────────────────────────────────────────────────────────────
+// Told not to write lists, the model complied with the letter — no line breaks
+// — and wrote one inline with dashes instead.
+
+describe("flattenInlineList", () => {
+  it("flattens the observed inline salary list", () => {
+    const raw =
+      "I could only find a couple of Lagos figures. Glassdoor lists: " +
+      "- Mid-level backend developer in Lagos: NGN 298,578 per month (Glassdoor, 2024). " +
+      "- Backend developer in Lagos: total pay about NGN 257,167 per month. " +
+      "What are you targeting?";
+    const out = flattenInlineList(raw);
+    expect(out).not.toMatch(/\s-\s[A-Z]/);
+    expect(out).toContain("298,578");
+    expect(out).toContain("What are you targeting?");
+  });
+
+  it("leaves em-dash asides alone", () => {
+    const raw = "Walk in with a number already decided — the awkwardness passes in a minute — and hold it.";
+    expect(flattenInlineList(raw)).toBe(raw);
+  });
+
+  it("leaves hyphenated words alone", () => {
+    const raw = "Look for mid-level and senior-level roles in well-funded companies.";
+    expect(flattenInlineList(raw)).toBe(raw);
+  });
+
+  it("ignores a single dash — that's an aside, not a list", () => {
+    const raw = "Ask for the range - Then decide.";
+    expect(flattenInlineList(raw)).toBe(raw);
+  });
+
+  it("leaves a real multi-line list to capParagraphs", () => {
+    const raw = "Steps:\n- research the range\n- decide a floor\n- ask for a day";
+    expect(flattenInlineList(raw)).toBe(raw);
   });
 });

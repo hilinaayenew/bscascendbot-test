@@ -10,8 +10,8 @@
 //   5. Save AI reply to messages table + return it
 
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { BSCCoach } from "./bsc-coach.ts";
 import { BotemaCoach } from "./botema-coach.ts";
+import { HISTORY_WINDOW, HISTORY_FETCH } from "./converser.ts";
 import type { UserProfile, ConverserContext, AzureConfig, AzureToolSchema, OAIMessage } from "./converser.ts";
 
 const corsHeaders = {
@@ -47,7 +47,7 @@ async function routeWithAI(
     body: JSON.stringify({
       messages: [
         { role: "system", content: instructions },
-        ...history.slice(-6),
+        ...history.slice(-HISTORY_WINDOW),
         { role: "user", content: message },
       ],
       tools: functionSchemas,
@@ -90,7 +90,13 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { message, sender_id, bot = "chataki" } = await req.json();
+    // Single coach as of 2026-08-15: every request goes to Botema. Chataki's
+    // implementation is untouched in bsc-coach.ts and her shared functions are
+    // still in bsc-functions.ts — nothing was deleted. Reinstating her is an
+    // import plus a branch here, plus the picker in AICoachWidget.tsx.
+    // A `bot` field in the body is accepted and ignored, so older clients
+    // keep working rather than erroring.
+    const { message, sender_id } = await req.json();
     if (!message || !sender_id) throw new Error("Missing message or sender_id");
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -129,7 +135,7 @@ Deno.serve(async (req) => {
         `and(sender_id.eq.${AI_COACH_ID},receiver_id.eq.${sender_id})`
       )
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(HISTORY_FETCH);
 
     const conversationHistory: OAIMessage[] = (history || [])
       .reverse()
@@ -145,9 +151,7 @@ Deno.serve(async (req) => {
       conversationHistory,
     };
 
-    const coach = bot === "botema"
-      ? new BotemaCoach(context, supabase, sender_id, azureConfig)
-      : new BSCCoach(context, supabase, sender_id, azureConfig);
+    const coach = new BotemaCoach(context, supabase, sender_id, azureConfig);
 
     // ── 4. Routing — entirely the AI's own judgment ───────────────────
     // Whether this message needs narrowing (inviteUserContext) or can be

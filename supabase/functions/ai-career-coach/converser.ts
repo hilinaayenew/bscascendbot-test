@@ -89,6 +89,66 @@ function capParagraphs(text: string, max = 2): string {
   return [first, ...keptMiddle, last].join("\n\n");
 }
 
+/**
+ * Flattens a list the model wrote inline, mid-paragraph.
+ *
+ * Observed against a grounded salary answer: "Glassdoor lists: - Mid-level
+ * backend developer in Lagos: NGN 298,578 per month (Glassdoor, 2024). -
+ * Backend developer in Lagos: total pay about NGN 257,167 per month." Told
+ * repeatedly not to write lists, the model complied with the letter — no line
+ * breaks — and produced a list anyway. Instructions have lost this argument
+ * three times now (ISSUE-005, ISSUE-006, and here), so it is handled in code.
+ *
+ * Only touches inline dashes acting as bullets: a hyphen preceded by a space
+ * and followed by a capital or digit. Real em-dash asides and hyphenated
+ * words are left alone, and a genuine multi-line list is capParagraphs'
+ * business, not this function's.
+ */
+export function flattenInlineList(text: string): string {
+  if (/\n/.test(text)) return text;
+  const bullets = text.match(/\s-\s(?=[A-Z0-9])/g);
+  if (!bullets || bullets.length < 2) return text;
+
+  // Turn each bullet into a sentence boundary, then let capSentences decide
+  // how many survive — the point is that she gets an anchor, not a table.
+  return text
+    .replace(/:\s-\s(?=[A-Z0-9])/g, ". ")
+    .replace(/\s-\s(?=[A-Z0-9])/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/**
+ * Sentence-level cap, for the rundown that capParagraphs() cannot see.
+ *
+ * capParagraphs splits on blank lines, so a single unbroken paragraph — which
+ * is what gpt-5-nano returns most of the time — passes through it untouched
+ * however long it runs. Observed locally: an eight-sentence tour of market
+ * research, anchoring, the value case, the current-salary question and the
+ * full benefits package, all in one paragraph, in answer to "how do I
+ * negotiate salary". ISSUE-006 intended to stop exactly that and didn't.
+ *
+ * Keeps the opening answer and the closing question, drops the tour between
+ * them. Only touches single-paragraph text: anything with real paragraph
+ * structure has already been through capParagraphs, and a list that survived
+ * that check survived deliberately.
+ */
+export function capSentences(text: string, keep = 4): string {
+  if (/\n\s*\n/.test(text)) return text;
+  if (LIST_LIKE_PARAGRAPH.test(text)) return text;
+
+  const sentences = text.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+  if (sentences.length <= keep) return text;
+
+  // The closing question is the one part that must survive — every answer is
+  // supposed to end on one, and dropping it strands the conversation.
+  const closing = sentences[sentences.length - 1].endsWith("?")
+    ? sentences[sentences.length - 1]
+    : null;
+  const body = sentences.slice(0, keep - (closing ? 1 : 0));
+  return [...body, closing].filter(Boolean).join(" ");
+}
+
 // The bullet-shape check above still can't save a legitimately long
 // deliverable written as plain prose (a full cover-letter draft, an
 // explanation the user explicitly asked to go deeper on) — nothing marks
@@ -98,6 +158,113 @@ function capParagraphs(text: string, max = 2): string {
 export const LONG_FORM_ESCAPE_HATCH = `If — and only if — the user explicitly asked for something that genuinely needs a longer, multi-paragraph answer (a full draft, a full rewrite, or they asked you to explain more or go deeper), start your reply with the exact marker LONG_FORM_OK alone on its own first line, then continue with your full answer as normal on the following lines. Do not include this marker for an ordinary short answer — it should be rare, not the default.`;
 
 const LONG_FORM_OK_PATTERN = /^\s*LONG_FORM_OK\s*\n+/i;
+
+// ── Conversation history window ─────────────────────────────────────────────
+// Raised from 6 to 10 on 15 Aug 2026 (ISSUE-009). Six messages is three
+// exchanges, and a properly worked-through discussion area runs longer than
+// that — enter, two or three follow-ups, then close — so the coach reached the
+// close having already lost sight of how the area opened, and couldn't
+// summarise what it had covered.
+//
+// Ten buys headroom, but it is not the real fix and won't survive a long area
+// either. The durable record is `covered_facets` on coach_user_profiles: a
+// compact list of facet IDs that can be expanded back into "market rate,
+// opening the negotiation, benefits" for a few tokens, and that never falls
+// out of a window. Treat this constant as the short-term memory and
+// covered_facets as the long-term one.
+export const HISTORY_WINDOW = 10;
+
+// Fetched from the DB before slicing — kept above HISTORY_WINDOW so the slice
+// always has a full window available rather than whatever happened to fit.
+export const HISTORY_FETCH = 20;
+
+// ── Whose side the coach is on ──────────────────────────────────────────────
+// This coach exists for women building tech careers, and it should sound like
+// it. Observed 15 Aug: asked about a male colleague earning more for the same
+// job, it opened with "confirm you truly have the same role and scope" —
+// sound advice, and the wrong first move. It asks her to prove it before it
+// takes her seriously, which is the experience she is already having at work.
+//
+// The fix is not sympathy noises; those are banned elsewhere in these prompts
+// for good reason. It is *substantive* validation — a fact about the world.
+// "Pay gaps between men and women in the same role are well documented" does
+// more for her than "that sounds hard", and it is also true.
+export const STAND_WITH_HER =
+  "You are coaching women building tech careers, and you are on their side. " +
+  "When someone raises something women in tech demonstrably face — being paid less than a male colleague for the same work, being called difficult for negotiating, being assumed junior, being talked over — say plainly that it is real and well documented BEFORE you give any advice. She is not imagining it, and she is not alone. " +
+  "Never open by asking her to prove it. 'Check whether it's really the same role' is useful and it is not how you start; it reads as doubt. Validate first, then help her get her facts. " +
+  "Be accurate rather than sweeping: the pattern is well established, this particular case you cannot know from here — say both, in that order. " +
+  "Do this with substance, not sympathy: a fact she can use beats a soft phrase every time.";
+
+// ── Invented-figure guard ───────────────────────────────────────────────────
+// The coach has no web search and no pay data of any kind: its only sources are
+// KNOWLEDGE_BASE, the few-shot examples and the user's own profile. So any
+// currency figure it produces is invented, and any claim to be citing data is
+// a fabricated source. Observed in production: "Based on Nairobi market data
+// for a junior developer with 2 years, I'm targeting 210k-260k KES base."
+//
+// This is also what Otema actually says — that public pay data is thin in many
+// African markets, and peers and mentors are the more reliable signal. So the
+// guard isn't only about accuracy; a coach asserting a sourced number is
+// contradicting the person whose voice it speaks in.
+//
+// When Phase 4 lands, pass hasGroundedData=true for W-marked facets that
+// genuinely retrieved figures, and the guard steps aside for those only.
+
+const CURRENCY_CODES = "KES|KSh|NGN|ZAR|GHS|UGX|TZS|RWF|XOF|XAF|ZMW|MWK|ETB|USD|GBP|EUR";
+
+// Deliberately conservative: an explicit currency next to digits, nothing more.
+// A false negative just means the instruction has to carry it; a false positive
+// would delete legitimate advice, which is the worse failure.
+const CURRENCY_FIGURE = new RegExp(
+  `(?:\\b(?:${CURRENCY_CODES})\\b[\\s:]*\\d)|(?:\\d[\\d,.]*\\s*[km]?\\s*\\b(?:${CURRENCY_CODES})\\b)|(?:[$£€₦]\\s?\\d)`,
+  "i",
+);
+
+// "Based on Nairobi market data", "according to salary surveys" — a claimed
+// source is wrong even with no number attached to it.
+const FABRICATED_SOURCE =
+  /\b(?:based on|according to|per)\b[^.!?]{0,50}\b(?:market data|salary data|pay data|salary surveys?|surveys?|research|reports?|figures|benchmarks?)\b/i;
+
+export function hasUnsourcedFigure(text: string): boolean {
+  return CURRENCY_FIGURE.test(text) || FABRICATED_SOURCE.test(text);
+}
+
+// Said in place of a stripped figure. Teaches the method instead of asserting a
+// number — which is both the honest answer and the one Otema actually gives.
+export const NO_RELIABLE_PAY_DATA =
+  "I don't have reliable, current pay data for your market, and I'd rather not hand you a number I can't stand behind. " +
+  "The most accurate signal is people doing the same role near you — ask in a community group, or ask a mentor directly what band they'd expect for it. " +
+  "What role and location are you looking at?";
+
+/**
+ * Removes sentences that state a currency figure or claim a source the coach
+ * doesn't have. Surgical rather than wholesale: an answer is usually mostly
+ * sound advice with one invented number in it, and throwing away the advice to
+ * remove the number would be its own kind of failure.
+ */
+export function stripUnsourcedFigures(text: string, hasGroundedData = false): string {
+  if (hasGroundedData || !hasUnsourcedFigure(text)) return text;
+
+  const kept = text
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => !hasUnsourcedFigure(sentence));
+
+  // If stripping left nothing of substance — or only the closing question —
+  // there was no answer underneath the invented number, so say so plainly.
+  const substantive = kept.filter((s) => !s.trim().endsWith("?"));
+  if (substantive.length === 0) return NO_RELIABLE_PAY_DATA;
+
+  return kept.join(" ").trim();
+}
+
+// Instruction half of the same guard. Code catches what the model ignores, but
+// the model should not be producing these in the first place.
+export const NO_INVENTED_FIGURES =
+  "You have no live pay data and no web access, so never state a specific salary, rate or currency figure, " +
+  "and never claim to be citing market data, surveys or research — you have none. " +
+  "If someone asks what a role pays, tell them how to find out instead: what to compare, who to ask, and what makes a source trustworthy. " +
+  "Being honest that reliable public data is thin in many markets is a better answer than a confident number.";
 
 export function resolveNarrowOrAnswer(raw: string): string {
   const selfReported = raw.match(NARROW_OUTPUT_PATTERN);
@@ -117,7 +284,12 @@ export function resolveNarrowOrAnswer(raw: string): string {
     return withChoices("Which one would you like to focus on?", enumeratedOptions);
   }
 
-  return longFormMatch ? body : capParagraphs(body);
+  const resolved = longFormMatch ? body : capSentences(capParagraphs(flattenInlineList(body)));
+
+  // Last gate before the user sees it. Runs on every generation path — both
+  // personas, advice and mindset alike — because this is the single funnel
+  // they all pass through.
+  return stripUnsourcedFigures(resolved);
 }
 
 // Azure OpenAI config — passed through from index.ts (loaded from Supabase secrets)

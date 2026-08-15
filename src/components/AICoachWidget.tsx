@@ -54,11 +54,7 @@ const AICoachWidget = () => {
   const [newMessage, setNewMessage] = useState("");
   const [unread, setUnread] = useState(0);
   const [sending, setSending] = useState(false);
-  const [botMenuOpen, setBotMenuOpen] = useState(false);
-  const [selectedBot, setSelectedBot] = useState<"botema" | "chataki" | null>(() => {
-    const saved = sessionStorage.getItem("selectedBot");
-    return saved === "botema" || saved === "chataki" ? saved : null;
-  });
+
   const [size, setSize] = useState({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
   const [minimized, setMinimized] = useState(false);
@@ -164,11 +160,6 @@ const AICoachWidget = () => {
     }
   };
 
-  const pickBot = (bot: "botema" | "chataki") => {
-    sessionStorage.setItem("selectedBot", bot);
-    setSelectedBot(bot);
-    setBotMenuOpen(false);
-  };
 
   const fetchMessages = useCallback(async () => {
     if (!user) return;
@@ -271,7 +262,7 @@ const AICoachWidget = () => {
     }
 
     supabase.functions
-      .invoke("ai-career-coach", { body: { message: msgText, sender_id: user.id, bot: selectedBot ?? "chataki" } })
+      .invoke("ai-career-coach", { body: { message: msgText, sender_id: user.id } })
       .then(() => fetchMessages())
       .catch((err) => {
         console.error("AI Coach Error:", err);
@@ -341,36 +332,9 @@ const AICoachWidget = () => {
             <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center shrink-0">
               <Bot className="h-4 w-4" />
             </div>
-            <span className="font-body text-sm font-semibold flex-1 truncate">
-              {selectedBot === "botema" ? "Botema" : selectedBot === "chataki" ? "Chataki" : AI_COACH_NAME}
-            </span>
-
-            <div className="relative">
-              <button
-                onClick={() => setBotMenuOpen((v) => !v)}
-                className="flex items-center gap-1 text-xs font-body px-2 py-1 rounded-md border border-primary-foreground/30 hover:bg-primary-foreground/10 transition-colors"
-              >
-                {selectedBot === "botema" ? "🤖 Botema" : selectedBot === "chataki" ? "🤖 Chataki" : "Select coach"}
-              </button>
-              {botMenuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-56 bg-popover border border-border rounded-lg shadow-lg z-50 text-popover-foreground">
-                  <button
-                    onClick={() => pickBot("botema")}
-                    className={`w-full text-left px-3 py-2 hover:bg-muted transition-colors rounded-t-lg ${selectedBot === "botema" ? "bg-muted" : ""}`}
-                  >
-                    <p className="font-body text-sm font-semibold">🤖 Botema</p>
-                    <p className="font-body text-xs text-muted-foreground mt-0.5">Direct, personal, African tech context</p>
-                  </button>
-                  <button
-                    onClick={() => pickBot("chataki")}
-                    className={`w-full text-left px-3 py-2 hover:bg-muted transition-colors rounded-b-lg ${selectedBot === "chataki" ? "bg-muted" : ""}`}
-                  >
-                    <p className="font-body text-sm font-semibold">🤖 Chataki</p>
-                    <p className="font-body text-xs text-muted-foreground mt-0.5">Warm, thorough, research-backed</p>
-                  </button>
-                </div>
-              )}
-            </div>
+            {/* Single coach since 2026-08-15 — Chataki removed, so there is
+                nothing to switch between and no picker to show. */}
+            <span className="font-body text-sm font-semibold flex-1 truncate">Botema</span>
 
             <button
               onClick={toggleMinimize}

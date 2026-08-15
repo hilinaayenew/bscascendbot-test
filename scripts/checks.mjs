@@ -82,3 +82,18 @@ export function replyOf(out) {
   }
   return blocks.join("\n\n").trim();
 }
+
+// Questions that press her to disclose her own pay.
+//
+// Otema's S3 coaches her to refuse exactly this — "turn it around and ask what
+// range they've set aside, that tells you more than giving your own number
+// first" — so a coach that then extracts the same figure has not understood
+// its own advice. Observed: "What range are you prepared to anchor on?" twice
+// in one conversation, plus asking her for the employer's budgeted range.
+const EXTRACTIVE_Q =
+  /\b(?:what|how much|share|tell me|could you)\b[^?]{0,90}?\b(?:your (?:current )?(?:salary|pay|rate|range|number|figure)|you (?:currently )?(?:earn|make|are on)|prepared to (?:accept|anchor)|payslip|pay slip|screenshot|budgeted range)\b[^?]{0,50}\?/i;
+
+export function extractiveQuestions(out) {
+  const qs = replyOf(out).match(/[^.!?]*\?/g) || [];
+  return qs.filter((q) => EXTRACTIVE_Q.test(q)).map((q) => q.trim());
+}

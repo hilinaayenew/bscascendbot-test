@@ -116,6 +116,12 @@ function loadPlainLanguage() {
   return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
 }
 
+function loadAskWell() {
+  const src = readFileSync(join(FN, "converser.ts"), "utf8");
+  const m = src.match(/export const ASK_WITHOUT_EXTRACTING =\s*([\s\S]*?);\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
+}
+
 function loadFigureGuard() {
   const src = readFileSync(join(FN, "converser.ts"), "utf8");
   const m = src.match(/export const NO_INVENTED_FIGURES =\s*([\s\S]*?);\n/);
@@ -723,6 +729,7 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     loadStandWithHer(),
     loadNeverAct(),
     loadPlainLanguage(),
+    loadAskWell(),
     // Observed across five turns on freelance rates: four replies opened "I
     // would always recommend" and the billable-days method was re-derived
     // three times. She has already been told; saying it again is not emphasis,

@@ -1,6 +1,6 @@
 # A nurse moving into health tech, offered far too little
 
-_Run 2026-08-15 18:08 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 18:32 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Crosses stage A into B mid-conversation, and treats a half offer as a mismatch rather than a starting point.
 
@@ -12,71 +12,68 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I've been a nurse for 6 years and I'm moving into health tech
-  [stage A — User is re-pricing themselves into a new domain; no employer yet; exploring market value without an offer.]
+  [stage A — User is moving from nursing into health tech; pricing themselves fits stage A]
   → enterDiscussionArea(9 · Salary & Negotiation)
+  [W · skipped — no location known yet]
+  [sentence cap fired — the model wrote a rundown]
   [drew on G2, S1, G10a, G10 — 1 Otema, 3 drafted]
 
 Botema
-  Your nursing experience is a real edge in health tech—target roles where
-  clinical insight matters, like health data analyst or clinical product
-  specialist. Start by picking one or two core skills (SQL and Python basics,
-  plus healthcare data/workflow knowledge) and build a small portfolio project
-  that demonstrates turning a clinical question into a data-backed answer.
-  Which area in health tech are you most excited about—data, product, or
-  implementation—and who in your network could mentor you as you begin?
+  That six-year nursing background is your strongest asset in health tech.
+  Start with roles that blend clinical insight with tech—clinical informatics,
+  health data analytics, or health-software implementation—and build a small
+  portfolio showing how you translate a care problem into a product or data
+  solution. What exact health-tech area are you aiming for first, and where
+  are you based?
 
   you > they've offered me something but it feels really low
-  [stage B — Offer received; compensation appears below market; seeking negotiation guidance]
-  [W · skipped — no location known yet]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [sentence cap fired — the model wrote a rundown]
+  [stage B — User has an actual offer in a health-tech role and reports the compensation feeling low; needs negotiation guidance.]
   [drew on S5a, G7, S2, S5 — 2 Otema, 2 drafted]
 
 Botema
-  That’s real and common when you’re moving into health tech; your clinical
-  experience is valuable, so you deserve a fair offer. Start by asking for a
-  full breakdown (base, currency, signing bonus, learning budget, equipment,
-  benefits, and any equity) and push for a clear path to salary review if the
-  base can’t move. What is the base salary and currency they offered?
+  That low offer is real, not your imagination—women moving into health tech
+  in Africa often face underpay and unclear currency terms. I’d push for the
+  full package (base, currency, signing bonus or learning budget, equipment,
+  health cover) and a clear salary review after 6–12 months; if it’s a
+  startup, ask about equity too. Can you share the base figure, the currency,
+  and the other benefits in the offer so I can help you draft a tight counter?
 
   you > it's about half what the job ads say for that role
-  [stage B — User has an offer that is much lower than advertised; in negotiation stage]
+  [stage B — Offer is about half of what job ads say; requires market comparison and negotiation strategy.]
+  [W · skipped — no location known yet]
   [drew on G3, G3a, G7, S3 — 1 Otema, 3 drafted]
 
 Botema
-  That’s real, and it’s not you—ads often show a range that the offer never
-  meets. I’d push for a clear budgeted base range for the role and a direct
-  link between the duties and your six years of clinical experience; if the
-  base can’t move, negotiate a signing bonus, a learning budget, equipment,
-  and a six‑month salary review, plus confirm pay in a stable local currency.
-  What base and currency did they offer, and what was the range in the job ad?
+  That gap is real in our market—ads publish ranges, but the actual budget
+  often sits much lower. I’d treat this as a mismatch and push for a counter
+  anchored to the market rate for this health-tech level, asking for the full
+  package (base in local currency, signing or learning budget, equipment,
+  health cover) and a six-month salary review; if base can’t move, ask for
+  other value like equity or a higher benefits floor. What are the base
+  figure, currency, and the other components on the offer so I can help you
+  draft the exact counter?
 
   you > I keep thinking maybe I don't deserve more since I'm new to tech
-  [stage B — User is still in offer stage and is experiencing imposter syndrome; pertains to negotiating with a prospective employer.]
+  [stage B — User reports imposter syndrome and confidence block during ongoing B-stage negotiation.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S3a, G9a, G7, S2 — 1 Otema, 3 drafted]
 
 Botema
-  That feeling is real, but it doesn’t mean you don’t belong here. Six years
-  in nursing is exactly the kind of clinical insight health tech needs, so you
-  absolutely deserve a fair offer for the role. What base and currency did
-  they offer, and what was the range in the job ad?
+  That doubt is common when you’re moving into tech, but your six years of
+  nursing is exactly the value you bring to health tech and you deserve fair
+  pay for it. What is the base figure and currency, and what other components
+  are in the offer?
 
   you > what do I actually say to them
-  [stage B — User asked for exact phrases to use when negotiating after receiving a low offer in stage B.]
+  [stage B — User asked for exact wording for negotiating an offer.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S2a, S3b, G6, S2 — 1 Otema, 3 drafted]
 
 Botema
-  Based on what I’ve researched for this role and the value of that clinical
-  insight I’d contribute, the base salary offered is below the published
-  range, so I’m looking for a base in the [X] to [Y] range in [local
-  currency]. If the base can’t move, can we discuss a signing bonus, a
-  learning budget, and a six‑month salary review to re‑base the package? What
-  range can you move to today?
+  What are the base figure and currency in your offer so I can tailor the
+  exact wording?
 
   you > quit
 
@@ -85,9 +82,9 @@ Botema
   covered_stages  A, B
   touched_facets  S1, G2, G10, G10a, G5, S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a
   closed_areas    —
-  role/location   health tech role (clinical background nurse transitioning) / —
-  where she is    She is a nurse with six years of experience, currently transitioning into health tech. She has received an offer for a health tech role, but the compensation feels really low and is about half of what the job ads say for that role.
-  trying to do    She wants to move into health tech. In her way is an underwhelming offer compared with the advertised range, and her own doubt about whether she deserves more since she is new to tech. What she has already tried: NONE.
+  role/location   health tech role / —
+  where she is    — She is moving into health tech after six years as a nurse. She has received a health-tech job offer, but the compensation feels really low. The offer is about half of what job ads say for that role.
+  trying to do    — She wants to secure a health-tech role that leverages her clinical experience; the main obstacle is the low offer; she also says she keeps thinking she may not deserve more since she is new to tech. Now she is asking for exact language to say to them—she wants a script or talking points to negotiate.
 
   Nothing was written to any database.
 ```
@@ -98,9 +95,9 @@ Botema
 - PASS — values her clinical background rather than discounting it
 - PASS — stayed in the area for all five turns
 - PASS — every reply ends on a question
-- **FAIL** — no two replies open the same way
+- PASS — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms
-- PASS — no reply mostly restates the one before it
+- **FAIL** — no reply mostly restates the one before it
 
 ---
 

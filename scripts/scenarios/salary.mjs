@@ -13,7 +13,7 @@
 // leading anywhere — only show up over a run.
 // ============================================================================
 
-import { replyOf, everyReplyAsks, noRepeatedOpeners, jargonPerReply, maxRepeatOverlap } from "../checks.mjs";
+import { replyOf, everyReplyAsks, noRepeatedOpeners, jargonPerReply, maxRepeatOverlap, extractiveQuestions } from "../checks.mjs";
 
 export default [
   {
@@ -32,6 +32,7 @@ export default [
       ["values her clinical background rather than discounting it", (o) => /(nurse|clinical|healthcare|domain|background|experience)/i.test(replyOf(o))],
       ["stayed in the area for all five turns", (o) => !/stage leaving/.test(o)],
       ["every reply ends on a question", (o) => everyReplyAsks(o)],
+      ["never asks her to disclose her own pay", (o) => extractiveQuestions(o).length === 0],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
@@ -53,6 +54,7 @@ export default [
       ["questions why the money appeared only now", (o) => /(before|why|earlier|only now|resignation|notice)/i.test(replyOf(o))],
       ["treats money as not the whole reason", (o) => /(reason|why you|what was wrong|part of|fix)/i.test(replyOf(o))],
       ["every reply ends on a question", (o) => everyReplyAsks(o)],
+      ["never asks her to disclose her own pay", (o) => extractiveQuestions(o).length === 0],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
@@ -74,6 +76,7 @@ export default [
       ["takes the currency worry seriously", (o) => /(volatil|inflation|moved|devalu|risk|stable)/i.test(replyOf(o))],
       ["handles the 'sounding difficult' turn without leaving", (o) => !/stage leaving/.test(o)],
       ["every reply ends on a question", (o) => everyReplyAsks(o)],
+      ["never asks her to disclose her own pay", (o) => extractiveQuestions(o).length === 0],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
@@ -95,6 +98,7 @@ export default [
       ["names the repetition as information about them", (o) => /(pattern|again|last year|twice|says something|about them|not about you)/i.test(replyOf(o))],
       ["does not treat raising it as complaining", (o) => /(complain|reasonable|entitled|fair|normal|right to|business issue|not about being)/i.test(replyOf(o))],
       ["every reply ends on a question", (o) => everyReplyAsks(o)],
+      ["never asks her to disclose her own pay", (o) => extractiveQuestions(o).length === 0],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],

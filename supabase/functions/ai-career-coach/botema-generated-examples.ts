@@ -82,7 +82,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "The offer is well below what I was expecting. Do I counter or walk away?",
       answer:
-        "Counter once, properly: a number and a reason, not an apology. If the base genuinely can't move, ask what else is open — a review at six months in writing, a learning budget, remote days. I know how hard it is to walk away when jobs feel scarce, but a badly-set first salary follows you into every role after it, because the next employer asks what you're on now. How far below your range are they?",
+        "Counter once, properly: a number and a reason, not an apology. If the base genuinely can't move, ask what else is open — a review at six months in writing, a learning budget, remote days. I know how hard it is to walk away when jobs feel scarce, but a badly-set first salary follows you into every role after it, because the next employer asks what you're on now. What did they say the role actually involves?",
       topic: "salary",
       area: 9,
       facet: "G3",
@@ -184,7 +184,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "I have a range in mind, but I don't know how to actually say it out loud.",
       answer:
-        "Say it flat, with no hedge attached: \"Based on what I've researched for this role, I'm looking at X to Y.\" Then stop talking, because the silence afterwards is theirs to fill and not yours. What range are you working with?",
+        "Say it flat, with no hedge attached: \"Based on what I've researched for this role, I'm looking at X to Y.\" Then stop talking, because the silence afterwards is theirs to fill and not yours. Where has the conversation got to so far?",
       topic: "salary", area: 9, facet: "S2a", respondsTo: "S2",
       userSaid: "Yes — but I don't know how to actually say it out loud",
       gap: "How to physically deliver the number",
@@ -220,7 +220,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "My salary hasn't changed but everything costs more now.",
       answer:
-        "That's a real argument, but keep it about the value of the role rather than your household. \"My salary has stayed flat while costs have moved, and I'd like us to look at what this role is worth now\" lands better than what you can no longer afford. Where the currency is unstable, negotiate the review interval as well as the number — an annual review in a fast-moving market is already behind before it happens. How much has it shifted where you are?",
+        "That's a real argument, but keep it about the value of the role rather than your household. \"My salary has stayed flat while costs have moved, and I'd like us to look at what this role is worth now\" lands better than what you can no longer afford. Where the currency is unstable, negotiate the review interval as well as the number — an annual review in a fast-moving market is already behind before it happens. How long has your pay been sitting where it is?",
       topic: "salary", area: 9, facet: "S4c", respondsTo: "S4",
       userSaid: "My salary doesn't stretch like it used to",
       gap: "Cost-of-living and currency erosion as grounds for a rise",

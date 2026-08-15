@@ -1,6 +1,6 @@
 # She resigned and they suddenly found the money
 
-_Run 2026-08-15 18:08 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 18:32 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C throughout, and asks why the number only appeared once she was leaving.
 
@@ -12,67 +12,73 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I handed in my notice last week and now they've offered me 30% more to stay
-  [stage C — User is negotiating with their current employer after giving notice; employer offered 30% to stay.]
+  [stage B — User has resigned and received a counter-offer; this is a live negotiation with a prospective offer to stay.]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G8, S4c, S4, S4a — 1 Otema, 3 drafted]
+  [drew on S5a, G6, G7, S2 — 1 Otema, 3 drafted]
 
 Botema
-  Counter-offers are real, but they rarely fix the deeper reasons you handed
-  in your notice. If you’re considering staying, push for a written package: a
-  clear new role/title, a salary that reflects the market and currency
-  reality, a defined timeline for review, and concrete growth opportunities or
-  a learning budget. What would you need to see in writing beyond the 30% to
-  feel confident staying?
+  That 30% raise is real and a strong signal they want you to stay. I’d push
+  for a formal written offer that covers base salary, any bonus, a clear
+  promotion/growth path, learning budget, equipment, remote/flex details, and
+  a concrete timeline for the next raise. What are your top two goals for the
+  next 12–18 months, and would this plan help you reach them if there’s a
+  credible path to the next step?
 
   you > I'd asked for a raise twice before and got nothing
-  [stage C — User has a history of asking for raises (twice denied) and is continuing pay discussion with employer; this is stage C (negotiation with current employer) and needs strategic guidance.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G8, G9a, G1, G1a — 0 Otema, 4 drafted]
+  [stage C — Negotiation stage with current employer after previous rejection; ongoing pay discussion]
 
-Botema
-  That pattern is real and well documented—being offered change only after you
-  threaten to leave happens to many women in tech, you’re not imagining it.
-  Since you asked before and got nothing, treat the 30% as leverage for a
-  written package rather than a windfall. What one element do you need in
-  writing to feel confident staying: title, money, or growth?
+  Azure error: fetch failed
 
   you > honestly the money was only part of why I was going
-  [stage C — User is negotiating with current employer after handing in notice; money isn't the sole factor, so stage C fits; message adds new information about non-monetary factors.]
+  [stage C — User is negotiating with current employer; not leaving; new information indicates non-monetary factors matter in retention.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G8, G9, G9a, G1b — 0 Otema, 4 drafted]
+  [drew on G8, G9, S4a, S4 — 1 Otema, 3 drafted]
 
 Botema
-  You're right—the money is only part of why you were leaving. What
-  non-monetary factor matters most to you, and how would you want it captured
-  in writing?
+  I hear you — money wasn’t the sole driver, and that matters. I’d push for a
+  written package that includes a credible growth path (title and promotion
+  timeline), ownership of meaningful projects, a learning budget, and flexible
+  work terms, plus a concrete plan for the next raise with milestones. What
+  two non-monetary factors matter most to you in the next 12–18 months, and
+  could they be included in a written offer?
 
   you > my new employer has already sent the contract
-  [azure error: fetch failed]
+  [stage B — The user has a contract from a new employer; they are in active negotiation with a prospective employer.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S5a, S3, S3a, G3 — 1 Otema, 3 drafted]
 
 Botema
-  Sorry — that one did not come through properly on my end. Could you say it
-  again, or put it a different way?
+  Nice — contract on the table means you’re in the decision phase now. I’d
+  treat it like you’re weighing two paths: verify base pay, pay cadence, and
+  any signing bonus if any; ensure the title/level and a real growth path with
+  promotion timelines; confirm remote/flex terms, learning budget, equipment,
+  and a concrete plan for the next raise; and nail down currency and review
+  intervals in writing. What are the two non-monetary terms you must have
+  written into this contract, and how long do you need to review it?
 
   you > so do I take it or not
-  [azure error: fetch failed]
+  [stage B — User asks whether to accept a new job contract while currently weighing two paths; decision point in offer stage.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G9a, S5a, G3a, S5 — 1 Otema, 3 drafted]
 
 Botema
-  Sorry — that one did not come through properly on my end. Could you say it
-  again, or put it a different way?
+  I’d take your time and don’t sign today. Do you want me to draft the exact
+  wording to request that extension and those terms?
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     9 · Salary & Negotiation
-  covered_stages  C
-  touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
+  covered_stages  B, C
+  touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5, S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8
   closed_areas    —
-  role/location   current role / —
-  where she is    She handed in her notice last week; the employer has offered her 30% more to stay. She says money was only part of why she was going.
-  trying to do    She had asked for a raise twice before and got nothing.
+  role/location   contract from new employer; considering two offers / —
+  where she is    She handed in her notice last week; the company has offered her a 30% raise to stay. The new employer has sent the contract. She is in the decision phase about whether to accept the offer.
+  trying to do    She wants to decide whether to take the 30% raise and stay, after having asked for a raise twice before and got nothing. She has said money was only part of why she was leaving.
 
   Nothing was written to any database.
 ```
@@ -80,12 +86,12 @@ Botema
 ## Checks
 
 - PASS — classified stage C
-- PASS — questions why the money appeared only now
-- PASS — treats money as not the whole reason
+- **FAIL** — questions why the money appeared only now
+- **FAIL** — treats money as not the whole reason
 - PASS — every reply ends on a question
-- **FAIL** — no two replies open the same way
+- PASS — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms
-- **FAIL** — no reply mostly restates the one before it
+- PASS — no reply mostly restates the one before it
 
 ---
 

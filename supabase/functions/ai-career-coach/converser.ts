@@ -452,6 +452,27 @@ export const PLAIN_LANGUAGE =
   "Never stack two or more technical terms in one sentence. If a sentence needs a glossary, rewrite it. " +
   "Avoid startup and US-tech vocabulary that does not travel. She is negotiating in Lagos or Accra or Nairobi, not reading a term sheet in San Francisco.";
 
+// ── Do not extract what she has not offered ─────────────────────────────────
+// Observed across one conversation: "What range are you prepared to anchor
+// on?" twice, "Could you share the budgeted range for this role?", "What range
+// have you seen?" — the coach asking her to name her number, turn after turn.
+//
+// It is intrusive, and worse, it is incoherent. Otema's S3 coaches her to
+// refuse exactly this: "turn it around and ask what range they've set aside —
+// that tells you more than giving your own number first." A coach that tells
+// her not to disclose, then presses her for the same figure, has not
+// understood its own advice.
+//
+// She will volunteer a number when it helps her. Until then, none of the
+// advice needs it: how to open a negotiation, what to do about a low offer,
+// how to answer the current-salary question — all of it works without knowing
+// what she earns.
+export const ASK_WITHOUT_EXTRACTING =
+  "Never ask her what she currently earns, what she is prepared to accept, what her range is, or for a payslip, a screenshot or any document. Do not ask her to name a figure at all. " +
+  "If she volunteers a number, use it. If she does not, the advice still works without it — none of what you have to say depends on knowing what she is paid. " +
+  "When you close on a question, ask about her SITUATION rather than her finances: what has been said so far, where the conversation has got to, what matters most to her here, what she has already tried, what is making her hesitate. " +
+  "Asking her to disclose is also incoherent: you are the coach telling her not to give her number away first. Do not be the one extracting it.";
+
 // ── Invented-figure guard ───────────────────────────────────────────────────
 // The coach has no web search and no pay data of any kind: its only sources are
 // KNOWLEDGE_BASE, the few-shot examples and the user's own profile. So any

@@ -1,6 +1,6 @@
 # She resigned and they suddenly found the money
 
-_Run 2026-08-15 17:47 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 17:59 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C throughout, and asks why the number only appeared once she was leaving.
 
@@ -12,70 +12,65 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I handed in my notice last week and now they've offered me 30% more to stay
-  [stage C — The user is negotiating with their current employer after handing in notice; conversation is about staying and a pay raise.]
+  [stage C — They are negotiating with their current employer after resigning; this is a stage C money conversation.]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [sentence cap fired — the model wrote a rundown]
   [drew on G8, S4c, S4, S4a — 1 Otema, 3 drafted]
 
 Botema
-  Counteroffers are real and often used to patch over deeper issues; they
-  don’t always fix what pushed you to look in the first place. A 30% raise is
-  meaningful, but demand that it’s permanent and tied to a written plan: your
-  new title, expanded responsibilities, a 12-month path to the next promotion,
-  and a formal review date (plus clarity on how the pay is structured). What
-  matters most to you in the next 12–18 months—salary now or a stronger role
-  with a clear growth path?
+  30% is a real signal they want you to stay, but these offers can be
+  temporary pressure tactics. If you stay, get it in writing: new base salary,
+  a title that matches the work, a 12‑month review with a clear promotion
+  path, and agreed benefits. What are the top reasons you wanted to leave, and
+  does this new offer actually address them long enough for you?
 
   you > I'd asked for a raise twice before and got nothing
-  [stage C — User is actively negotiating a raise with their current employer; prior attempts were unsuccessful. This fits Stage C: money conversations started by employee.]
+  [stage C — User is negotiating pay with current employer after asking before; confirms they're in stage C]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on G8, G9a, G1, G1a — 0 Otema, 4 drafted]
 
 Botema
-  I know it’s real: women often get a higher offer after asking before, but
-  past refusals tend to show up again if there’s no solid plan behind it. If
-  they can’t commit in writing, treat this as a retention move with no
-  long-term certainty and be ready to walk away again. What would you want
-  included in the written plan to feel confident staying?
+  If you’ve asked for a raise twice and got nothing, a 30% increase to stay is
+  a real signal they want to keep you, but it can be a temporary tactic. What
+  are the two most important reasons you wanted to leave, and would this offer
+  address them in a sustainable way?
 
   you > honestly the money was only part of why I was going
-  [stage C — The user indicates non-monetary factors are also important, so this remains an internal negotiation rather than a new job offer.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage C — Non-monetary factors driving the move; money isn't the sole concern, so the negotiation strategy should address career growth, work-life balance, recognition, etc.]
   [drew on G8, G9, G9a, G1b — 0 Otema, 4 drafted]
 
 Botema
-  I hear you — money was part of it, but not all of it. If you stay, push for
-  a written plan that tackles the non-monetary issues you cared about: a clear
-  path to the next promotion, genuine mentorship and sponsorship, manageable
-  workload, more visibility and impact, a learning budget, and workable
-  flexibility. What are your top two non-monetary issues, and what would a
-  written plan need to include for you to feel confident staying?
+  You’re right—the money was part, but not the whole. What mattered more were
+  growth, ownership, and a respectful culture; if you stay, push for a formal
+  development plan, a clear path to promotion, and a written agreement that
+  those changes stay in place along with the new salary and title. What are
+  the two non-monetary factors that would actually persuade you to stay
+  long-term, and how would you want them reflected in a written offer?
 
   you > my new employer has already sent the contract
-  [stage B — User has a contract from a new employer, i.e., a live job offer, stage B.]
+  [stage B — undefined]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S5a, G6, G7, S2 — 1 Otema, 3 drafted]
 
 Botema
-  Great you’ve got the contract; before you sign, ensure there’s a written
-  plan: promotion path, mentorship, workload, and a formal review date, plus
-  clear pay terms. If those aren’t locked, propose a short side letter to
-  codify them. What are your two top non-monetary asks you want anchored in
-  writing?
+  Nice that the contract is out, but don’t sign yet—make sure it codifies the
+  growth you wanted and the non-monetary factors. Which clause in the contract
+  looks most unclear to you right now?
 
   you > so do I take it or not
-  [stage B — User asked whether to take the offer; decision belongs to the negotiation stage with a prospective employer.]
+  [stage B — User has a concrete offer/contract and must decide whether to accept or negotiate, which is stage B (negotiation with a prospective employer).]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [sentence cap fired — the model wrote a rundown]
   [drew on S5a, G6, G7a, S3 — 1 Otema, 3 drafted]
 
 Botema
-  My take: sign only if the contract locks in the raise in writing and you
-  also get a concrete, written plan for growth (promotion path, mentorship,
-  workload, learning budget, flexibility) either in a side letter or the main
-  contract with a formal review date. If they won’t commit in writing, you
-  should seriously consider walking away again. What are your two top
-  non-monetary asks, and can they be anchored in writing in a side letter or
-  the contract?
+  Don’t sign yet. This is about long-term fit: the contract should lock in a
+  formal development plan, a clear path to promotion, and a binding 12-month
+  review with milestones, in addition to the base salary and title. What
+  exactly does the contract say about growth and promotion, and what would you
+  want added to make it acceptable?
 
   you > quit
 
@@ -84,7 +79,7 @@ Botema
   covered_stages  C, B
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a, S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G5
   closed_areas    —
-  role/location   — / —
+  role/location   not specified / —
 
   Nothing was written to any database.
 ```
@@ -92,7 +87,7 @@ Botema
 ## Checks
 
 - PASS — classified stage C
-- PASS — questions why the money appeared only now
+- **FAIL** — questions why the money appeared only now
 - PASS — treats money as not the whole reason
 - PASS — every reply ends on a question
 - PASS — no two replies open the same way

@@ -44,6 +44,34 @@ ALTER TABLE public.coach_user_profiles
 COMMENT ON COLUMN public.coach_user_profiles.location IS
   'City and/or country, as the user gave it. Drives market-rate advice and is a required input for the W-marked facets.';
 
+-- ── Who she is, in prose ───────────────────────────────────────────────────
+-- A fixed set of variables can only hold what somebody anticipated. The five
+-- we have — career_stage, current_background, target_role, goals, challenges —
+-- cannot hold "she found out a male colleague earns more, saw it on a document
+-- she was not meant to open, and does not want to seem difficult", which is
+-- precisely the sort of thing a mentor would remember and act on.
+--
+-- So: two short paragraphs the coach maintains, alongside the variables rather
+-- than instead of them. The variables stay useful for anything that has to be
+-- queried or filtered; the prose carries the situation.
+--
+-- Rules that go with these, enforced in the prompt that writes them:
+--   • record only what she has said — never infer, never embellish
+--   • keep each to a few sentences; this is a memory, not a file on her
+--   • rewrite in full each time rather than appending, so it stays readable
+
+ALTER TABLE public.coach_user_profiles
+  ADD COLUMN IF NOT EXISTS situation text,
+  ADD COLUMN IF NOT EXISTS aims text,
+  ADD COLUMN IF NOT EXISTS profile_updated_at timestamptz;
+
+COMMENT ON COLUMN public.coach_user_profiles.situation IS
+  'Where she is now, in prose: role, place, what is happening with her pay or job right now. Written by the coach from what she has said. Never inferred.';
+COMMENT ON COLUMN public.coach_user_profiles.aims IS
+  'What she is trying to do, in prose: where she wants to get to, what is in her way, what she has already tried.';
+COMMENT ON COLUMN public.coach_user_profiles.profile_updated_at IS
+  'When the prose was last rewritten — distinct from updated_at, which moves whenever any field changes.';
+
 -- ── ISSUE-016 · challenges ─────────────────────────────────────────────────
 -- The column exists, is typed on UserProfile, and is SELECTed in index.ts —
 -- but captureUserBackground.updateContext() never writes it, so it is always

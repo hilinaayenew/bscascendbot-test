@@ -1,6 +1,6 @@
 # A foreign employer insisting on local currency
 
-_Run 2026-08-15 17:47 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 17:59 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Negotiates the mechanism — review interval, pegging — rather than arguing about the currency itself.
 
@@ -12,64 +12,66 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I'm in Accra and a German company wants to hire me remotely
-  [stage B — User is currently in a negotiation stage with a prospective employer (remote position with a German company).]
+  [stage B — User is being priced in a live negotiation with a prospective employer (remote offer discussion).]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [drew on G6, G7, G7a, S2 — 1 Otema, 3 drafted]
 
 Botema
-  From my experience, remote work with a German employer works best when you
-  lock in currency, tax handling, and your employment status up front. Ask for
-  compensation in EUR or USD (or a pegged rate with a clear transfer method),
-  confirm whether you’ll be treated as an employee or contractor and who
-  handles Ghana tax, and verify the benefits you’ll receive. What details has
-  the offer included so far about currency, employment status, and benefits?
+  That remote-from-Accra setup is exactly what I see a lot now. I’d push for
+  payment in a stable currency (EUR or USD) with a fixed rate mechanism
+  written in the contract, not in an email, and I’d want clarity on who
+  handles taxes and social contributions (employee vs contractor) because that
+  changes your net and benefits. What currency and work status did they
+  propose, and do you know whether you’d be on their payroll or billed as a
+  contractor?
 
   you > they say they'll only pay in cedis
-  [stage B — User is negotiating a salary with a prospective employer; currency in cedis is a new constraint.]
+  [stage B — User is negotiating currency; it's a live negotiation with a prospective employer.]
   [drew on S2a, S3, S3a, S3b — 1 Otema, 3 drafted]
 
 Botema
-  That’s a real constraint in Accra—the FX risk and fees of being paid in
-  cedis for a remote role with a German company are real. I would push to be
-  paid in EUR or USD, or at least have a fixed FX peg with clear payroll and
-  tax handling; if they can’t, negotiate a higher GHS base to offset FX risk
-  and consider a currency allowance and benefits. What would be your minimum
-  acceptable currency arrangement, and what other protections do you want in
-  the offer?
+  Paying in cedis is a real risk for you—FX volatility and tax handling can
+  eat into your take-home. I would push for either a salary in USD/EUR paid
+  into your account, or a formal FX clause that fixes your GHS amount to a
+  USD/EUR rate (with regular review) and clear tax/social contributions
+  arrangements. Have they said whether you’d be on their payroll or working as
+  a contractor, and who covers taxes in that setup?
 
   you > the cedi has moved a lot this year and I'm worried
-  [stage B — User is negotiating with a German employer about paying in Ghanaian cedi; currency risk and FX volatility are concerns during a live negotiation.]
+  [stage B — The user expressed concern about cedi volatility affecting take-home pay, which introduces a concrete negotiation lever (currency of pay, FX clauses, payroll mechanics).]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on G9, G5, S5, S5a — 1 Otema, 3 drafted]
 
 Botema
-  You’re not imagining it—the cedi’s volatility hits you hard when you’re paid
-  in local currency for work done for a foreign company. I’d push for USD or
-  EUR salary, or at least a fixed exchange rate with a clear payroll method
-  and quarterly reviews; if that isn’t possible, ask for a higher base in GHS
-  to offset FX risk plus a currency allowance and a signing bonus to cushion
-  the first months. What does the offer say about currency protection or a
-  review schedule, and what minimum protection would you accept?
+  That volatility is real and it will bite you if you stay paid in cedi
+  without protection. What exact terms did they offer for currency and payroll
+  status, and how often would the rate be reviewed?
 
   you > is there anything I can actually ask for here
-  [stage B — User asked for concrete asks to make during negotiation with a German employer; stage B.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage B — User asks for actionable asks to negotiate with a prospective employer]
   [drew on G6, G3a, G9a, S2 — 1 Otema, 3 drafted]
 
 Botema
-  Yes—these are concrete asks you can anchor in the offer to protect against
-  FX risk and tax headaches. What has the offer said about currency, payroll,
-  and taxes so far, and what is your minimum protection?
+  Yes, you can push for concrete protections against currency risk. I’d ask
+  for one of these on the table: a salary in USD or EUR, or a formal FX hedge
+  that fixes your GHS pay to a USD/EUR rate with quarterly reviews and a
+  floor/ceiling, plus a clear payroll/tax arrangement and a signing bonus or
+  regular cost-of-living adjustment to offset volatility (and, if possible, a
+  remote-work stipend and health/pension contributions). What did they propose
+  about payroll status, rate review frequency, and any upfront bonuses so far?
 
   you > how do I put that to them without sounding difficult
-  [stage B — User asked for non-difficult phrasing to present negotiation points to a prospective employer]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage B — User asks for how to phrase request without sounding difficult.]
+  [sentence cap fired — the model wrote a rundown]
   [drew on G6, G9, G7, S2 — 1 Otema, 3 drafted]
 
 Botema
-  That’s normal to worry about, but you can keep it professional and direct.
-  Would you like me to tailor this to the exact wording in your offer?
+  I’m excited about the role, and I want to move forward with protections
+  against FX volatility since paying in cedis erodes my take-home. Could we
+  either fix the salary in USD (or EUR) or include an FX clause that ties GHS
+  pay to a USD/EUR rate with quarterly reviews and a floor/ceiling, plus a
+  clear payroll/tax arrangement? Would that be doable for them?
 
   you > quit
 
@@ -78,7 +80,7 @@ Botema
   covered_stages  B
   touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
   closed_areas    —
-  role/location   remote role for German company / Accra
+  role/location   software developer (remote) / Accra, Ghana
 
   Nothing was written to any database.
 ```
@@ -90,8 +92,8 @@ Botema
 - PASS — handles the 'sounding difficult' turn without leaving
 - PASS — every reply ends on a question
 - PASS — no two replies open the same way
-- PASS — no reply stacks more than two jargon terms
-- PASS — no reply mostly restates the one before it
+- **FAIL** — no reply stacks more than two jargon terms
+- **FAIL** — no reply mostly restates the one before it
 
 ---
 

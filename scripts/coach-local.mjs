@@ -152,6 +152,7 @@ const STAGES = areaConfig.stages;
 const STAGE_SUMMARY = areaConfig.stageSummary;
 const S_ORDER = areaConfig.realOrder;
 const AREA_TOPIC = areaConfig.topic;
+const HISTORY_WINDOW_LOCAL = 10;
 const SUPERSEDES = areaConfig.supersedes || [];
 const FALLBACK_QUESTION = areaConfig.fallbackQuestion || "What would you like to look at next?";
 
@@ -490,6 +491,49 @@ async function searchMarketRate(role, location, context = "") {
   return result;
 }
 
+// ── Who she is, in prose ────────────────────────────────────────────────────
+// A fixed set of variables only holds what somebody anticipated. Two short
+// paragraphs hold the situation — what a mentor would actually remember.
+//
+// Runs only when the classifier says she added something, so a turn that
+// carries no new information costs nothing. Rewrites in full rather than
+// appending, so it stays readable instead of growing into a file on her.
+
+async function updateProfile(message, history) {
+  const sys = [
+    "You keep a short private note about someone a career coach is talking to. Rewrite it now, incorporating anything new in her latest message.",
+    "",
+    "Return exactly two paragraphs separated by a blank line, nothing else:",
+    "1. WHERE SHE IS — her role, her place, what is happening with her pay or job right now.",
+    "2. WHAT SHE IS TRYING TO DO — where she wants to get to, what is in her way, what she has already tried.",
+    "",
+    "Write it as a note in the third person — \"She is a backend developer in Nairobi, three years in the role\" — never by quoting her back at herself.",
+    "ACCUMULATE. The note so far is below; keep everything in it that is still true and fold in whatever is new. Do not start again from only the latest message.",
+    "Record ONLY what she has actually said. Never infer, never embellish, never guess a city or a salary she has not given.",
+    "If you genuinely know nothing for a paragraph, output the single word NONE for it. Never write \"no information provided\" or any other placeholder — that gets stored as if it were a fact.",
+    "A few sentences each at most. This is a memory, not a dossier.",
+    "",
+    "The note so far:",
+    state.situation ? "WHERE SHE IS: " + state.situation : "WHERE SHE IS: (nothing yet)",
+    state.aims ? "WHAT SHE IS TRYING TO DO: " + state.aims : "WHAT SHE IS TRYING TO DO: (nothing yet)",
+  ].filter((x) => x !== null).join("\n");
+
+  const out = await callAzure([
+    { role: "system", content: sys },
+    ...history.slice(-HISTORY_WINDOW_LOCAL),
+    { role: "user", content: message },
+  ], { maxTokens: 1200 });
+  if (!out) return;
+
+  const parts = out.split(/\n\s*\n/).map((p) => p.replace(/^\s*(?:\d[.)]\s*)?(?:WHERE SHE IS|WHAT SHE IS TRYING TO DO)\s*:?\s*/i, "").trim());
+  // A placeholder stored as content is worse than an empty field: it reads as
+  // something known. Observed once — "(no information provided in this
+  // message)" sitting where her aims should be.
+  const real = (p) => p && !/^\(?\s*(?:none|n\/a|unknown|no information|nothing)\b/i.test(p.trim());
+  if (real(parts[0])) state.situation = parts[0];
+  if (real(parts[1])) state.aims = parts[1];
+}
+
 // ── Layer 1: classification ─────────────────────────────────────────────────
 
 const AREA_LIST = () => Object.entries(OTHER_AREAS).map(([n,t])=>n+" ("+t+")").join(", ");
@@ -656,6 +700,15 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     "",
     `Where the user is right now: ${STAGES[stage].describes}`,
     "",
+    // What a mentor would remember about her, kept as prose rather than
+    // variables. Placed before the examples so it frames them: the examples
+    // are generic, she is not.
+    state.situation ? `WHAT YOU KNOW ABOUT HER: ${state.situation}` : null,
+    state.aims ? `WHAT SHE IS TRYING TO DO: ${state.aims}` : null,
+    state.situation || state.aims
+      ? "Use this. Never ask her again for something she has already told you, and never recite it back at her — just let it shape the answer."
+      : null,
+    state.situation || state.aims ? "" : null,
     "Answers you have given to related questions. These are your VOICE REFERENCE — match their tone, their directness and above all their length. Do not quote them, and do not answer questions the user did not ask.",
     "",
     examples,
@@ -713,6 +766,8 @@ const state = {
   lastStage: null,
   role: null,
   location: null,
+  situation: "",
+  aims: "",
   lastRefinement: null,
   usedExamples: [],
 };
@@ -744,6 +799,8 @@ function showState() {
   console.log(C.dim(`  touched_facets  ${state.touched_facets.join(", ") || "—"}`));
   console.log(C.dim(`  closed_areas    ${state.closed_areas.join(", ") || "—"}`));
   console.log(C.dim(`  role/location   ${state.role || "—"} / ${state.location || "—"}`));
+  if (state.situation) console.log(C.dim(`  where she is    ${state.situation}`));
+  if (state.aims) console.log(C.dim(`  trying to do    ${state.aims}`));
 }
 
 // ── Loop ────────────────────────────────────────────────────────────────────
@@ -906,6 +963,12 @@ async function main() {
     }
 
     if (DRY) { console.log(C.dim("  (dry mode — no answer generated)\n")); continue; }
+
+    // Keep the note current before answering, so this turn already benefits
+    // from whatever she just said. Never block the reply on it.
+    if (placed.newInformation !== false) {
+      try { await updateProfile(input, history); } catch { /* ignore */ }
+    }
 
     // W-marked behaviour: only a question about what something PAYS reaches
     // the web, and only when we know both the role and the place. Without a

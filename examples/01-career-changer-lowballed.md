@@ -1,6 +1,6 @@
 # A nurse moving into health tech, offered far too little
 
-_Run 2026-08-15 19:09 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-15 19:33 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Crosses stage A into B mid-conversation, and treats a half offer as a mismatch rather than a starting point.
 
@@ -12,68 +12,74 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I've been a nurse for 6 years and I'm moving into health tech
-  [stage A — User is pricing themselves as transitioning into health tech rather than negotiating an offer]
+  [stage A — User is transitioning from nursing to health tech and is in early pricing/market positioning stage.]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [sentence cap fired — the model wrote a rundown]
   [drew on G2, S1, G10a, G10 — 1 Otema, 3 drafted]
 
 Botema
-  Your six years as a nurse give you a hard-won view of patient workflows and
-  data quality—that’s exactly what health-tech teams pay for. Price the role
-  by what the job pays someone who does it well, not by your nursing years,
-  and translate your experience into tech terms (clinical workflows, data
-  quality, EHRs) while you target roles that value that domain knowledge. What
-  health-tech roles are you eyeing, and in which market are you planning to
-  work from?
+  Six years as a nurse give you a valuable lens for health tech—your clinical
+  insight, care workflows, and patient safety mindset are exactly what teams
+  need. To move in, map your transferrable skills to roles like health
+  informatics, clinical data analyst, or implementation support, and start
+  building healthcare-focused data skills (SQL, Python, dashboards) plus a
+  small portfolio. Which health-tech area excites you most, and do you want
+  local Ghana roles or remote international work?
 
   you > they've offered me something but it feels really low
-  [stage B — User received a job offer but feels it is low; wants negotiation help]
+  [stage B — They offered a fixed amount; needs market data and negotiation plan]
+  [W · skipped — no location known yet]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
   [sentence cap fired — the model wrote a rundown]
   [drew on S5a, G7, S2, S5 — 2 Otema, 2 drafted]
 
 Botema
-  That sounds rough, but it’s real—many health-tech offers undervalue the
-  clinical insight you bring. I would push to get the full, written package
-  and request a quick chat to review it, focusing on base salary, any signing
-  bonus, equity (if relevant), learning budget, equipment, and the
-  currency/remote terms. What does the current offer break down into, and
-  which market are you negotiating from?
+  That feeling is real and common—offers in health tech here often don’t
+  reflect the value you bring. I would always recommend getting the full
+  package in writing and a concrete 12-month path to growth, plus clarity on
+  whether pay is in local currency or USD and any non-salary levers like a
+  signing bonus, learning budget, equipment, or extra leave. What matters most
+  to you in this offer, and have you asked for the full written package and
+  growth plan yet?
 
   you > it's about half what the job ads say for that role
-  [stage B — User reports that the offer is about half of what job ads say for that role; studying how to respond in negotiation]
+  [stage B — Offer is about half of the advertised range; you need market data and a plan for a fair counter-offer.]
+  [W · skipped — no location known yet]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on G3, G3a, G7, S3 — 1 Otema, 3 drafted]
 
 Botema
-  That’s real—and it happens often. What exactly did they say the role
-  involves, and what have they offered beyond base so far?
+  What matters most to you in this offer, and have you asked for the budgeted
+  range and growth plan yet?
 
   you > I keep thinking maybe I don't deserve more since I'm new to tech
-  [stage B — This message signals impostor syndrome during a live negotiation with a prospective employer; needs alignment on stage and next steps.]
-  [W · skipped — no location known yet]
+  [stage B — User expresses imposter syndrome and doubt about deserving more in a negotiation.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S3a, G9a, G7, S2 — 1 Otema, 3 drafted]
 
 Botema
-  That feeling is real—and it’s a bias many women face, not a reflection of
-  your worth. Your six years in nursing are exactly the value health-tech
-  needs, so anchor your ask to the market rate for the role and your domain
-  edge, and push for a quick written review of base with a plan for a signing
-  bonus or learning budget if the base can’t move. What does the offer look
-  like beyond base, and who can you talk to next to review it?
+  That doubt is real and common, but it isn’t the truth you need to carry
+  forward. Your six years in nursing give you a unique, valuable lens for
+  health tech, and you deserve a fair market offer for the role, not a
+  discount because you’re new to tech. Would you like me to draft a tight
+  script you can use in your next negotiation to push for a higher offer and a
+  growth plan?
 
   you > what do I actually say to them
-  [stage B — User asks for exact script to respond to an offer and negotiate.]
+  [stage B — User is asking for actual script to negotiate a low offer in a health tech role]
   [drew on S2a, S3b, G6, S2 — 1 Otema, 3 drafted]
 
 Botema
-  That gap is real—and you deserve to be paid for the value you bring. Say
-  this, exactly: "Thank you for the offer. Based on the scope of this
-  health-tech role and local market rates, I’m targeting a base salary in the
-  range of [X to Y]. If the base isn’t flexible, I’d like to discuss a signing
-  bonus and a learning budget, along with clear currency/remote terms." What
-  does the current offer include beyond base, and which parts matter most to
-  you right now?
+  That doubt is real, but your value isn’t negotiable. Use this tight script:
+  “Thank you for the offer — I’m excited to bring six years of nursing into
+  health tech, and I need the package to reflect market value and the impact
+  I’ll deliver. Could we align on a base salary within the budgeted range for
+  this role, plus a concrete 12‑month growth plan and non‑salary levers like a
+  signing bonus, learning budget, equipment, and extra leave, with a written
+  package that confirms whether pay is in local currency or USD?” What else do
+  you want this offer to include to feel truly fair?
 
   you > quit
 
@@ -82,9 +88,9 @@ Botema
   covered_stages  A, B
   touched_facets  S1, G2, G10, G10a, G5, S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a
   closed_areas    —
-  role/location   health-tech role / —
-  where she is    She is a nurse with six years of experience who is moving into health tech. An offer has been extended, but the proposed compensation feels low. The offer is about half of what the job ads say for that role.
-  trying to do    She wants to negotiate the offer and figure out exactly what to say to them to advocate for her value in health tech. What is in her way: she has been worried she doesn't deserve more since she's new to tech. What she has already tried: NONE. She has asked for guidance on what to actually say to them.
+  role/location   health tech / health informatics / —
+  where she is    She is a nurse with six years of experience moving into health tech and is newly transitioning to tech roles. She has been offered a health tech role, but the compensation feels really low, and the offer is about half of what the job ads say for that role.
+  trying to do    She wants to move into health tech roles and now aims to negotiate a higher offer and a growth plan; what is in her way: self-doubt about whether she deserves more since she's new to tech, and the current offer being low compared with ads; what she has already tried: NONE; what she has asked: what to say to them.
 
   Nothing was written to any database.
 ```
@@ -95,10 +101,10 @@ Botema
 - PASS — values her clinical background rather than discounting it
 - PASS — stayed in the area for all five turns
 - PASS — every reply ends on a question
-- PASS — never asks her to disclose her own pay
-- PASS — no two replies open the same way
+- **FAIL** — never asks her to disclose her own pay
+- **FAIL** — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms
-- PASS — no reply mostly restates the one before it
+- **FAIL** — no reply mostly restates the one before it
 
 ---
 

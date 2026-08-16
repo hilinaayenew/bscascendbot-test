@@ -70,7 +70,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "I'm switching from a non-tech career. How do I price myself for my first tech role?",
       answer:
-        "Price the role, not your history: what does this job pay someone who does it well? Your previous years are worth what they let you do faster, so name those things specifically rather than asking for credit for the time itself — and don't accept being priced as a fresh graduate when you're bringing real domain knowledge. Does that sit right with you?",
+        "Price the role, not your history: what does this job pay someone who does it well? Your previous years are worth what they let you do faster, so name those things specifically rather than asking for credit for the time itself — and don't accept being priced as a fresh graduate when you're bringing real domain knowledge. What field are you coming from?",
       topic: "salary",
       area: 9,
       facet: "G2",
@@ -106,7 +106,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "How do I set my rate as a freelancer or contractor?",
       answer:
-        "Work out what you need to earn in a year, then divide by realistic billable days — not 250, more like 150 once you account for finding the work and doing your own admin. That gives you a floor, not a target. Then check what the client's market pays, because an agency in Lagos and a client in Berlin are two different rate cards for identical work.",
+        "Work out what you need to earn in a year, then divide by realistic billable days — not 250, more like 150 once you account for finding the work and doing your own admin. That gives you a floor, not a target. Then check what the client's market pays, because an agency in Lagos and a client in Berlin are two different rate cards for identical work. Undercharging at the start is very hard to walk back with the same client. Who's your first client likely to be?",
       topic: "salary",
       area: 9,
       facet: "G5",
@@ -130,7 +130,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "I've been offered a remote role paid from abroad. Should I ask for local currency or USD?",
       answer:
-        "Ask to be paid in the stable currency if that's what the client earns in. It's the single most valuable thing you can negotiate on a remote role, and it usually costs them nothing to agree to. Get the payment method into the contract as well, because \"we'll sort out transfers later\" quietly becomes your problem.",
+        "Ask to be paid in the stable currency if that's what the client earns in. It's the single most valuable thing you can negotiate on a remote role, and it usually costs them nothing to agree to. Get the payment method into the contract as well, because \"we'll sort out transfers later\" quietly becomes your problem. Where is the company based?",
       topic: "salary",
       area: 9,
       facet: "G7",
@@ -154,7 +154,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "I'm worried I'll be seen as difficult or ungrateful if I negotiate.",
       answer:
-        "You're not being difficult. Asking about money is an expected part of the process, and the people who suggest otherwise tend to benefit from your silence. Does that land?",
+        "You're not being difficult. Asking about money is an expected part of the process, and the people who suggest otherwise tend to benefit from your silence. Has someone actually said this to you, or is it a worry you're carrying?",
       topic: "salary",
       area: 9,
       facet: "G9",
@@ -229,7 +229,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "Working from home matters more to me than the money does.",
       answer:
-        "Then negotiate it properly instead of hoping it stays informal. Get the days written into the contract, not agreed in a conversation with your manager; verbal flexibility disappears the moment that manager changes. Be specific too. \"Three days remote\" is something you can hold them to, \"flexible working\" means nothing once someone new is reading it. Does that make sense?",
+        "Then negotiate it properly instead of hoping it stays informal. Get the days written into the contract, not agreed in a conversation with your manager; verbal flexibility disappears the moment that manager changes. Be specific too. \"Three days remote\" is something you can hold them to, \"flexible working\" means nothing once someone new is reading it. How many days do you actually want?",
       topic: "salary", area: 9, facet: "S5a", respondsTo: "S5",
       userSaid: "Working from home — that's worth more than money to me",
       gap: "Negotiating remote days and flexibility as the priority",
@@ -238,7 +238,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "I found out about the pay gap by seeing a document I wasn't meant to see.",
       answer:
-        "Then you can't use the document, but you can absolutely use what it told you. Go in with market research instead and ask for what the role is worth — you'll arrive at the same place without putting yourself in the wrong, which is where they'd otherwise move the conversation. I know that feels unfair when the proof is sitting right there.",
+        "Then you can't use the document, but you can absolutely use what it told you. Go in with market research instead and ask for what the role is worth — you'll arrive at the same place without putting yourself in the wrong, which is where they'd otherwise move the conversation. I know that feels unfair when the proof is sitting right there. Do you know what the market rate for your role actually is?",
       topic: "salary", area: 9, facet: "G1a", respondsTo: "G1",
       userSaid: "I saw a document I wasn't meant to see",
       gap: "Knowing about a pay gap through information you weren't meant to have",
@@ -265,7 +265,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "They turned down my raise because they said my performance isn't good enough.",
       answer:
-        "Make them be specific, because \"performance\" on its own isn't something you can act on. What would good look like, by when, and who decides? Ask for it in writing. If they can name concrete things you have a real path and a date to hold them to; if they can't — and often they can't — then it was never really about your performance. What did they actually point to?",
+        "Make them be specific, because \"performance\" on its own isn't something you can act on. What would good look like, by when, and who decides? Ask for it in writing. If they can name concrete things you have a real path and a date to hold them to; if they can't — and often they can't — then it was never really about your performance. Does that feel like something you can put to them?",
       topic: "salary", area: 9, facet: "G4a", respondsTo: "G4",
       userSaid: "They said my performance isn't there yet",
       gap: "A raise refused on performance grounds",
@@ -274,7 +274,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "They said there's no budget for a raise.",
       answer:
-        "Budget is a timing answer rather than a no, so pin the timing down: when does the next cycle open, and what would you need to have done by then? Ask what isn't budget-constrained too, because title, training and remote days often sit in a completely different pot. Does that make sense as a next step?",
+        "Budget is a timing answer rather than a no, so pin the timing down: when does the next cycle open, and what would you need to have done by then? Ask what isn't budget-constrained too, because title, training and remote days often sit in a completely different pot. When does budget actually get set?",
       topic: "salary", area: 9, facet: "G4b", respondsTo: "G4",
       userSaid: "They said there's no budget",
       gap: "A raise refused on budget grounds",

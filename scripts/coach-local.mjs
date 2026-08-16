@@ -651,42 +651,103 @@ function retiredBy(used) {
   return gone;
 }
 
-function mostRelevant(pool, message, limit = 4, used = []) {
+const STOP = new Set(["what", "when", "should", "would", "there", "their", "about", "this", "that", "with", "from", "have", "they", "them", "your", "just", "been", "much", "more", "than"]);
+
+function queryWords(message) {
+  return new Set(
+    message.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length > 3 && !STOP.has(w)),
+  );
+}
+
+function overlapScore(e, words) {
+  const hay = `${e.question} ${e.answer}`.toLowerCase();
+  let n = 0;
+  for (const w of words) if (hay.includes(w)) n += 1;
+  return n;
+}
+
+// How well the best available example actually matches what she asked. Used to
+// tell the model when it is on its own — see the note in wordalise().
+function matchStrength(pool, message) {
+  const words = queryWords(message);
+  if (!words.size || !pool.length) return 0;
+  return Math.max(...pool.map((e) => overlapScore(e, words)));
+}
+
+// Deterministic stand-in for Math.random, seeded from the query text. The
+// random four must genuinely vary from turn to turn, but two runs of the same
+// scenario have to pick the same examples or nothing can be compared between
+// them — a regression would be indistinguishable from a reshuffle.
+function seeded(text) {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return () => {
+    h = Math.imul(h ^ (h >>> 15), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return ((h ^= h >>> 16) >>> 0) / 4294967296;
+  };
+}
+
+// Seven examples: the three closest, then four drawn at random from the rest
+// of the area.
+//
+// The three closest give the model the material for THIS question. The random
+// four are there for the opposite reason — to widen the voice it is matching,
+// so it hears her across the whole area rather than echoing the shape of the
+// nearest neighbour back at her. Retrieval by word overlap tends to return
+// examples that resemble each other as much as they resemble the question, and
+// a prompt built only from those reads as a variation on one answer.
+//
+// Random ones are labelled separately in the prompt, so their job is plain: a
+// far-off example is voice, not advice.
+function mostRelevant(pool, message, closest = 3, used = [], random = 4) {
   const retired = retiredBy(used);
   if (retired.size) pool = pool.filter((e) => !retired.has(e.id));
-  const stop = new Set(["what", "when", "should", "would", "there", "their", "about", "this", "that", "with", "from", "have", "they", "them", "your", "just", "been", "much", "more", "than"]);
-  const words = new Set(
-    message.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length > 3 && !stop.has(w)),
-  );
-  if (!words.size) return pool.slice(0, limit);
+  const words = queryWords(message);
+  const total = closest + random;
+  if (!words.size) return { near: pool.slice(0, total), wide: [] };
 
-  const score = (e) => {
-    const hay = `${e.question} ${e.answer}`.toLowerCase();
-    let n = 0;
-    for (const w of words) if (hay.includes(w)) n += 1;
-    return n;
-  };
   const scored = pool
-    .map((e) => ({ e, score: score(e) - (used.includes(e.id) ? 1.5 : 0) }))
+    .map((e) => ({ e, score: overlapScore(e, words) - (used.includes(e.id) ? 1.5 : 0) }))
     .sort((a, b) => b.score - a.score);
-  const picked = scored.slice(0, limit).map((s) => s.e);
+
+  const near = scored.slice(0, closest).map((s) => s.e);
 
   // Always carry at least one of Otema's real answers, even when the drafted
   // ones are lexically closer. Observed: "my manager said there's no budget"
   // selected G4, G4a, G4b, G4d — all four drafted, so her voice was absent
   // from a prompt whose whole job is to sound like her. The drafts echo her;
   // they are not a substitute for her.
-  if (!picked.some((e) => e.source === "OTEMA")) {
+  if (!near.some((e) => e.source === "OTEMA")) {
     const hers = scored.find((s) => s.e.source === "OTEMA");
-    if (hers) picked.splice(limit - 1, 1, hers.e);
+    if (hers) near.splice(closest - 1, 1, hers.e);
   }
-  return picked;
+
+  const rest = scored.map((s) => s.e).filter((e) => !near.includes(e));
+  const rand = seeded(message);
+  for (let i = rest.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rand() * (i + 1));
+    [rest[i], rest[j]] = [rest[j], rest[i]];
+  }
+  return { near, wide: rest.slice(0, random) };
 }
 
 async function wordalise(message, stage, history, facets, search = null, used = [], previousReplies = []) {
   const all = STAGES[stage].facets.map((id) => facets[id]).filter(Boolean);
-  const pool = mostRelevant(all, conversationQuery(message, history), 4, used);
-  const examples = pool.map((e) => `Q: ${e.question}\nA: ${e.answer}`).join("\n\n");
+  const query = conversationQuery(message, history);
+  const { near, wide } = mostRelevant(all, query, 3, used);
+  const render = (list) => list.map((e) => `Q: ${e.question}\nA: ${e.answer}`).join("\n\n");
+
+  // Retrieval always returns its full quota, however badly the examples fit —
+  // ask about relocation costs or maternity pay and raise answers come back
+  // looking exactly as authoritative as good matches. Measured: a well-matched
+  // question scores 4 against the best example, an off-map one scores 0 or 1.
+  // Without this the model has no way to tell the two cases apart, and it
+  // answers the question the examples are about rather than the one she asked.
+  const thin = matchStrength(all, query) <= 1;
 
   // Call two of two. An ordinary chat completion — no tools, no searching.
   // Its only job is to say what the search found, in her voice. Because the
@@ -726,9 +787,19 @@ async function wordalise(message, stage, history, facets, search = null, used = 
       ? "Use this. Never ask her again for something she has already told you, and never recite it back at her — just let it shape the answer."
       : null,
     state.situation || state.aims ? "" : null,
-    "Answers you have given to related questions. These are your VOICE REFERENCE — match their tone, their directness and above all their length. Do not quote them, and do not answer questions the user did not ask.",
+    thin
+      ? "Answers you have given to OTHER questions. Nothing here is close to what she just asked, so take ONLY the voice from them — the directness, the length, the habit of giving her one thing she can act on. The advice must be your own, worked out for her question from what you know. Do not bend her question towards these answers because they are what you have."
+      : "Answers you have given to related questions. These are your VOICE REFERENCE — match their tone, their directness and above all their length. Do not quote them, and do not answer questions the user did not ask.",
     "",
-    examples,
+    render(near),
+    "",
+    // Deliberately further afield, and said so plainly. Without the label the
+    // model treats them as material for the question and tries to work them in.
+    wide.length
+      ? "OTHER ANSWERS OF YOURS, on different questions in this same area. These are NOT about what she asked and you must not answer from them. They are here so you can hear the full range of how you write — where you are blunt, where you soften, how long you run, how you open. Take the range, leave the content."
+      : null,
+    wide.length ? "" : null,
+    wide.length ? render(wide) : null,
     "",
     "Background you may draw on if it is relevant to what was actually asked:",
     loadKnowledge(AREA_TOPIC),
@@ -1075,7 +1146,10 @@ async function main() {
     }
     if (capped) console.log(C.amber("  [sentence cap fired — the model wrote a rundown]"));
 
-    const chosen = mostRelevant(STAGES[placed.stage].facets.map((f) => facets[f]).filter(Boolean), conversationQuery(input, history), 4, state.usedExamples);
+    // Only the three closest count as "used". The random four were shown for
+    // voice, not drawn on for advice, and marking them used would burn through
+    // the area in two turns and start retiring facets she has never been told.
+    const { near: chosen } = mostRelevant(STAGES[placed.stage].facets.map((f) => facets[f]).filter(Boolean), conversationQuery(input, history), 3, state.usedExamples);
     for (const e of chosen) if (!state.usedExamples.includes(e.id)) state.usedExamples.push(e.id);
     const real = chosen.filter((e) => e.source === "OTEMA").length;
     console.log(C.dim(`  [drew on ${chosen.map((e) => e.id).join(", ")} — ${real} Otema, ${chosen.length - real} drafted]`));

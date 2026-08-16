@@ -983,6 +983,16 @@
         So the facets and edges below record <em>what material each stage can draw on</em>. They are never consulted to decide what to say.
       </div>
 
+      <div class="banner spec">
+        <strong>Seven examples per reply: the three closest, plus four drawn at random from the area.</strong> <span class="st changed">CHANGED</span> Selecting only the nearest matches couples the answers too tightly to the examples — retrieval by word overlap returns examples that resemble <em>each other</em> as much as they resemble the question, so the model hears one shape and gives it back. The random four widen the voice it is matching: it hears her across the whole area, blunt in places and softer in others, rather than echoing the nearest neighbour.
+        <br><br>
+        The two sets are <strong>labelled differently in the prompt</strong>, and that label is doing the real work. The close three are voice reference for this question. The random four are introduced as <em>"OTHER ANSWERS OF YOURS, on different questions in this same area. These are NOT about what she asked and you must not answer from them… Take the range, leave the content."</em> Without that, the model treats a far-off example as material and tries to work it in. Only the close three are recorded as covered — the random four were shown, not drawn on, and marking them used would burn through an area in two turns.
+        <br><br>
+        <strong>When nothing fits at all.</strong> Retrieval returns its full quota however badly the examples match. Measured against the salary pool, a well-matched question scores 4 against its best example; "should they cover relocation and visa fees" scores 1, and "what laptop should I buy" scores 0 — and all three previously produced the same confident-looking prompt. When the best match scores 1 or less the framing now changes outright: <em>"Nothing here is close to what she just asked, so take ONLY the voice… Do not bend her question towards these answers because they are what you have."</em>
+        <br><br>
+        <strong>Repeat examples are allowed on purpose.</strong> A used example is down-weighted, not removed, so the same answer can surface again in a later turn. Some repetition is right — a point worth making once is often worth returning to — and the guards against restating a reply verbatim sit further downstream, in <code>dropRepeatedSentences()</code> and the do-not-repeat-yourself rules.
+      </div>
+
       <div class="banner info">
         <strong>What the mapping bought us.</strong> All 31 answers already end in a question, and several of those closers already point at another facet. Mapping them found the 16 replies with nothing behind them — which is why the drafted pool exists. That work stands: it is what tells you whether a stage can actually carry a conversation. It just isn't a route.
       </div>
@@ -1376,7 +1386,7 @@
 
     <div class="section">
       <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">All Answers in Full <span class="st changed">CHANGED</span></h2>
-      <div class="banner info"><strong>How an answer ends is now a third of the design.</strong> Every drafted answer used to close on a follow-on question. Asked every single time, that stops reading as interest and starts reading as a tic — and some of those questions existed only to fill the ending. The 27 drafted answers now split evenly: <span class="endkind followon">follow-on</span> where her answer genuinely changes what comes next, <span class="endkind checkin">checks it landed</span> where the advice is a judgement call and the useful thing is whether she is with you, and <span class="endkind none">ends on the advice</span> where the answer is complete and a question would only pad it. Those last are also shorter, since the question was often the only thing holding a fourth sentence up.<br><br>The prompt itself still says <strong>usually end on a question, and usually a follow-on</strong> — that is the default and the best ending available; the other two are what to reach for when a follow-on would be forced. Two thirds of the examples end on a question, so the guidance and the material agree. Three mechanisms that used to force one on every reply have been relaxed to match: the harness no longer appends a question, and the scenario check requires a majority rather than all. Otema's five real answers are untouched — they are hers.</p></div>
+      <div class="banner info"><strong>How an answer ends is part of the design.</strong> Every drafted answer used to close on a follow-on question. Asked every single time, that stops reading as interest and starts reading as a tic — and some of those questions existed only to fill the ending. The 27 drafted answers now split roughly <strong>50 / 25 / 25</strong>: <span class="endkind followon">follow-on</span> where her answer genuinely changes what comes next, <span class="endkind checkin">checks it landed</span> where the advice is a judgement call and the useful thing is whether she is with you, and <span class="endkind none">ends on the advice</span> where the answer is complete and a question would only pad it. Those last are also shorter, since the question was often the only thing holding a fourth sentence up.<br><br>The prompt is deliberately <em>not</em> an even split — it says <strong>usually end on a question, and usually a follow-on</strong>, with the other two as what to reach for when a follow-on would be forced. Three quarters of the examples end on a question, so the guidance and the material agree. Two mechanisms that used to force one on every reply have been relaxed to match: the harness no longer appends the area fallback, and the scenario check requires a majority rather than all. Otema's five real answers are untouched — they are hers.</p></div>
       <p class="prompt-intro">The complete question and answer behind every facet above, in ID order. <span class="src real">OTEMA</span> answers are her real words from the questionnaire. <span class="src drafted">DRAFTED</span> answers are AI-written in her voice and <strong>unreviewed</strong> — they are not served to anyone until she has approved them in the response reviewer.</p>
       <div class="full-list">
         <div class="full-facet real">
@@ -1455,139 +1465,139 @@
           <p class="ff-a">Only if it's time-boxed and written down — what you'll learn, what you'll have built by the end, and the date it either ends or converts to paid. Unpaid work with no end date and nothing in your portfolio at the end of it is just unpaid work. And if you can't afford to do it, don't let anyone frame that as a lack of commitment; plenty of people get in without that route. What's actually on offer, and for how long?</p>
         </div>
 
-        <div class="stage-band" style="grid-column:1/-1"><span class="sb-id">Drafted</span><h3>All 27 drafted answers</h3><span class="sb-note">unreviewed · a third of each ending</span></div>
+        <div class="stage-band" style="grid-column:1/-1"><span class="sb-id">Drafted</span><h3>All 27 drafted answers</h3><span class="sb-note">unreviewed · tagged by how each one ends</span></div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G1</span><h4>I found out a male colleague in the same role earns more than me. What do I do?</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">G1</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I found out a male colleague in the same role earns more than me. What do I do?</p>
           <p class="ff-a">Pay gaps between men and women doing the same job are well documented, so start from the position that your question is a fair one. What you need is ground to stand on: the same role, the same scope, and a record of what you deliver. Take it to your manager as a conversation about market alignment, not about him. How did you find out about the gap?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G2</span><h4>I'm switching from a non-tech career. How do I price myself for my first tech role?</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">G2</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I'm switching from a non-tech career. How do I price myself for my first tech role?</p>
-          <p class="ff-a">Price the role, not your history: what does this job pay someone who does it well? Your previous years are worth what they let you do faster, so name those things specifically rather than asking for credit for the time itself — and don't accept being priced as a fresh graduate when you're bringing real domain knowledge. Does that sit right with you?</p>
+          <p class="ff-a">Price the role, not your history: what does this job pay someone who does it well? Your previous years are worth what they let you do faster, so name those things specifically rather than asking for credit for the time itself — and don't accept being priced as a fresh graduate when you're bringing real domain knowledge. What field are you coming from?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G3</span><h4>The offer is well below what I was expecting. Do I counter or walk away?</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">G3</span><span class="endkind checkin">checks it landed</span></div>
           <p class="ff-q">The offer is well below what I was expecting. Do I counter or walk away?</p>
           <p class="ff-a">Counter once, properly: a number and a reason, not an apology. If the base genuinely can't move, ask what else is open — a review at six months in writing, a learning budget, remote days. I know how hard it is to walk away when jobs feel scarce, but a badly-set first salary follows you into every role after it, because the next employer asks what you're on now. How does that sit with you?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G4</span><h4>I asked for a pay rise and they said no. What now?</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">G4</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I asked for a pay rise and they said no. What now?</p>
           <p class="ff-a">A no is not the end of the conversation. Before you leave the room, get an answer to one question: what would need to be true for this to happen, and when do we revisit it? Put it in writing if you can. In my experience, a no with no path attached tells you about the company rather than about you. What reason did they give you?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G5</span><h4>How do I set my rate as a freelancer or contractor?</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">G5</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">How do I set my rate as a freelancer or contractor?</p>
-          <p class="ff-a">Work out what you need to earn in a year, then divide by realistic billable days — not 250, more like 150 once you account for finding the work and doing your own admin. That gives you a floor, not a target. Then check what the client's market pays, because an agency in Lagos and a client in Berlin are two different rate cards for identical work.</p>
+          <p class="ff-a">Work out what you need to earn in a year, then divide by realistic billable days — not 250, more like 150 once you account for finding the work and doing your own admin. That gives you a floor, not a target. Then check what the client's market pays, because an agency in Lagos and a client in Berlin are two different rate cards for identical work. Undercharging at the start is very hard to walk back with the same client. Who's your first client likely to be?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G6</span><h4>A startup offered me equity instead of a higher salary. How do I know what it's worth?</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">G6</span><span class="endkind checkin">checks it landed</span></div>
           <p class="ff-q">A startup offered me equity instead of a higher salary. How do I know what it's worth?</p>
           <p class="ff-a">Three questions before you value it at anything: what percentage of the whole company is it, what's the vesting schedule, and has anyone actually sold shares yet. If they won't answer the first one, treat it as worth nothing and negotiate on cash — I've watched too many people take a real pay cut for paper that never converted. How does that land?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G7</span><h4>I've been offered a remote role paid from abroad. Should I ask for local currency or USD?</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">G7</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I've been offered a remote role paid from abroad. Should I ask for local currency or USD?</p>
-          <p class="ff-a">Ask to be paid in the stable currency if that's what the client earns in. It's the single most valuable thing you can negotiate on a remote role, and it usually costs them nothing to agree to. Get the payment method into the contract as well, because &quot;we'll sort out transfers later&quot; quietly becomes your problem.</p>
+          <p class="ff-a">Ask to be paid in the stable currency if that's what the client earns in. It's the single most valuable thing you can negotiate on a remote role, and it usually costs them nothing to agree to. Get the payment method into the contract as well, because &quot;we'll sort out transfers later&quot; quietly becomes your problem. Where is the company based?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G8</span><h4>I resigned and my employer came back with a counter-offer. Should I take it?</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">G8</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I resigned and my employer came back with a counter-offer. Should I take it?</p>
           <p class="ff-a">Be careful with this one. If it took a resignation letter to get you a fair number, ask yourself why that number wasn't offered before you handed it in — most people who accept a counter-offer have left within the year anyway, because what was wrong usually wasn't only the money. What made you start looking in the first place?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G9</span><h4>I'm worried I'll be seen as difficult or ungrateful if I negotiate.</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">G9</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I'm worried I'll be seen as difficult or ungrateful if I negotiate.</p>
-          <p class="ff-a">You're not being difficult. Asking about money is an expected part of the process, and the people who suggest otherwise tend to benefit from your silence. Does that land?</p>
+          <p class="ff-a">You're not being difficult. Asking about money is an expected part of the process, and the people who suggest otherwise tend to benefit from your silence. Has someone actually said this to you, or is it a worry you're carrying?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G10</span><h4>Should I take an unpaid or very low-paid role to get my first bit of experience?</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">G10</span><span class="endkind checkin">checks it landed</span></div>
           <p class="ff-q">Should I take an unpaid or very low-paid role to get my first bit of experience?</p>
           <p class="ff-a">Only if it's time-boxed and written down: what you'll learn, what you'll have built by the end, and the date it either ends or converts to paid. Unpaid work with no end date and nothing in your portfolio afterwards is just unpaid work. And if you can't afford to do it, don't let anyone frame that as a lack of commitment. How does that feel?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">S2a</span><h4>after <strong>S2</strong> — &ldquo;Yes — but I don't know how to actually say it out loud&rdquo;</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">S2a</span><span class="endkind none">ends on the advice</span></div>
           <p class="ff-q">I have a range in mind, but I don't know how to actually say it out loud.</p>
           <p class="ff-a">Say it flat, with no hedge attached: &quot;Based on what I've researched for this role, I'm looking at X to Y.&quot; Then stop talking, because the silence afterwards is theirs to fill and not yours.</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">S3a</span><h4>after <strong>S3</strong> — &ldquo;I already told them what I'm on&rdquo;</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">S3a</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I already told them what I'm currently earning. Can I still recover?</p>
           <p class="ff-a">It's recoverable. You have to move the anchor deliberately rather than hope they forget: &quot;I gave you my current figure earlier; since then I've looked at what this role pays in the market, and that's the number I'd like us to work from.&quot; You're not retracting, you're reframing. Has the offer come through yet?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">S4a</span><h4>after <strong>S4</strong> — &ldquo;I've taken on much more work, same title&rdquo;</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">S4a</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I've taken on a lot more work but my title hasn't changed.</p>
           <p class="ff-a">Write down what you've picked up that wasn't in your original role — actual tasks, not a general feeling. The ask isn't &quot;I'm doing more&quot;, it's &quot;my role has changed and I'd like the title and salary to match&quot;, and push on the title as hard as the money because that's what your next employer prices you on. What have you taken on?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">S4b</span><h4>after <strong>S4</strong> — &ldquo;It's been three years without any increase&rdquo;</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">S4b</span><span class="endkind none">ends on the advice</span></div>
           <p class="ff-q">It's been three years and I've never had an increase.</p>
           <p class="ff-a">Three years is long enough that the real question is whether they've been relying on you not to ask. Go in with the market rate for what you do now, not a percentage of what you were paid then; those two numbers have drifted a long way apart.</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">S4c</span><h4>after <strong>S4</strong> — &ldquo;My salary doesn't stretch like it used to&rdquo;</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">S4c</span><span class="endkind checkin">checks it landed</span></div>
           <p class="ff-q">My salary hasn't changed but everything costs more now.</p>
           <p class="ff-a">That's a real argument, but keep it about the value of the role rather than your household. &quot;My salary has stayed flat while costs have moved, and I'd like us to look at what this role is worth now&quot; lands better than what you can no longer afford. Where the currency is unstable, negotiate the review interval as well as the number — an annual review in a fast-moving market is already behind before it happens. Does that framing work for your situation?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">S5a</span><h4>after <strong>S5</strong> — &ldquo;Working from home — that's worth more than money to me&rdquo;</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">S5a</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">Working from home matters more to me than the money does.</p>
-          <p class="ff-a">Then negotiate it properly instead of hoping it stays informal. Get the days written into the contract, not agreed in a conversation with your manager; verbal flexibility disappears the moment that manager changes. Be specific too. &quot;Three days remote&quot; is something you can hold them to, &quot;flexible working&quot; means nothing once someone new is reading it. Does that make sense?</p>
+          <p class="ff-a">Then negotiate it properly instead of hoping it stays informal. Get the days written into the contract, not agreed in a conversation with your manager; verbal flexibility disappears the moment that manager changes. Be specific too. &quot;Three days remote&quot; is something you can hold them to, &quot;flexible working&quot; means nothing once someone new is reading it. How many days do you actually want?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G1a</span><h4>after <strong>G1</strong> — &ldquo;I saw a document I wasn't meant to see&rdquo;</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">G1a</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">I found out about the pay gap by seeing a document I wasn't meant to see.</p>
-          <p class="ff-a">Then you can't use the document, but you can absolutely use what it told you. Go in with market research instead and ask for what the role is worth — you'll arrive at the same place without putting yourself in the wrong, which is where they'd otherwise move the conversation. I know that feels unfair when the proof is sitting right there.</p>
+          <p class="ff-a">Then you can't use the document, but you can absolutely use what it told you. Go in with market research instead and ask for what the role is worth — you'll arrive at the same place without putting yourself in the wrong, which is where they'd otherwise move the conversation. I know that feels unfair when the proof is sitting right there. Do you know what the market rate for your role actually is?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G1b</span><h4>after <strong>G1</strong> — &ldquo;I don't know for certain — I just suspect it&rdquo;</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">G1b</span><span class="endkind checkin">checks it landed</span></div>
           <p class="ff-q">I think I'm underpaid compared to colleagues but I can't prove it.</p>
           <p class="ff-a">Build the conversation on your own market value rather than on the suspicion — you can evidence one and not the other, and if you are underpaid that conversation fixes it either way. What do you think?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G3a</span><h4>after <strong>G3</strong> — &ldquo;It's less than half what I expected&rdquo;</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">G3a</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">The offer is less than half what I expected.</p>
           <p class="ff-a">That isn't a negotiation, it's a mismatch: either they've misunderstood the role or they're hoping you don't know what it pays. Do not read it as the advertised range being inflated — job ads with published ranges are one of the few honest signals we have, and treating a half offer as &quot;the ad oversold it&quot; is the employer's argument, not yours. Ask what range the role was budgeted at; that tells you which of the two it is. What did they say the role actually involves?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G4a</span><h4>after <strong>G4</strong> — &ldquo;They said my performance isn't there yet&rdquo;</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">G4a</span><span class="endkind checkin">checks it landed</span></div>
           <p class="ff-q">They turned down my raise because they said my performance isn't good enough.</p>
-          <p class="ff-a">Make them be specific, because &quot;performance&quot; on its own isn't something you can act on. What would good look like, by when, and who decides? Ask for it in writing. If they can name concrete things you have a real path and a date to hold them to; if they can't — and often they can't — then it was never really about your performance. What did they actually point to?</p>
+          <p class="ff-a">Make them be specific, because &quot;performance&quot; on its own isn't something you can act on. What would good look like, by when, and who decides? Ask for it in writing. If they can name concrete things you have a real path and a date to hold them to; if they can't — and often they can't — then it was never really about your performance. Does that feel like something you can put to them?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G4b</span><h4>after <strong>G4</strong> — &ldquo;They said there's no budget&rdquo;</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">G4b</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">They said there's no budget for a raise.</p>
-          <p class="ff-a">Budget is a timing answer rather than a no, so pin the timing down: when does the next cycle open, and what would you need to have done by then? Ask what isn't budget-constrained too, because title, training and remote days often sit in a completely different pot. Does that make sense as a next step?</p>
+          <p class="ff-a">Budget is a timing answer rather than a no, so pin the timing down: when does the next cycle open, and what would you need to have done by then? Ask what isn't budget-constrained too, because title, training and remote days often sit in a completely different pot. When does budget actually get set?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G4c</span><h4>after <strong>G4</strong> — &ldquo;They said to wait for the review cycle&rdquo;</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">G4c</span><span class="endkind none">ends on the advice</span></div>
           <p class="ff-q">They told me to wait until the review cycle.</p>
           <p class="ff-a">&quot;Wait&quot; needs a date and a number attached, or it simply repeats next year. Agree what you'll have demonstrated by then and what the increase would be if you do, then send a short note confirming what you both said — that note is what turns it from a brush-off into a commitment.</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G4d</span><h4>after <strong>G4</strong> — &ldquo;They didn't really give one&rdquo;</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">G4d</span><span class="endkind none">ends on the advice</span></div>
           <p class="ff-q">They said no to my raise and didn't really give a reason.</p>
           <p class="ff-a">That's the most useful no of the lot, even though it doesn't feel like it. Ask once more, plainly — &quot;I'd like to understand the reasoning, so I know what to work on&quot; — and if there still isn't an answer, the decision wasn't about your work.</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G7a</span><h4>after <strong>G7</strong> — &ldquo;They're insisting on paying in local currency&rdquo;</h4><span class="endkind followon">follow-on</span></div>
+          <div class="ff-top"><span class="facet-id">G7a</span><span class="endkind followon">follow-on</span></div>
           <p class="ff-q">The company abroad is insisting on paying me in local currency.</p>
           <p class="ff-a">Negotiate the mechanism rather than the currency itself. Ask for the figure to be reviewed against the dollar at a set interval, or pegged and adjusted when it moves past a threshold — companies that won't shift on currency will often agree to that, because it costs them nothing until it matters. Whichever you land on, get it into the contract rather than an email. How volatile has it been where you are?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G9a</span><h4>after <strong>G9</strong> — &ldquo;Someone did call me difficult for asking&rdquo;</h4><span class="endkind checkin">checks it landed</span></div>
+          <div class="ff-top"><span class="facet-id">G9a</span><span class="endkind checkin">checks it landed</span></div>
           <p class="ff-q">Someone actually called me difficult for asking about pay.</p>
           <p class="ff-a">I'm sorry that happened, and I want to be clear that it says everything about them and nothing about you. That word gets reached for with women far more than with men doing exactly the same thing. Keep asking, keep it about the role and the market, and take note of who used it — it tells you what progression in that place is going to look like. How does that sit with you?</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">S3b</span><h4>after <strong>S3</strong> — &ldquo;They want proof of my current salary&rdquo;</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">S3b</span><span class="endkind none">ends on the advice</span></div>
           <p class="ff-q">They're asking me to prove what I currently earn — a payslip or a screenshot.</p>
           <p class="ff-a">Don't send it, and don't send a summary of it either — a redacted version is still your number, and if you're underpaid now it anchors their offer to what someone else undervalued you at. Put it back to them: &quot;I'd rather we work from what this role is worth. What range has been budgeted for it?&quot;</p>
         </div>
         <div class="full-facet drafted">
-          <div class="ff-top"><span class="facet-id">G10a</span><h4>after <strong>G10</strong> — &ldquo;They say it might turn into a paid role&rdquo;</h4><span class="endkind none">ends on the advice</span></div>
+          <div class="ff-top"><span class="facet-id">G10a</span><span class="endkind none">ends on the advice</span></div>
           <p class="ff-q">They say the unpaid role might turn into a paid one.</p>
           <p class="ff-a">&quot;Might&quot; needs turning into something you can hold: what has to be true for it to become paid, and by what date? Get that written down before you start, not once you're already in. And if nobody there has made that jump before, treat &quot;might&quot; as &quot;no&quot;.</p>
         </div>

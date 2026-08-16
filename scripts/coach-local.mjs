@@ -741,13 +741,24 @@ async function wordalise(message, stage, history, facets, search = null, used = 
   const { near, wide } = mostRelevant(all, query, 3, used);
   const render = (list) => list.map((e) => `Q: ${e.question}\nA: ${e.answer}`).join("\n\n");
 
+  // Record what actually went into the prompt rather than recomputing it after
+  // the fact. The caller used to call mostRelevant a second time to find out —
+  // which was correct only for as long as both calls were passed identical
+  // arguments, and this function's signature has now changed twice.
+  state.lastSelection = { near, wide };
+
   // Retrieval always returns its full quota, however badly the examples fit —
   // ask about relocation costs or maternity pay and raise answers come back
   // looking exactly as authoritative as good matches. Measured: a well-matched
   // question scores 4 against the best example, an off-map one scores 0 or 1.
   // Without this the model has no way to tell the two cases apart, and it
   // answers the question the examples are about rather than the one she asked.
-  const thin = matchStrength(all, query) <= 1;
+  //
+  // Scored on the close three alone. They are the best of whatever the pool
+  // held after retiring, so they are the true strength — and leaving the random
+  // four out means a lucky draw scoring well by accident cannot talk it up.
+  const thin = matchStrength(near, query) <= 1;
+  if (thin) console.log(C.dim("  [no close example — voice only, advice from knowledge]"));
 
   // Call two of two. An ordinary chat completion — no tools, no searching.
   // Its only job is to say what the search found, in her voice. Because the
@@ -865,6 +876,7 @@ const state = {
   aims: "",
   lastRefinement: null,
   usedExamples: [],
+  lastSelection: { near: [], wide: [] },
 };
 
 // ── Presentation ────────────────────────────────────────────────────────────
@@ -1149,10 +1161,14 @@ async function main() {
     // Only the three closest count as "used". The random four were shown for
     // voice, not drawn on for advice, and marking them used would burn through
     // the area in two turns and start retiring facets she has never been told.
-    const { near: chosen } = mostRelevant(STAGES[placed.stage].facets.map((f) => facets[f]).filter(Boolean), conversationQuery(input, history), 3, state.usedExamples);
+    const { near: chosen, wide } = state.lastSelection;
     for (const e of chosen) if (!state.usedExamples.includes(e.id)) state.usedExamples.push(e.id);
     const real = chosen.filter((e) => e.source === "OTEMA").length;
     console.log(C.dim(`  [drew on ${chosen.map((e) => e.id).join(", ")} — ${real} Otema, ${chosen.length - real} drafted]`));
+    // The wide four go in the transcript too. Without them, a reply that drifts
+    // to something she never asked about cannot be traced back to the example
+    // that pulled it there — which is the one new way this selection can fail.
+    if (wide.length) console.log(C.dim(`  [voice only: ${wide.map((e) => e.id).join(", ")}]`));
     console.log(`\n${C.wine("Botema")}`);
     console.log(wrap(text));
     if (search?.citations.length) {

@@ -1,6 +1,6 @@
 # A foreign employer insisting on local currency
 
-_Run 2026-08-15 19:33 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 05:13 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Negotiates the mechanism — review interval, pegging — rather than arguing about the currency itself.
 
@@ -12,66 +12,61 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I'm in Accra and a German company wants to hire me remotely
-  [stage B — The user is negotiating with a prospective employer (Germany) for a remote role; not yet employed there.]
+  [stage B — User shared that a German company wants to hire them remotely, which places them in the negotiation stage with a prospective employer (stage B).]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [drew on G6, G7, G7a, S2 — 1 Otema, 3 drafted]
+  [drew on G6, G7, S2 — 1 Otema, 2 drafted]
 
 Botema
-  Yes—remote roles with German firms are common here, but the real friction is
-  currency stability and contract clarity. I would push to have pay in a
-  stable currency (or a clear USD/EUR basis with a fixed review schedule) and
-  for the contract to spell out payment method, tax obligations, and an
-  equipment/internet stipend. What has the company proposed so far, and what
-  matters most to you in this arrangement?
+  That can work—remote roles with German firms are happening more often. I
+  would always recommend you push for pay in a stable currency (EUR or USD)
+  and have the contract fix the currency, payment method, cadence, and who
+  covers taxes and social contributions. Have you asked them what currency
+  they’ll pay in and whether you’d be an employee or a contractor under
+  Ghanaian law?
 
   you > they say they'll only pay in cedis
-  [stage B — Employer insists on paying in Ghanaian Cedi; currency terms are the current negotiation blocker.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S2a, S3, S3a, S3b — 1 Otema, 3 drafted]
+  [stage B — User confirmed the employer will pay in Ghanaian Cedi, which is a currency/contract negotiation issue in stage B.]
+  [drew on G7a, S2a, S3 — 1 Otema, 2 drafted]
 
 Botema
-  That’s a real and common friction here. I would push for either pay in a
-  stable foreign currency (USD or EUR) with a fixed exchange mechanism, or a
-  USD-equivalent amount paid in cedis at regular revaluations (monthly or
-  quarterly). How flexible is the company on currency and what option would
-  you be most comfortable with given your finances and risk tolerance?
+  That’s a real constraint and a currency risk you shouldn’t have to shoulder.
+  I would push for a hard-currency salary (USD or EUR) with a defined monthly
+  conversion to GHS and clarity on taxes and social contributions; if they
+  won’t accept that, propose a currency-peg clause that triggers adjustments
+  when the GHS moves beyond a threshold. How would you like to present this to
+  them, and what was their response so far?
 
   you > the cedi has moved a lot this year and I'm worried
-  [stage B — User expressed concern about currency volatility and impact on compensation in a remote job with a foreign employer.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G9, G5, S5, S5a — 1 Otema, 3 drafted]
-
-Botema
-  You’re right to worry—the cedi moves bite remote pay. The cleanest path is
-  USD (or EUR) with a defined FX mechanism (for example, a quarterly rebase to
-  your Accra bank using the Bank of Ghana reference rate, with a floor and a
-  cap) so your take-home isn’t at the mercy of daily moves. What has the
-  company proposed on currency terms so far, and which option would you feel
-  most secure pushing for?
-
-  you > is there anything I can actually ask for here
-  [stage B — User is in negotiation stage with a prospective employer and asks what to ask for]
-  [drew on G6, G3, G3a, S2 — 1 Otema, 3 drafted]
-
-Botema
-  Yes—there are concrete asks you can push for to blunt the cedi risk. Ask for
-  pay in USD or EUR with a fixed FX mechanism (or an explicit USD-equivalent
-  in cedis with regular revaluations and a floor/cap), plus a cost-of-living
-  adjustment, a signing bonus or guaranteed minimum for a period, and an
-  equipment/internet stipend. Which of these would you feel most secure asking
-  for first?
-
-  you > how do I put that to them without sounding difficult
-  [stage B — User asking for how to phrase negotiating currency terms with a prospective employer]
+  [stage B — User expresses currency risk and concern about cedi movement affecting salary in a cedi-denominated offer; still in negotiation with prospective employer]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G9a, G6, G9, S2 — 1 Otema, 3 drafted]
+  [drew on G9, G5, S5 — 1 Otema, 2 drafted]
 
 Botema
-  Negotiating currency terms is smart risk management, not being difficult.
-  Which option would you push for first?
+  You’re not imagining it—the cedi’s volatility hurts real pay. Do you want me
+  to draft a ready-to-send sentence or a short clause you can drop into your
+  reply?
+
+  you > is there anything I can actually ask for here
+  [stage B — User asked for concrete negotiation asks in a currency-constrained remote offer]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G6, S5a, S2 — 1 Otema, 2 drafted]
+
+Botema
+  Yes. Which of these feels most doable to start with, and what has their
+  reply been so far?
+
+  you > how do I put that to them without sounding difficult
+  [stage B — User asking how to present a currency-guarded salary request in a live negotiation with a prospective employer (stage B).]
+  [drew on G9a, G6, S2 — 1 Otema, 2 drafted]
+
+Botema
+  That currency volatility is real, and you’re not overreacting. Given that,
+  could we structure the salary to be paid in USD or EUR with a fixed
+  conversion to GHS on each payday, plus clear guidance on tax and social
+  contributions? Would you like me to tailor this into a version that’s more
+  formal or warmer for your message?
 
   you > quit
 
@@ -80,9 +75,9 @@ Botema
   covered_stages  B
   touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
   closed_areas    —
-  role/location   remote salary negotiation for currency terms / Accra
-  where she is    She is in Accra, and a German company wants to hire her remotely. The company says they'll only pay in cedis. She is worried about the cedi's volatility this year.
-  trying to do    She wants to know how to present the currency issue to the company without sounding difficult. She is looking for a polite, constructive way to open a discussion about pay terms.
+  role/location   Software Engineer (remote, Accra) / Accra, Ghana
+  where she is    She is in Accra. A German company wants to hire her remotely. The cedi has moved a lot this year and she is worried about currency risk.
+  trying to do    She wants to be hired remotely by a German company. They will only pay in cedis. She is worried about the cedi's volatility this year and how that could affect her pay. She is asking what specific asks she can make in negotiations.
 
   Nothing was written to any database.
 ```
@@ -92,7 +87,7 @@ Botema
 - PASS — reaches the mechanism, not just the currency
 - PASS — takes the currency worry seriously
 - PASS — handles the 'sounding difficult' turn without leaving
-- PASS — every reply ends on a question
+- PASS — most replies still end on a question
 - PASS — never asks her to disclose her own pay
 - PASS — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms

@@ -678,6 +678,8 @@ function matchStrength(pool, message) {
 // random four must genuinely vary from turn to turn, but two runs of the same
 // scenario have to pick the same examples or nothing can be compared between
 // them — a regression would be indistinguishable from a reshuffle.
+const USED_PENALTY = 2.5;
+
 function seeded(text) {
   let h = 2166136261;
   for (let i = 0; i < text.length; i += 1) {
@@ -711,7 +713,16 @@ function mostRelevant(pool, message, closest = 3, used = [], random = 4) {
   if (!words.size) return { near: pool.slice(0, total), wide: [] };
 
   const scored = pool
-    .map((e) => ({ e, score: overlapScore(e, words) - (used.includes(e.id) ? 1.5 : 0) }))
+    // 2.5, not the 1.5 it started at. Measured: the gap between the best
+    // example and the fifth-best is about 3, so 1.5 could not move anything —
+    // in the review-cycle conversation the same three facets came back on
+    // three consecutive turns and the coach asked the same closing question
+    // four times. At 2.5 an example can still return when it is clearly the
+    // best fit for a new question, which is wanted, but not turn after turn.
+    // This governs the three nearest ONLY. The random four are shuffled
+    // uniformly and the penalty never reaches them — their job is the range of
+    // her voice, not fit, so a repeat there costs nothing.
+    .map((e) => ({ e, score: overlapScore(e, words) - (used.includes(e.id) ? USED_PENALTY : 0) }))
     .sort((a, b) => b.score - a.score);
 
   const near = scored.slice(0, closest).map((s) => s.e);

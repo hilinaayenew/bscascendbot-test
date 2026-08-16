@@ -766,7 +766,10 @@ async function wordalise(message, stage, history, facets, search = null, used = 
           "Three or four sentences. Two figures at most — she needs an anchor, not a table.",
         ].join(" ")
       : "Two or three sentences. Never a list. Never a rundown of the whole subject.",
-    "Then one short question that the material above can actually answer.",
+    "HOW TO END. Usually end on a question — and usually a follow-on, one that moves things forward because her answer would genuinely change what you say next. That is the default and the best ending you have. Never ask one that presses her to disclose her own pay.",
+    "Where a follow-on would be forced, a lighter check is better: 'Does that make sense?', 'How does that sit with you?', 'What do you think?'.",
+    "And occasionally — where the answer is complete in itself and any question would only pad it — end on the advice and stop. That should be the exception, not a habit.",
+    "Never ask a question you do not need the answer to. A reply that stops cleanly is better than one that reaches for a question to fill the ending.",
   ].join("\n");
 
   return callAzure([
@@ -1062,9 +1065,13 @@ async function main() {
     let { text, capped } = capSentences(flattenInlineList(plausible), search ? 5 : 3);
     // Every reply must end on a question — it is how the coach leads. When the
     // model does not manage one, append the area's own rather than strand her.
-    if (text && !text.trim().endsWith("?")) {
-      console.log(C.amber("  [no closing question — appended the area's]"));
-      text = text.trim() + " " + FALLBACK_QUESTION;
+    // No longer forces a question. An answer that ends on the advice is a
+    // deliberate shape — about a quarter of the examples do it. The area's
+    // fallback is kept for the one case that still needs rescuing: a reply
+    // left empty after the guards have stripped it.
+    if (!text || !text.trim()) {
+      console.log(C.amber("  [nothing survived the guards — using the area's question]"));
+      text = FALLBACK_QUESTION;
     }
     if (capped) console.log(C.amber("  [sentence cap fired — the model wrote a rundown]"));
 

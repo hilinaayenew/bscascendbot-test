@@ -62,11 +62,15 @@ export function noRepeatedOpeners(out) {
   return new Set(openers).size === openers.length;
 }
 
-// True when every reply in the run ends on a question — the coach is supposed
-// to lead, so a reply that just stops is a failure however good the advice is.
+// Most replies should end on a question, but not all of them. Roughly a
+// quarter of the examples deliberately end on the advice instead — asking
+// something you do not need the answer to is padding, and it reads as a tic.
+// This now checks the coach still leads MOST of the time rather than always.
 export function everyReplyAsks(out) {
   const replies = replyOf(out).split("\n\n").filter(Boolean);
-  return replies.length > 0 && replies.every((r) => r.trim().endsWith("?"));
+  if (!replies.length) return false;
+  const asking = replies.filter((r) => r.trim().endsWith("?")).length;
+  return asking / replies.length >= 0.5;
 }
 
 // The coach's replies only. Extracted by block — everything between a "Botema"

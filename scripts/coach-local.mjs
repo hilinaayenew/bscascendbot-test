@@ -725,17 +725,18 @@ function mostRelevant(pool, message, closest = 3, used = [], random = 4) {
     .map((e) => ({ e, score: overlapScore(e, words) - (used.includes(e.id) ? USED_PENALTY : 0) }))
     .sort((a, b) => b.score - a.score);
 
+  // There used to be a guarantee here that at least one of Otema's real
+  // answers made it into every reply. Dropped, because it was pinning a slot.
+  //
+  // Stage C contains exactly one real answer of hers, so the guarantee spliced
+  // that same answer into all four turns of the review-cycle conversation —
+  // including turns where it scored zero against what was actually asked. Two
+  // of the three close slots were fixed for the whole conversation, one by this
+  // and one by a near-verbatim match, which no penalty value could dislodge.
+  //
+  // Her voice can still arrive by the ordinary routes: on merit in the close
+  // three, or in the random four, which are drawn from the whole stage.
   const near = scored.slice(0, closest).map((s) => s.e);
-
-  // Always carry at least one of Otema's real answers, even when the drafted
-  // ones are lexically closer. Observed: "my manager said there's no budget"
-  // selected G4, G4a, G4b, G4d — all four drafted, so her voice was absent
-  // from a prompt whose whole job is to sound like her. The drafts echo her;
-  // they are not a substitute for her.
-  if (!near.some((e) => e.source === "OTEMA")) {
-    const hers = scored.find((s) => s.e.source === "OTEMA");
-    if (hers) near.splice(closest - 1, 1, hers.e);
-  }
 
   const rest = scored.map((s) => s.e).filter((e) => !near.includes(e));
   const rand = seeded(message);

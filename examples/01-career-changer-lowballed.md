@@ -1,6 +1,6 @@
 # A nurse moving into health tech, offered far too little
 
-_Run 2026-08-16 05:21 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 05:27 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Crosses stage A into B mid-conversation, and treats a half offer as a mismatch rather than a starting point.
 
@@ -12,80 +12,68 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I've been a nurse for 6 years and I'm moving into health tech
-  [stage A — Transitioning from nursing to health tech; exploring salary expectations.]
+  [stage A — User is transitioning from nursing to health tech and wants to understand how to price themselves before starting negotiations.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [sentence cap fired — the model wrote a rundown]
   [drew on G2, S1, G10a — 1 Otema, 2 drafted]
+  [voice only: G10, G5]
 
 Botema
-  That’s a solid move—and your nursing experience is your strongest entry
-  ticket in health tech, because you understand patient care workflows from
-  the inside. In my experience, the fastest path is to target roles that value
-  clinical context (clinical data analyst, health informatics,
-  implementation/support, product specialist) and then spell out how your
-  nursing skills map to what those roles do, while you close the gaps in data
-  and tech skills with a focused plan. Which health-tech area appeals most to
-  you right now, and what learning resources or time do you have available to
-  start?
+  Great move. Your six years as a nurse give you a sharp clinical lens that
+  health-tech teams pay a lot for. What path in health tech are you most drawn
+  to—implementation, product, or data—and are you aiming for the local market
+  or remote roles abroad?
 
   you > they've offered me something but it feels really low
-  [stage B — User has received an offer but compensation seems low]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [sentence cap fired — the model wrote a rundown]
+  [stage B — User has an offer that feels low; needs guidance on negotiation and market data.]
+  [W · skipped — no location known yet]
   [drew on S5a, G7, S2 — 1 Otema, 2 drafted]
+  [voice only: G3, G7a, S3b, G9]
 
 Botema
-  Yes—this is real and common. You deserve market value, not a lowball
-  opening. What exactly did they offer, and which parts do you want to push
-  for first (base, learning budget, signing bonus, or a review-and-raise
-  clause)?
+  That low offer is real and not unusual when you’re moving into health tech;
+  you’re not imagining it. I’d push for a written package that raises the base
+  toward market, adds a learning budget or signing bonus, and guarantees a
+  six‑month performance review with a path to a raise; if it’s remote from
+  abroad, insist on a stable currency with a defined review. What parts of the
+  package matter most to you to push first, and has the employer mentioned any
+  of these elements yet?
 
   you > it's about half what the job ads say for that role
-  [stage B — The user has an actual offer that is significantly below market, so this is a negotiation in stage B.]
+  [stage B — User reports offer is about half of advertised salary; moving to negotiation stage with employer.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S5, G3, G3a — 1 Otema, 2 drafted]
+  [voice only: G9, G7, S2, G7a]
 
 Botema
-  Ask them straight: what range was this role budgeted at and what would that
-  cover? If the budget won’t move, push for a structured package (base aligned
-  to the range plus a six-month review and a learning budget or signing bonus)
-  and confirm whether pay is in local currency or USD for remote work. How did
-  they respond when you asked for the range?
+  That gap is real and common; job ads often advertise an aspirational range
+  while the actual budget is lower. Do you want a short script you can send
+  now to push for that information and a concrete path to alignment?
 
   you > I keep thinking maybe I don't deserve more since I'm new to tech
-  [stage B — User is negotiating an offer and expressing self-doubt about deserving more; it's still in negotiation stage (B) and this message adds new info about confidence concerns.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage B — User expresses self-doubt about deserving higher pay in a live-negotiation context; still in Stage B negotiating with a prospective employer.]
+  [sentence cap fired — the model wrote a rundown]
   [drew on S3a, G9a, S3 — 1 Otema, 2 drafted]
+  [voice only: G3a, S2a, G7a, G9]
 
 Botema
-  That doubt is real for many women, but your nursing experience is exactly
-  why you belong in health tech. Your clinical background gives you unique
-  insight into patient care, safety, and workflows, and you deserve market
-  value, not a lowball. What did they say when you asked for the range, and
-  which part of the package matters most to you to win first?
+  That doubt is real, but it’s not about you or your worth. Your six years in
+  nursing gives you deep, transferable value for health tech—better user
+  understanding, safety, and workflow improvement—so you deserve a
+  market-aligned package, not a charity. What part of the offer worries you
+  most about accepting?
 
   you > what do I actually say to them
-  [stage B — User asks for concrete script to negotiate offer in stage B.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage B — User asked for concrete script to negotiate an offer in a live negotiation (Stage B).]
+  [sentence cap fired — the model wrote a rundown]
   [drew on S2a, G6, S2 — 1 Otema, 2 drafted]
+  [voice only: G5, G7, G9a, S3b]
 
 Botema
-  Here’s a tight script you can use in your next convo: “Thank you for the
-  offer — I’m excited to contribute here. Based on what I’ve researched for
-  this role and the value my six years in nursing brings to health tech, I’m
-  looking at a base in the range of [X to Y]. I’d also like a six‑month
-  performance review to adjust pay if targets are met, plus a learning budget
-  or signing bonus to build the necessary tech skills. Please confirm whether
-  pay is in local currency or USD for remote work, and whether there’s room to
-  move on the base.” If they push back, you can add: “If the base can’t move,
-  I’d consider the bottom of the range plus a signing bonus or learning budget
-  and the six‑month review.” Does that tone and structure fit how you want to
-  approach the conversation, or do you want me to tailor it to the exact role
-  and location?
+  Thank you for the offer. Based on my six years as a nurse and the
+  health‑tech scope, I’m seeking a market‑aligned package and a clear
+  six‑month path to a raise. How does that land so far?
 
   you > quit
 
@@ -94,9 +82,9 @@ Botema
   covered_stages  A, B
   touched_facets  S1, G2, G10, G10a, G5, S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a
   closed_areas    —
-  role/location   health tech entry role (nursing-to-healthtech transition) / —
-  where she is    She is a nurse with six years of experience, currently transitioning into health tech. They have offered her a role, but the compensation feels really low. The offer is about half of what the job ads say for that role.
-  trying to do    move into health tech and negotiate a fair package. What is in her way: the offer remains half of what the ads say and she is wrestling with self-doubt, thinking she doesn't deserve more because she is new to tech. What she has already tried: NONE. She is now seeking guidance on what to say to them.
+  role/location   health tech position (unspecified) / —
+  where she is    She is a nurse with six years of experience, and she is moving into health tech. She has been offered a health-tech role, but the compensation feels very low, about half of what the job ads say for that role.
+  trying to do    She wants to transition into health tech, leveraging her six years of nursing experience; the low offer is a barrier to accepting. She keeps thinking maybe she doesn't deserve more since she's new to tech. She asked for guidance on what to say to them.
 
   Nothing was written to any database.
 ```

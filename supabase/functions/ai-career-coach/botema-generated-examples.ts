@@ -220,7 +220,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "My salary hasn't changed but everything costs more now.",
       answer:
-        "That's a real argument, but keep it about the value of the role rather than your household. \"My salary has stayed flat while costs have moved, and I'd like us to look at what this role is worth now\" lands better than what you can no longer afford. Where the currency is unstable, negotiate the review interval as well as the number — an annual review in a fast-moving market is already behind before it happens. Does that framing work for your situation?",
+        "Cost of living is a fair thing to raise, but keep it about the value of the role rather than your household. \"My salary has stayed flat while costs have moved, and I'd like us to look at what this role is worth now\" lands better than what you can no longer afford. Where the currency is unstable, negotiate the review interval as well as the number — an annual review in a fast-moving market is already behind before it happens. Does that framing work for your situation?",
       topic: "salary", area: 9, facet: "S4c", respondsTo: "S4",
       userSaid: "My salary doesn't stretch like it used to",
       gap: "Cost-of-living and currency erosion as grounds for a rise",
@@ -292,7 +292,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "They said no to my raise and didn't really give a reason.",
       answer:
-        "That's the most useful no of the lot, even though it doesn't feel like it. Ask once more, plainly — \"I'd like to understand the reasoning, so I know what to work on\" — and if there still isn't an answer, the decision wasn't about your work.",
+        "Strange as it sounds, that is the most useful no of the lot. Ask once more, plainly — \"I'd like to understand the reasoning, so I know what to work on\" — and if there still isn't an answer, the decision wasn't about your work.",
       topic: "salary", area: 9, facet: "G4d", respondsTo: "G4",
       userSaid: "They didn't really give one",
       gap: "A raise refused with no reason given",

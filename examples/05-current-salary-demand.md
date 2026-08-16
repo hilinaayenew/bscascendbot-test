@@ -1,6 +1,6 @@
 # A recruiter asking what she is currently on, before any offer exists
 
-_Run 2026-08-15 19:33 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 05:27 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage B. She is being pushed to anchor on a salary that would trap her — tests whether the coach moves the conversation onto what the ROLE is worth, gives her words for a payslip demand, and handles 'should I just say a higher number' without either moralising or transplanting a US pay-history ban that does not apply where she is.
 
@@ -12,63 +12,67 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > there's a role i really want and the recruiter has asked what im currently on before they put an offer together
-  [stage B — They are negotiating with a prospective employer and the recruiter asked for current salary.]
+  [stage B — User is negotiating with a prospective employer; recruiter asked for current salary as part of offer preparation.]
   → enterDiscussionArea(9 · Salary & Negotiation)
-  [drew on S3b, S3a, S2, S5 — 2 Otema, 2 drafted]
+  [drew on S3a, S3b, S2 — 1 Otema, 2 drafted]
+  [voice only: G6, G5, G7, G3a]
 
 Botema
-  Don’t share your current pay; anchor on the role’s value: “I’d rather we
-  anchor on what this role is worth in the market—what range has the budget
-  for this role been set at?” For remote roles, confirm whether pay is in
-  local currency or USD as part of that range. What did they say about the
-  budget range so far?
+  That’s a real pressure point, and you’re not wrong to push back. Try: “I’d
+  rather we anchor the offer on the market value of this role here. What range
+  has the company budgeted for it?” If they push back, add: “I’m happy to
+  discuss my experience and impact to support that range.” What city and role
+  level is this in, so I can tailor the exact line?
 
   you > problem is im badly underpaid where i am now, i think its about half what this role should pay
-  [stage B — User is negotiating with a prospective employer; they reveal they are underpaid currently and believe this role should pay much more, which informs strategy.]
-  [drew on G7, S3b, G3, S3 — 1 Otema, 3 drafted]
+  [stage B — User expressed current underpayment, seeking market-driven offer for a new role; needs market data to anchor negotiation.]
+  [W · skipped — no location known yet]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G7, G3, S3 — 1 Otema, 2 drafted]
+  [voice only: S5, S3b, S3a, G6]
 
 Botema
-  You’re not imagining it—the pay gap for women in tech is real, and
-  underpayment like you’re describing happens far too often. I’d push to
-  anchor the discussion on the role’s market value, not your current pay: “I’d
-  rather we anchor on what this role is worth in the market—what range has the
-  budget for this role been set at?” If they pressure for your current salary,
-  keep it simple: “I’m not comfortable sharing my current salary; I want to
-  discuss compensation based on the market rate for this role and my
-  experience.” Have they given you a budget range yet, and is it in local
-  currency or USD?
+  That gap is real and you’re not imagining it. Would you like me to tailor
+  this to the exact city and role level you’re targeting?
 
   you > she's also asked me to send a payslip to confirm it
-  [stage B — User is negotiating a role and recruiter asked for payslip; this fits stage B (negotiating with prospective employer)]
-  [drew on S3b, G3a, G7, S2 — 1 Otema, 3 drafted]
+  [stage B — The user reports the recruiter asked for a payslip in a live negotiation with a prospective employer.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on S3b, S5, G3a — 1 Otema, 2 drafted]
+  [voice only: G7a, S3, S2a, G7]
 
 Botema
-  Don’t send a payslip. I’d rather we anchor on the market value of this role
-  and my experience—what budget range has been set for this role, and will the
-  pay be in local currency or USD? Have they given you a budget range yet, and
-  in what currency?
+  That request is real, but not something you should share. Do not send your
+  payslip. What city and role level is this, so I can tailor the exact line
+  for you?
 
   you > if i give her a higher number will they find out
-  [stage B — User asks if inflating current salary will be discovered; this is a live negotiation scenario (stage B) and the advice should focus on not misrepresenting earnings and handling verification risks.]
+  [stage B — User asked if inflating current salary would be discovered; it's a strategic question in a live offer negotiation.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S3b, G6, S3a, S5 — 1 Otema, 3 drafted]
+  [drew on S3b, G6, S5 — 1 Otema, 2 drafted]
+  [voice only: G7, S2a, G3a, S3a]
 
 Botema
-  Yes. They can and often do verify, so inflating your current pay runs real
-  risk of trust and offers being pulled later. What did they say about the
-  budget range and currency for this role?
+  Short answer: yes, giving a higher number as your current pay can anchor the
+  whole negotiation at a higher level, and if it’s not genuine it can
+  backfire. What city and level is this role in so I tailor the exact line for
+  you?
 
   you > i dont want to seem awkward and have them just move on to the next candidate
-  [stage B — The user is worried about appearing awkward and losing the opportunity during a live chat/offer stage; this is a negotiation tactic question within stage B.]
+  [stage B — User wants to avoid awkwardness and prevent being passed over; remains in negotiation stage with prospective employer.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S3b, G3, S3a, S2 — 1 Otema, 3 drafted]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S3b, G3, S2 — 1 Otema, 2 drafted]
+  [voice only: G6, S5, G9, S5a]
 
 Botema
-  That fear is real, but you’re not doing anything wrong by centering the talk
-  on value. What range and currency have they mentioned, and how did they
-  respond?
+  Yes. If you give a higher number, they’ll anchor the offer to that figure,
+  and it can be hard to unwind later. What city and level is this role, and
+  how has the recruiter responded to your range question so far?
 
   you > quit
 
@@ -77,9 +81,9 @@ Botema
   covered_stages  B
   touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
   closed_areas    —
-  role/location   — / —
-  where she is    She is currently employed and is aware that her pay is under market value; she believes her current pay is about half of what this role should pay. The recruiter has asked her to send a payslip to confirm her current pay.
-  trying to do    She wants the role she is really pursuing. The obstacle is the pay gap at her current job, which she estimates to be about half of the market value for the target role. The recruiter has asked what she is currently earning before they put together an offer. She is concerned that if she provides a higher current-salary figure, the recruiter might find out. She doesn’t want to seem awkward and have them move on to the next candidate.
+  role/location   prospective software engineer / —
+  where she is    The recruiter has asked what she is currently on before they put an offer together. She is badly underpaid where she is now, estimating her current pay is about half of what this role should pay. She has been asked to send a payslip to confirm it.
+  trying to do    She wants the role she really wants and is preparing to share her current pay so a formal offer can be put together. She notes the pay gap at her current job, estimating her pay is about half of what this role should pay. She wonders whether giving a higher current-pay figure would be discovered by the recruiter. She does not want to seem awkward and have them move on to the next candidate.
 
   Nothing was written to any database.
 ```

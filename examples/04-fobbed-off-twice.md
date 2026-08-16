@@ -1,6 +1,6 @@
 # Told to wait for the review cycle, for the second year running
 
-_Run 2026-08-15 19:33 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 05:27 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C. Recognises a pattern rather than repeating last year's advice.
 
@@ -12,61 +12,57 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > my manager told me to wait for the review cycle
-  [stage C — User is currently employed and the negotiation would occur in a performance review window; money talk falls under stage C.]
+  [stage C — User already works for the employer; manager asked to wait for review cycle; this is a money conversation that must be initiated by them while employed.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [sentence cap fired — the model wrote a rundown]
-  [drew on G4c, S4c, G1, S4 — 1 Otema, 3 drafted]
+  [drew on G4c, S4c, S4 — 1 Otema, 2 drafted]
+  [voice only: G4b, G1b, G1a, S4a]
 
 Botema
-  That’s real, and it’s exactly why you turn “wait” into a contract. I would
-  set a firm date for the next review, spell out 2–3 measurable outcomes
-  you’ll deliver by then, and agree what the increase would be if you meet
-  them. Proposed note you can send (your words): “Hi [Manager], as discussed,
-  by [cycle date] I will deliver [outcome 1], [outcome 2], and [outcome 3]. If
-  I achieve these, we will adjust my base salary at the next review to [agreed
-  increase].” What is the date of your next cycle, and which two or three
-  concrete outcomes will you commit to?
+  That’s a real tactic, but you can turn it into a concrete plan. I’d push for
+  a fixed window (the next review cycle) and clear milestones you’ll achieve
+  by then, e.g., two or three measurable outcomes, plus a written commitment
+  that if you meet them, your compensation will be reviewed to align with the
+  market for this role. And what are the two or three concrete outcomes you
+  could commit to before that date?
 
   you > she said exactly the same thing last year
-  [stage C — Manager has repeated the same wait-for-review stance, indicating no progress; money talk is now employee-initiated.]
+  [stage C — The user is in a ongoing manager-led pay negotiation stage and reports recurrence of the same response, so we classify under C and prepare to address move forward.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
+  [voice only: S4a, G4, G1, G8]
+
+Botema
+  That’s a real pattern, and I’ve seen it happen—when they push the
+  conversation out, you lock it in with a plan you can hold them to. What two
+  or three outcomes would you commit to, and who could you get to sign off on
+  that written plan if they push back again?
+
+  you > I did everything on the list she gave me
+  [stage C — User clarified they have completed the previously given checklist, confirming ongoing raise negotiation with manager.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
+  [voice only: S4c, S4a, G9, G1b]
+
+Botema
+  That’s real, and it’s a stall I’ve seen many times. I can help you draft the
+  exact words and pick the milestones—what two or three outcomes would you
+  lock in, and who should sign off if they push back again?
+
+  you > I don't want to be the person who complains
+  [stage C — User is still in stage C and expresses concern about being seen as complainant, which is a behavioral blocker affecting how they negotiate.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [sentence cap fired — the model wrote a rundown]
-  [drew on G4c, G9a, G1a, S4 — 1 Otema, 3 drafted]
+  [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
+  [voice only: G9, G4d, G4b, G8]
 
 Botema
-  That pattern is real and it’s meant to test you. Since this has happened
-  before, push for a written, time-bound plan this time: a fixed date for the
-  review and 2–3 measurable outcomes you’ll deliver, with the salary
-  discussion tied to achieving them. Did you ever get a written commitment
-  last year, and what is the exact cycle date this year plus the two outcomes
-  you want to attach to it?
-
-  you > I did everything on the list she gave me
-  [stage C — User has completed the manager's list and needs next steps to push for a compensation discussion.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G4c, G9a, G4a, S4 — 1 Otema, 3 drafted]
-
-Botema
-  That pattern is real, and you’ve done the hard part by completing the list.
-  Draft you can send: “Hi [Manager], I completed all items on the [date] list.
-  Please confirm the exact date of my next performance review and that the
-  salary discussion will be included in that cycle. If there are any
-  additional expectations, please specify them in writing by [date].” Would
-  you like me to tailor this to the specific items you finished and the cycle
-  date you want to anchor it to?
-
-  you > I don't want to be the person who complains
-  [stage C — User is negotiating salary within current job and wants to avoid appearing as complain.]
-  [no new information — stall 1/2]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G4c, G9a, G4b, S4 — 1 Otema, 3 drafted]
-
-Botema
-  That worry is real, but this is about governance, not complaining. What were
-  the exact items you completed, and what cycle date would you anchor to?
+  I hear you. It’s real, but you can flip it into a professional plan instead
+  of a complaint. What two or three outcomes would you commit to by the next
+  cycle, and who should sign off on that plan with you?
 
   you > am I being naive staying here
   [azure error: Azure 400: {"error":{"message":"The response was filtered due to the prompt triggering Azure OpenAI's content management]
@@ -82,9 +78,9 @@ Botema
   covered_stages  C
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
   closed_areas    —
-  role/location   — / —
-  where she is    She is waiting for the review cycle, as her manager told her to. She did everything on the list she was given.
-  trying to do    wait for the review cycle; this is the same as last year. She has already done everything on the list she was given.
+  role/location   current role / —
+  where she is    She is waiting for the review cycle; her manager told her to wait.
+  trying to do    She has done everything on the list her manager gave her and is waiting for the review cycle to proceed. She doesn't want to be the person who complains.
 
   Nothing was written to any database.
 ```
@@ -94,7 +90,7 @@ Botema
 - PASS — classified stage C
 - PASS — names the repetition as information about them
 - PASS — does not treat raising it as complaining
-- PASS — every reply ends on a question
+- PASS — most replies still end on a question
 - PASS — never asks her to disclose her own pay
 - **FAIL** — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms

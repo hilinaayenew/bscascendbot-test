@@ -1,6 +1,6 @@
 # A recruiter asking what she is currently on, before any offer exists
 
-_Run 2026-08-16 06:10 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 06:42 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage B. She is being pushed to anchor on a salary that would trap her — tests whether the coach moves the conversation onto what the ROLE is worth, gives her words for a payslip demand, and handles 'should I just say a higher number' without either moralising or transplanting a US pay-history ban that does not apply where she is.
 
@@ -12,67 +12,66 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > there's a role i really want and the recruiter has asked what im currently on before they put an offer together
-  [stage B — The user is negotiating with a prospective employer; they have a live recruiter request for their current pay.]
+  [stage B — User is in a live opportunity negotiating with a prospective employer; recruiter asked about current compensation.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [drew on S3a, S3b, S2 — 1 Otema, 2 drafted]
   [voice only: G6, G5, G7, G3a]
 
 Botema
-  That question is a classic anchor, and you don’t have to disclose your
-  current pay. I’d push back with: “I’d prefer we base the offer on the market
-  value of this role and my experience—what range has the budgeted for this
-  role?” If they push, you can add: “I can share a target range based on the
-  role and local market, but not my current pay.” What did they say and how
-  far along is the negotiation?
+  That’s a real barrier, and you don’t have to anchor there. Tell them: “I’d
+  rather we base the offer on the role’s value rather than my current salary.
+  Could you share the budgeted range for this role and confirm the currency?”
+  How did they respond, and what currency is the role paid in?
 
   you > problem is im badly underpaid where i am now, i think its about half what this role should pay
-  [stage B — User is in stage B (negotiation with prospective employer) and reveals they are underpaid currently, which informs their leverage and messaging.]
+  [stage B — User is in a live negotiation with a prospective employer (stage B) and reveals their current pay is far below market; this affects strategy and messaging.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G7, G3, S3 — 1 Otema, 2 drafted]
+  [drew on G7, G3, G3a — 0 Otema, 3 drafted]
   [voice only: G6, S5, S5a, G9a]
 
 Botema
-  You’re right to flag that—underpayment is real in our market, and it’s
-  exactly why you anchor on market value, not your current pay. What stage is
-  the negotiation at now, and is the offer expected in local currency or USD?
+  You’re not imagining it—underpayment is real and you shouldn’t anchor a
+  future offer to what you’re earning now. I would push to base any offer on
+  the role’s value and market rate, and push for the budgeted range and the
+  currency in writing (local vs USD, depending on the remote setup). How has
+  the recruiter responded on range and currency so far?
 
   you > she's also asked me to send a payslip to confirm it
-  [stage B — User reports recruiter asked for payslip; this is a live negotiation with a prospective employer.]
+  [stage B — They are negotiating with a prospective employer; recruiter asked for payslip to confirm current pay; classify as stage B.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S3b, S5, G3a — 1 Otema, 2 drafted]
-  [voice only: G3, G9, S2, G6]
+  [drew on S3b, S5, S3 — 2 Otema, 1 drafted]
+  [voice only: G3, G3a, S2, G6]
 
 Botema
-  Don’t send a payslip. How does that feel for your situation, and what did
-  they say next?
+  That request is common—but it anchors you to your current pay and you
+  shouldn’t share a payslip. How did they respond last time, and do you want
+  me to tailor a short reply you can send now?
 
   you > if i give her a higher number will they find out
-  [stage B — User is in stage B negotiating with a prospective employer and asked about risk of revealing higher number; we classify the area.]
+  [stage B — User asked if inflating the number will be discovered; need to guide on honesty and negotiation tactics]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S3b, G6, S5 — 1 Otema, 2 drafted]
-  [voice only: G5, S3, S2, G7a]
+  [drew on S3b, G6, G7a — 0 Otema, 3 drafted]
+  [voice only: S3a, S3, S2, G9a]
 
 Botema
-  No. Inflating or sharing a higher number won’t help and can backfire if they
-  poke around the details later. How has the recruiter responded so far, and
-  have they given a budget range for the role?
+  Yes—there’s a real risk they’ll anchor to whatever number you give and some
+  recruiters will verify payroll. How did they respond to the range and
+  currency request last time?
 
   you > i dont want to seem awkward and have them just move on to the next candidate
-  [stage B — User is negotiating with a prospective employer and wants to avoid awkwardness and not lose the candidate to others.]
-  [drew on S3b, G3, S2 — 1 Otema, 2 drafted]
-  [voice only: S3, G9a, G9, G6]
+  [stage B — User is worried about sounding awkward while still negotiating with a prospective employer.]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S3b, G3, S3a — 0 Otema, 3 drafted]
+  [voice only: G3a, S2, G9, G7a]
 
 Botema
-  That fear is real, but negotiating for value is exactly what good employers
-  expect. Try: “I’m really excited about this role—could you share the
-  budgeted range for this position? I want us to anchor on the market value of
-  the role, not my current pay.” If they push back, add: “If the base can’t
-  move, what about other components like a learning budget, signing bonus, or
-  a six-month review with a potential increase?” How does that feel, and what
-  did the recruiter say in response so far?
+  Negotiating honestly about value is normal, not awkward. If you want to keep
+  it smooth, say something like: I’d rather we anchor the offer to the role’s
+  value and market rate. What did they say in their last reply about range and
+  currency?
 
   you > quit
 
@@ -81,9 +80,9 @@ Botema
   covered_stages  B
   touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
   closed_areas    —
-  role/location   prospective role negotiation / —
-  where she is    She is a backend developer who is currently underpaid in her current role; she believes her current pay is about half of what the role she wants should pay. A recruiter has asked what she is currently on before they put together an offer. She has been asked to send a payslip to confirm it.
-  trying to do    She wants to land the role she really wants and receive an offer for that role. The main obstacle is the underpayment she is experiencing in her current job; she believes it’s about half of what the new role should pay. She doesn’t want to seem awkward or pushy and risk them moving on to the next candidate.
+  role/location   — / —
+  where she is    She is in her current role and feels underpaid. She believes her current salary is about half of what the role she wants should pay. The recruiter has asked for a payslip to confirm her current pay. She is concerned about whether giving a higher number will be discovered. She doesn’t want to seem awkward or to cause the recruiter to move on to the next candidate.
+  trying to do    She is trying to secure the role she really wants. She wants the offer to be based on the role’s value and market rate, and she is seeking the budgeted range and the currency for the role in writing. She has been avoiding sharing a payslip and is weighing how to respond about range and currency. She is worried that appearing awkward could lead to being passed over to another candidate, and she wants to handle the conversation smoothly while protecting her position.
 
   Nothing was written to any database.
 ```

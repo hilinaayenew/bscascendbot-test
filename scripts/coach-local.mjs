@@ -849,7 +849,11 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     "When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.",
     "You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.",
     previousReplies.length
-      ? `Your last reply began: "${previousReplies[previousReplies.length - 1].split(/\s+/).slice(0, 8).join(" ")}…". Do NOT begin this one the same way — different first words, different shape.`
+      // Every opener so far, not just the last one. Looking back a single turn
+      // let "That's real" come back on turn 3 after turn 2 happened to open
+      // differently — the rule could not see two turns ago, so the phrase was
+      // free again the moment it skipped one.
+      ? `You have already opened replies in this conversation with: ${previousReplies.map((r) => `"${r.split(/\s+/).slice(0, 6).join(" ")}…"`).join(", ")}. Do NOT begin this one like ANY of those — different first words, different shape. Openers that validate before saying anything ("That's real", "That's a real", "I hear you") wear out fastest; you have other ways in.`
       : null,
     "'I would always recommend' is yours, but used every turn it stops sounding like you and starts sounding like a template.",
     "Answer only the one thing the user actually asked. You have been given several examples so that you can pick the right one — not so that you can cover them all.",

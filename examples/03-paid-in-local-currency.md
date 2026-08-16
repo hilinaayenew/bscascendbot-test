@@ -1,6 +1,6 @@
 # A foreign employer insisting on local currency
 
-_Run 2026-08-16 06:10 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 06:42 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Negotiates the mechanism — review interval, pegging — rather than arguing about the currency itself.
 
@@ -12,71 +12,81 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I'm in Accra and a German company wants to hire me remotely
-  [stage B — User in Accra, German company wants to hire remotely; this is a negotiation with a prospective employer (Stage B).]
+  [stage B — User has a German company offering a remote role; it's a live job discussion requiring negotiation with a prospective employer.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [no close example — voice only, advice from knowledge]
-  [drew on G6, G7, S2 — 1 Otema, 2 drafted]
+  [drew on G6, G7, G7a — 0 Otema, 3 drafted]
   [voice only: S5, G5, G9, S3a]
 
 Botema
-  Yes, that’s a common setup. Your next move is to get a written offer that
-  clearly specifies the pay currency, how you’ll be paid, and your employment
-  status for tax purposes; push for USD or a locally stable currency and a
-  clear payroll path to avoid volatility. What have they said so far about
-  currency and payroll terms?
+  That setup is exactly why currency and pricing matter in remote jobs from
+  abroad. Push to be paid in a stable currency (USD or EUR) or have a formal
+  FX-adjustment clause in the contract, with the rate reviewed at regular
+  intervals (every 3–6 months) so you’re not hit by sudden moves. What have
+  they offered so far around payment currency and contract terms?
 
   you > they say they'll only pay in cedis
-  [stage B — Currency constraint introduced in ongoing negotiation; stage B]
-  [no close example — voice only, advice from knowledge]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G7a, S2a, S3 — 1 Otema, 2 drafted]
-  [voice only: G9a, S2, G9, G3a]
+  [stage B — Live negotiation about currency and contract terms with an overseas employer]
 
-Botema
-  That’s real. If they’ll pay in cedi, push for a currency mechanism so you’re
-  not exposed to drift. Does that feel like something you’d press for in the
-  contract today?
+Botema …
+  Let me check what's actually being paid for that at the moment — one moment.
 
-  you > the cedi has moved a lot this year and I'm worried
-  [stage B — User is negotiating with a prospective employer about currency terms; volatility risk in cedi; needs guidance on currency hedging and contract terms]
-  [no close example — voice only, advice from knowledge]
-  [drew on G9, G5, S5 — 1 Otema, 2 drafted]
-  [voice only: S2, S3b, G7, S3]
-
-Botema
-  That volatility is real here; you’re not overreacting. I would push for
-  either (a) pay in USD (or a USD-denominated contract) or (b) a cedi salary
-  pegged to a stable reference (like the Bank of Ghana USD/Cedi rate) with a
-  monthly true-up to shield you from drift. Which option feels most doable to
-  you to bring into the offer today?
-
-  you > is there anything I can actually ask for here
-  [stage B — User asked for actionable asks in a live negotiation scenario with currency/terms at issue.]
+  [W · searching: remote software developer, Accra, remote , German company, pay in GHS (cedis)] 2 search, 0 sources
+  [nothing citable — answering ungrounded, guard back on]
   [no close example — voice only, advice from knowledge]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S5a, G3a, S2 — 1 Otema, 2 drafted]
-  [voice only: G7a, G7, S3b, S3a]
+  [drew on S2, S2a, S3 — 2 Otema, 1 drafted]
+  [voice only: G9a, G7a, G9, G3a]
 
 Botema
-  If that isn’t possible, you can also request a signing bonus and a
-  short-term cost-of-living adjustment plus a scheduled salary review. Which
-  of these feels most doable to bring into the offer today, and how would you
-  phrase it?
+  That’s real and it’s why currency risk matters for you. My move would be to
+  push for payment in USD or EUR, or at minimum a formal FX-adjustment clause
+  that reviews the rate every 3 months so your salary doesn’t drift with the
+  cedi. If you want a ready-to-use line: “Based on currency risk and market
+  norms, I would like to be paid in USD (or EUR). If that isn’t possible,
+  please include an FX adjustment clause in the contract that resets the
+  salary every three months.” Does that approach fit what you’re comfortable
+  pushing for, and would you like me to tailor the exact line to your
+  situation?
+
+  you > the cedi has moved a lot this year and I'm worried
+  [stage B — User expresses worry about currency volatility (GHS) affecting remote job offer payment terms.]
+  [no close example — voice only, advice from knowledge]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G9, G5, S3a — 0 Otema, 3 drafted]
+  [voice only: S2, S5, G7, S3]
+
+Botema
+  That volatility is real and you’re right to worry. Does USD with a quarterly
+  reset feel workable for you, or would you prefer a different mechanism?
+
+  you > is there anything I can actually ask for here
+  [stage B — User is negotiating with a prospective employer about payment terms; they asked for concrete asks they can propose.]
+  [no new information — stall 1/2]
+  [no close example — voice only, advice from knowledge]
+  [drew on S5a, G3a, G9a — 0 Otema, 3 drafted]
+  [voice only: G9, G7a, G3, S5]
+
+Botema
+  Yes. The most practical asks are: 1) get paid in USD (or EUR), or at minimum
+  a quarterly FX adjustment clause that resets the salary to reflect the rate,
+  using a published reference rate; 2) if they won’t budge on currency, push
+  for a signing bonus to offset the currency risk. Does one of those feel
+  workable for you, and would you like me to tailor the exact wording for your
+  reply?
 
   you > how do I put that to them without sounding difficult
-  [stage B — User is negotiating with a prospective employer and wants practical, non-confrontational wording.]
-  [drew on G9a, G6, S2 — 1 Otema, 2 drafted]
-  [voice only: S2a, G7a, S5a, S5]
+  [stage B — The user is in a live negotiation with a prospective employer and wants to phrase a request without sounding difficult.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G6, G9, S3b — 0 Otema, 3 drafted]
+  [voice only: S2a, S2, S5a, S3a]
 
 Botema
-  Be direct but collaborative—frame it as solving a shared problem, not making
-  a demand. You can say something like: “I’m excited about the role; to keep
-  the offer stable for both of us, could we structure the pay as either
-  USD-denominated or a cedi amount pegged to the USD/Cedi rate with a monthly
-  true-up and a six-month salary review? If neither is possible, I’d at least
-  ask for a signing bonus or a COLA clause to bridge the volatility.” How does
-  that feel for you to use, and what would you want to emphasize most?
+  Currency volatility is real, and it’s fair to address it in pay. Does that
+  feel workable, or should I tailor it to your exact offer?
 
   you > quit
 
@@ -85,8 +95,9 @@ Botema
   covered_stages  B
   touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
   closed_areas    —
-  role/location   remote software engineer / Accra
-  where she is    She is in Accra. A German company wants to hire her remotely. They will pay in cedis. She is worried about the cedi's volatility this year.
+  role/location   remote software engineer / Accra, Ghana
+  where she is    She is in Accra. A German company wants to hire her remotely and pay in cedis.
+  trying to do    She wants to proceed with the remote opportunity from the German company, but she is worried about currency risk because the cedi has moved a lot this year.
 
   Nothing was written to any database.
 ```
@@ -100,7 +111,7 @@ Botema
 - PASS — never asks her to disclose her own pay
 - PASS — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms
-- PASS — no reply mostly restates the one before it
+- **FAIL** — no reply mostly restates the one before it
 
 ---
 

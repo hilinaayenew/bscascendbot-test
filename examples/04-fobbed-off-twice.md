@@ -1,6 +1,6 @@
 # Told to wait for the review cycle, for the second year running
 
-_Run 2026-08-16 06:10 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 06:42 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C. Recognises a pattern rather than repeating last year's advice.
 
@@ -12,57 +12,52 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > my manager told me to wait for the review cycle
-  [stage C — User is negotiating as an existing employee; money talk will follow the review cycle per manager's instruction.]
+  [stage C — User is in an ongoing job and the manager asked to wait for the annual review cycle, which constrains when compensation discussions can occur.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [sentence cap fired — the model wrote a rundown]
-  [drew on G4c, S4c, S4 — 1 Otema, 2 drafted]
-  [voice only: G4b, G1b, G1a, S4a]
+  [drew on G4c, S4c, G1 — 0 Otema, 3 drafted]
+  [voice only: S4, G1b, G4b, S4a]
 
 Botema
-  That’s real, and it happens. Use the wait to push for clarity and
-  leverage—ask for a written plan with the exact outcomes to hit by the cycle,
-  the decision date, and what changes if you meet them. You could say: "Could
-  we align on the specific outcomes I should deliver before the review, and
-  confirm in writing when the decision will be made?" and "If the cycle is
-  months away, could we schedule a mid-cycle check-in to review progress?"
-  What is the cycle window for you, and what outcomes could you realistically
-  deliver before it closes?
+  That’s real and you should not let it stay vague. Turn “wait for the review”
+  into a concrete plan: decide two measurable outcomes you’ll deliver by the
+  end of the cycle, and get a written commitment to revisit compensation at
+  that time. What two outcomes would you commit to achieving by the cycle?
 
   you > she said exactly the same thing last year
-  [stage C — User is in a current role; discussing pay with manager again; this is a negotiation stage]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
-  [voice only: G1b, G4, G1, G8]
-
-Botema
-  That pattern is real, and it’s not you. If it’s happened before, you need a
-  written, milestone-based plan this time—clear deliverables, a decision date,
-  and what changes if you hit or miss them, plus a mid-cycle check-in. What
-  outcomes can you confidently commit to, and when would a check-in work for
-  you?
-
-  you > I did everything on the list she gave me
-  [stage C — User is negotiating a raise with a manager at their current job after completing the list; this is a stage C conversation.]
+  [stage C — User is in a ongoing negotiation with their employer; this is Stage C and the message indicates a recurring blocking behavior; we should respond with tactics to secure a written commitment and concrete milestones.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G4c, G1, S4 — 1 Otema, 2 drafted]
-  [voice only: S4b, S4a, S4c, G1b]
+  [drew on G4c, G9a, G1a — 0 Otema, 3 drafted]
+  [voice only: S4c, G8, G4a, S4]
 
 Botema
-  That pattern is real, and it’s not you. What’s the cycle window for you, and
-  what milestones would you want included?
+  What would be a realistic deadline for you, and what two outcomes could you
+  commit to?
+
+  you > I did everything on the list she gave me
+  [stage C — User completed the tasks manager gave; now needs guidance on next compensation discussion steps.]
+  [drew on G4c, G4a, G4b — 0 Otema, 3 drafted]
+  [voice only: G8, G1, G1b, G1a]
+
+Botema
+  That’s real, and you’ve done everything on the list—don’t let vague promises
+  stand. Push for a written compensation review at the cycle’s end: specify
+  the end date, the exact metrics you’ve met, and a firm decision date on pay
+  with the market rationale. What is the official cycle end date, and what two
+  measurable outcomes did you deliver?
 
   you > I don't want to be the person who complains
-  [stage C — User stated they don't want to be the complaining type; this adds a defensive stance to the negotiation approach.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
-  [voice only: S4a, G9, S4b, S4c]
+  [stage C — User expresses concern about being seen as complainant, wants to pursue compensation while maintaining professional framing.]
+  [drew on G4c, G9a, S4b — 0 Otema, 3 drafted]
+  [voice only: G1a, G1b, G9, G1]
 
 Botema
-  That worry is real, and it’s common. But asking for fair pay and a formal
-  review isn’t complaining—it’s professional and necessary. What are the three
-  most measurable outcomes you delivered this cycle, and what would a
-  successful resolution look like for you in the review?
+  That worry isn’t just in your head—it's real and well documented that women
+  get labeled as complainers for asking about pay. Reset the frame to business
+  value: “I’ve completed the cycle and delivered on the agreed metrics; I’d
+  like a compensation review at the end with market justification and a firm
+  decision date.” How does that feel, and what’s the cycle end date?
 
   you > am I being naive staying here
   [azure error: Azure 400: {"error":{"message":"The response was filtered due to the prompt triggering Azure OpenAI's content management]
@@ -78,9 +73,9 @@ Botema
   covered_stages  C
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
   closed_areas    —
-  role/location   current role compensation discussion / —
-  where she is    — She is waiting for the review cycle. She has done everything on the list her manager gave her.
-  trying to do    — She does not want to be the person who complains. She has completed the items on the manager's list; now she is waiting for the review cycle.
+  role/location   mid-level developer / —
+  where she is    She is waiting for the review cycle; her manager told her to wait. She said the same thing last year. She has completed everything on the list her manager gave her.
+  trying to do    She does not want to be the person who complains.
 
   Nothing was written to any database.
 ```

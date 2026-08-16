@@ -1,6 +1,6 @@
 # A recruiter asking what she is currently on, before any offer exists
 
-_Run 2026-08-16 05:27 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 06:10 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage B. She is being pushed to anchor on a salary that would trap her — tests whether the coach moves the conversation onto what the ROLE is worth, gives her words for a payslip demand, and handles 'should I just say a higher number' without either moralising or transplanting a US pay-history ban that does not apply where she is.
 
@@ -12,67 +12,67 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > there's a role i really want and the recruiter has asked what im currently on before they put an offer together
-  [stage B — User is negotiating with a prospective employer; recruiter asked for current salary as part of offer preparation.]
+  [stage B — The user is negotiating with a prospective employer; they have a live recruiter request for their current pay.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [drew on S3a, S3b, S2 — 1 Otema, 2 drafted]
   [voice only: G6, G5, G7, G3a]
 
 Botema
-  That’s a real pressure point, and you’re not wrong to push back. Try: “I’d
-  rather we anchor the offer on the market value of this role here. What range
-  has the company budgeted for it?” If they push back, add: “I’m happy to
-  discuss my experience and impact to support that range.” What city and role
-  level is this in, so I can tailor the exact line?
+  That question is a classic anchor, and you don’t have to disclose your
+  current pay. I’d push back with: “I’d prefer we base the offer on the market
+  value of this role and my experience—what range has the budgeted for this
+  role?” If they push, you can add: “I can share a target range based on the
+  role and local market, but not my current pay.” What did they say and how
+  far along is the negotiation?
 
   you > problem is im badly underpaid where i am now, i think its about half what this role should pay
-  [stage B — User expressed current underpayment, seeking market-driven offer for a new role; needs market data to anchor negotiation.]
-  [W · skipped — no location known yet]
+  [stage B — User is in stage B (negotiation with prospective employer) and reveals they are underpaid currently, which informs their leverage and messaging.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on G7, G3, S3 — 1 Otema, 2 drafted]
-  [voice only: S5, S3b, S3a, G6]
+  [voice only: G6, S5, S5a, G9a]
 
 Botema
-  That gap is real and you’re not imagining it. Would you like me to tailor
-  this to the exact city and role level you’re targeting?
+  You’re right to flag that—underpayment is real in our market, and it’s
+  exactly why you anchor on market value, not your current pay. What stage is
+  the negotiation at now, and is the offer expected in local currency or USD?
 
   you > she's also asked me to send a payslip to confirm it
-  [stage B — The user reports the recruiter asked for a payslip in a live negotiation with a prospective employer.]
+  [stage B — User reports recruiter asked for payslip; this is a live negotiation with a prospective employer.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S3b, S5, G3a — 1 Otema, 2 drafted]
-  [voice only: G7a, S3, S2a, G7]
+  [voice only: G3, G9, S2, G6]
 
 Botema
-  That request is real, but not something you should share. Do not send your
-  payslip. What city and role level is this, so I can tailor the exact line
-  for you?
+  Don’t send a payslip. How does that feel for your situation, and what did
+  they say next?
 
   you > if i give her a higher number will they find out
-  [stage B — User asked if inflating current salary would be discovered; it's a strategic question in a live offer negotiation.]
+  [stage B — User is in stage B negotiating with a prospective employer and asked about risk of revealing higher number; we classify the area.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S3b, G6, S5 — 1 Otema, 2 drafted]
-  [voice only: G7, S2a, G3a, S3a]
+  [voice only: G5, S3, S2, G7a]
 
 Botema
-  Short answer: yes, giving a higher number as your current pay can anchor the
-  whole negotiation at a higher level, and if it’s not genuine it can
-  backfire. What city and level is this role in so I tailor the exact line for
-  you?
+  No. Inflating or sharing a higher number won’t help and can backfire if they
+  poke around the details later. How has the recruiter responded so far, and
+  have they given a budget range for the role?
 
   you > i dont want to seem awkward and have them just move on to the next candidate
-  [stage B — User wants to avoid awkwardness and prevent being passed over; remains in negotiation stage with prospective employer.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [sentence cap fired — the model wrote a rundown]
+  [stage B — User is negotiating with a prospective employer and wants to avoid awkwardness and not lose the candidate to others.]
   [drew on S3b, G3, S2 — 1 Otema, 2 drafted]
-  [voice only: G6, S5, G9, S5a]
+  [voice only: S3, G9a, G9, G6]
 
 Botema
-  Yes. If you give a higher number, they’ll anchor the offer to that figure,
-  and it can be hard to unwind later. What city and level is this role, and
-  how has the recruiter responded to your range question so far?
+  That fear is real, but negotiating for value is exactly what good employers
+  expect. Try: “I’m really excited about this role—could you share the
+  budgeted range for this position? I want us to anchor on the market value of
+  the role, not my current pay.” If they push back, add: “If the base can’t
+  move, what about other components like a learning budget, signing bonus, or
+  a six-month review with a potential increase?” How does that feel, and what
+  did the recruiter say in response so far?
 
   you > quit
 
@@ -81,9 +81,9 @@ Botema
   covered_stages  B
   touched_facets  S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G9, G9a, G5
   closed_areas    —
-  role/location   prospective software engineer / —
-  where she is    The recruiter has asked what she is currently on before they put an offer together. She is badly underpaid where she is now, estimating her current pay is about half of what this role should pay. She has been asked to send a payslip to confirm it.
-  trying to do    She wants the role she really wants and is preparing to share her current pay so a formal offer can be put together. She notes the pay gap at her current job, estimating her pay is about half of what this role should pay. She wonders whether giving a higher current-pay figure would be discovered by the recruiter. She does not want to seem awkward and have them move on to the next candidate.
+  role/location   prospective role negotiation / —
+  where she is    She is a backend developer who is currently underpaid in her current role; she believes her current pay is about half of what the role she wants should pay. A recruiter has asked what she is currently on before they put together an offer. She has been asked to send a payslip to confirm it.
+  trying to do    She wants to land the role she really wants and receive an offer for that role. The main obstacle is the underpayment she is experiencing in her current job; she believes it’s about half of what the new role should pay. She doesn’t want to seem awkward or pushy and risk them moving on to the next candidate.
 
   Nothing was written to any database.
 ```

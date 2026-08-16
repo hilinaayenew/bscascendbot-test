@@ -3,13 +3,13 @@
 Five conversations run through `scripts/coach-local.mjs` against live Azure (`gpt-5-nano`), five turns each.
 Each exists to test one claim the storyboard makes about the area model.
 
-_Salary & Negotiation · last run **2026-08-16 05:27 UTC** — regenerate with `npm run coach:scenarios -- --area=salary`._
+_Salary & Negotiation · last run **2026-08-16 06:10 UTC** — regenerate with `npm run coach:scenarios -- --area=salary`._
 
-**4 of 5 scenarios passed all checks.**
+**3 of 5 scenarios passed all checks.**
 
 | # | Scenario | Tests | Result |
 |---|---|---|---|
-| 01 | [A nurse moving into health tech, offered far too little](01-career-changer-lowballed.md) | Crosses stage A into B mid-conversation, and treats a half offer as a mismatch rather than a starting point. | pass |
+| 01 | [A nurse moving into health tech, offered far too little](01-career-changer-lowballed.md) | Crosses stage A into B mid-conversation, and treats a half offer as a mismatch rather than a starting point. | fail — no reply mostly restates the one before it |
 | 02 | [She resigned and they suddenly found the money](02-counter-offer.md) | Stage C throughout, and asks why the number only appeared once she was leaving. | pass |
 | 03 | [A foreign employer insisting on local currency](03-paid-in-local-currency.md) | Negotiates the mechanism — review interval, pegging — rather than arguing about the currency itself. | pass |
 | 04 | [Told to wait for the review cycle, for the second year running](04-fobbed-off-twice.md) | Stage C. Recognises a pattern rather than repeating last year's advice. | fail — no two replies open the same way; no reply mostly restates the one before it |

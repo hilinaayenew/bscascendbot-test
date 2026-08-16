@@ -1,6 +1,6 @@
 # She resigned and they suddenly found the money
 
-_Run 2026-08-16 05:27 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 06:10 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C throughout, and asks why the number only appeared once she was leaving.
 
@@ -12,73 +12,72 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I handed in my notice last week and now they've offered me 30% more to stay
-  [stage C — User is negotiating with current employer after handing in notice; decision falls in stage C]
+  [stage C — The user has submitted notice and received a 30% retention increase; needs guidance on whether to negotiate, accept, or leverage offer.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [sentence cap fired — the model wrote a rundown]
   [drew on G8, S4c, S4 — 1 Otema, 2 drafted]
   [voice only: G4, G4b, G9, G1]
 
 Botema
-  Counter-offers are real, but they rarely fix the underlying reasons you
-  handed in your notice. If you stay, demand a written retention plan now: a
-  clear role scope and title, a six-to-twelve month salary review tied to
-  concrete milestones, and specific improvements you actually care about
-  (learning budget, equipment, flexible/hybrid work, mentorship). What are the
-  two or three non-monetary issues you needed addressed, and would you be
-  willing to see them resolved in a retention plan?
+  Counter-offers are real, and in Africa they often buy time rather than fix
+  the underlying issue. If you left for growth, learning, or culture, a 30%
+  bump may not address those longer-term gaps, and many people accept and
+  still move on within a year. What was the core reason you handed in your
+  notice, and what outcome would make you feel confident staying?
 
   you > I'd asked for a raise twice before and got nothing
-  [stage C — User has already been in a money negotiation with their current employer and states they asked for a raise previously without success; clearly stage C (they are negotiating with their current employer)]
+  [stage C — User is negotiating with employer they already work for; mentions past attempts to raise and no success; indicates internal negotiation context.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G8, G9a, G1 — 0 Otema, 3 drafted]
+  [drew on G9a, G8, G1 — 0 Otema, 3 drafted]
   [voice only: G1a, G9, G1b]
 
 Botema
-  That history isn’t in your head—it's real, and it signals whether they value
-  you long-term. If they can’t commit to that, the 30% offer may not be
-  durable, and you should be prepared to walk again if the plan falters. What
-  two or three specifics do you want in that written plan to feel secure
-  staying?
+  That’s real: you asked for a raise twice before and got nothing, so a 30%
+  bump to stay often hides the same underlying issue. With your notice on the
+  table, push for a concrete retention package in writing—a clear promotion
+  path or expanded responsibilities, a learning/mentorship budget, and a
+  defined salary review date with a real ceiling if milestones are met. What
+  would a credible retention plan look like for you, and what two to three
+  non-negotiables must be in writing?
 
   you > honestly the money was only part of why I was going
-  [stage B — User confirms money wasn't the sole reason for leaving and future negotiations should address non-monetary factors; this keeps the area in B (offer/negotiation)]
+  [stage C — User indicates monetary reasons were not the sole factor; focus on non-monetary retention levers and the underlying issues beyond pay.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S5a, G6, S2 — 1 Otema, 2 drafted]
-  [voice only: S5, S3b, S3a, S2a]
+  [drew on G8, G9, G1a — 0 Otema, 3 drafted]
+  [voice only: G1, G9a, G1b]
 
 Botema
-  I hear you—the money isn’t the whole story, and you shouldn’t sign on
-  without real improvements you can count on. What are the two or three
-  non-monetary outcomes that matter most to you, and would you insist they sit
-  in that plan?
+  You’re right: money is part of it, but growth, culture and real
+  responsibility can matter just as much. What non-monetary elements would
+  have to be included in that plan for you to feel confident staying?
 
   you > my new employer has already sent the contract
-  [stage B — The user now has a current offer contract from a prospective employer, indicating stage B negotiations.]
-  [drew on G7, S5a, S3 — 1 Otema, 2 drafted]
-  [voice only: G3a, S2a, G9, G5]
+  [stage B — User has received a contract from a new employer and is in active negotiation with a prospective employer.]
+  [drew on S5a, G6, S2 — 1 Otema, 2 drafted]
+  [voice only: G3a, S5, G7a, G5]
 
 Botema
-  That contract is your leverage, not a done deal. Don’t sign until you’ve got
-  those guardrails written in and you’ve had a quick call to align on
-  them—specifically a six-to-twelve month salary review tied to milestones, a
-  defined learning budget and equipment support, and clarity on
-  currency/payment timing. Does one of those terms need to be added or tweaked
-  for you to feel secure?
+  That contract is your next step, so don’t sign anything you haven’t fully
+  reviewed. Request a written extension to review it and outline amendments
+  that reflect your non-negotiables: concrete retention terms (promotion path
+  and a salary review date with a ceiling), a learning/mentorship budget, and
+  clarity on currency and any signing bonus or equipment. Do you want me to
+  draft a concise note you can send to the employer to request time and lay
+  out the changes?
 
   you > so do I take it or not
-  [stage B — User is asking whether to accept a contract from a prospective employer; they previously negotiated and are weighing guardrails]
+  [stage B — User is deciding whether to accept a raised offer and wants guidance.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S5a, G6, S2 — 1 Otema, 2 drafted]
-  [voice only: S5, S3a, S3, G7a]
+  [drew on G7, G7a, S3 — 1 Otema, 2 drafted]
+  [voice only: S2, G3a, G9, S5a]
 
 Botema
-  Not yet. If they won’t commit in writing, you should walk unless you’re
-  prepared to accept the current terms without guardrails. What are your top
-  two non-monetary guardrails you’d insist on in writing, and is the company
-  willing to lock those in now?
+  Don’t sign today. If they can’t commit those in writing, you have every
+  reason to walk away and keep negotiating elsewhere. What are your two
+  must‑have terms to see in writing before you decide?
 
   you > quit
 
@@ -87,9 +86,9 @@ Botema
   covered_stages  C, B
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a, S2, S2a, S3, S3a, S3b, S5, S5a, G3, G3a, G6, G7, G7a, G5
   closed_areas    —
-  role/location   prospective role / —
-  where she is    She handed in her notice last week; the employer offered 30% more to stay; money was only part of why she was leaving. A new employer has sent the contract.
-  trying to do    She is trying to secure a raise; she has asked for a raise twice before and got nothing. The money was only part of why she was leaving.
+  role/location   — / —
+  where she is    She handed in her notice last week. They offered 30% more to stay. Her new employer has sent the contract. She is deciding whether to take the counter-offer or move to the new contract.
+  trying to do    She is weighing two paths: staying with the current employer or joining the new contract. Money was only part of why she was leaving; she had asked for a raise twice before and got nothing.
 
   Nothing was written to any database.
 ```

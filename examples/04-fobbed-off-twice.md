@@ -1,6 +1,6 @@
 # Told to wait for the review cycle, for the second year running
 
-_Run 2026-08-16 05:27 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-16 06:10 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C. Recognises a pattern rather than repeating last year's advice.
 
@@ -12,57 +12,57 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > my manager told me to wait for the review cycle
-  [stage C — User already works for the employer; manager asked to wait for review cycle; this is a money conversation that must be initiated by them while employed.]
+  [stage C — User is negotiating as an existing employee; money talk will follow the review cycle per manager's instruction.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [sentence cap fired — the model wrote a rundown]
   [drew on G4c, S4c, S4 — 1 Otema, 2 drafted]
   [voice only: G4b, G1b, G1a, S4a]
 
 Botema
-  That’s a real tactic, but you can turn it into a concrete plan. I’d push for
-  a fixed window (the next review cycle) and clear milestones you’ll achieve
-  by then, e.g., two or three measurable outcomes, plus a written commitment
-  that if you meet them, your compensation will be reviewed to align with the
-  market for this role. And what are the two or three concrete outcomes you
-  could commit to before that date?
+  That’s real, and it happens. Use the wait to push for clarity and
+  leverage—ask for a written plan with the exact outcomes to hit by the cycle,
+  the decision date, and what changes if you meet them. You could say: "Could
+  we align on the specific outcomes I should deliver before the review, and
+  confirm in writing when the decision will be made?" and "If the cycle is
+  months away, could we schedule a mid-cycle check-in to review progress?"
+  What is the cycle window for you, and what outcomes could you realistically
+  deliver before it closes?
 
   you > she said exactly the same thing last year
-  [stage C — The user is in a ongoing manager-led pay negotiation stage and reports recurrence of the same response, so we classify under C and prepare to address move forward.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
-  [voice only: S4a, G4, G1, G8]
-
-Botema
-  That’s a real pattern, and I’ve seen it happen—when they push the
-  conversation out, you lock it in with a plan you can hold them to. What two
-  or three outcomes would you commit to, and who could you get to sign off on
-  that written plan if they push back again?
-
-  you > I did everything on the list she gave me
-  [stage C — User clarified they have completed the previously given checklist, confirming ongoing raise negotiation with manager.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
-  [voice only: S4c, S4a, G9, G1b]
-
-Botema
-  That’s real, and it’s a stall I’ve seen many times. I can help you draft the
-  exact words and pick the milestones—what two or three outcomes would you
-  lock in, and who should sign off if they push back again?
-
-  you > I don't want to be the person who complains
-  [stage C — User is still in stage C and expresses concern about being seen as complainant, which is a behavioral blocker affecting how they negotiate.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage C — User is in a current role; discussing pay with manager again; this is a negotiation stage]
   [sentence cap fired — the model wrote a rundown]
   [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
-  [voice only: G9, G4d, G4b, G8]
+  [voice only: G1b, G4, G1, G8]
 
 Botema
-  I hear you. It’s real, but you can flip it into a professional plan instead
-  of a complaint. What two or three outcomes would you commit to by the next
-  cycle, and who should sign off on that plan with you?
+  That pattern is real, and it’s not you. If it’s happened before, you need a
+  written, milestone-based plan this time—clear deliverables, a decision date,
+  and what changes if you hit or miss them, plus a mid-cycle check-in. What
+  outcomes can you confidently commit to, and when would a check-in work for
+  you?
+
+  you > I did everything on the list she gave me
+  [stage C — User is negotiating a raise with a manager at their current job after completing the list; this is a stage C conversation.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G4c, G1, S4 — 1 Otema, 2 drafted]
+  [voice only: S4b, S4a, S4c, G1b]
+
+Botema
+  That pattern is real, and it’s not you. What’s the cycle window for you, and
+  what milestones would you want included?
+
+  you > I don't want to be the person who complains
+  [stage C — User stated they don't want to be the complaining type; this adds a defensive stance to the negotiation approach.]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G4c, G9a, S4 — 1 Otema, 2 drafted]
+  [voice only: S4a, G9, S4b, S4c]
+
+Botema
+  That worry is real, and it’s common. But asking for fair pay and a formal
+  review isn’t complaining—it’s professional and necessary. What are the three
+  most measurable outcomes you delivered this cycle, and what would a
+  successful resolution look like for you in the review?
 
   you > am I being naive staying here
   [azure error: Azure 400: {"error":{"message":"The response was filtered due to the prompt triggering Azure OpenAI's content management]
@@ -78,9 +78,9 @@ Botema
   covered_stages  C
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
   closed_areas    —
-  role/location   current role / —
-  where she is    She is waiting for the review cycle; her manager told her to wait.
-  trying to do    She has done everything on the list her manager gave her and is waiting for the review cycle to proceed. She doesn't want to be the person who complains.
+  role/location   current role compensation discussion / —
+  where she is    — She is waiting for the review cycle. She has done everything on the list her manager gave her.
+  trying to do    — She does not want to be the person who complains. She has completed the items on the manager's list; now she is waiting for the review cycle.
 
   Nothing was written to any database.
 ```

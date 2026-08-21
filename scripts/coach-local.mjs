@@ -140,7 +140,7 @@ const AREA_SLUG = areaArg ? areaArg.slice(7).toLowerCase() : "salary";
 
 const AREAS_BUILT = [
   "salary",
-  // "getting-started",   ← Hilina
+  "getting-started",
   // "confidence",        ← Hilina
 ];
 
@@ -359,7 +359,21 @@ function dropRepeatedSentences(text, previousReplies, threshold = 0.45) {
     // sentence; exempting everything ending in "?" let a near-verbatim script
     // through twice. Split the question off and judge the rest.
     const lastBreak = sentence.search(/[.!”"]\s+[^.!?]*\?$/);
-    if (lastBreak === -1) { kept.push(sentence); continue; }
+    if (lastBreak === -1) {
+      // A standalone closing question, no quoted script attached — this used
+      // to be kept unconditionally, on the theory that varying the question
+      // was enough. Getting Started's thinner stages (S2/G1 in Stage C, only
+      // two facets) showed the coach can land on the exact same closer turn
+      // after turn regardless — "which lane feels most urgent to you, web or
+      // data, and which days can you protect for study this month?" recurred
+      // near-verbatim across all five turns of the constrained-runway
+      // scenario, unchecked, because nothing here ever looked at it. Now
+      // checked like any other sentence; if it repeats, the reply simply
+      // lands without a closing question that turn, which is an accepted
+      // shape already (see everyReplyAsks — not every reply needs one).
+      if (!repeats(sentence)) kept.push(sentence);
+      continue;
+    }
     const body = sentence.slice(0, lastBreak + 1).trim();
     const question = sentence.slice(lastBreak + 1).trim();
     if (!repeats(body)) kept.push(sentence);
@@ -455,6 +469,58 @@ function mentionedByUser(candidate, saidByUser) {
     .split(/\s+/)
     .filter((w) => w.length > 3 && !NON_PLACES.includes(w));
   return words.length > 0 && words.some((w) => saidByUser.includes(w));
+}
+
+// ── The invented-location guard ──────────────────────────────────────────
+// Observed live, twice, on Getting Started with no location ever given: the
+// model volunteered a specific country/city unprompted ("Ghana-based roles",
+// "local firms in Ghana") — a fabrication in the same shape as an invented
+// figure, just a place instead of a number. mentionedByUser() above already
+// keeps the web-search location honest; this applies the same test to every
+// reply, not just search-triggering ones. The list is curated, not
+// exhaustive — extend it if a different invented place turns up.
+const KNOWN_PLACES = [
+  "ghana", "accra", "nigeria", "lagos", "abuja", "kenya", "nairobi",
+  "south africa", "cape town", "johannesburg", "uganda", "kampala",
+  "rwanda", "kigali", "tanzania", "ethiopia", "addis ababa", "senegal",
+  "dakar", "egypt", "cairo", "morocco", "zambia", "malawi", "zimbabwe",
+  "germany", "berlin", "united kingdom", "united states",
+];
+
+function stripInventedLocation(text, saidByUser) {
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  const invented = (s) => {
+    const low = s.toLowerCase();
+    return KNOWN_PLACES.some((p) => low.includes(p) && !mentionedByUser(p, saidByUser));
+  };
+  if (!sentences.some(invented)) return text;
+  // Unlike a figure, a place named inside a question is still a fabrication —
+  // "are you aiming for local Ghana roles?" presumes Ghana just as much as
+  // stating it outright would. Confirmed live: this exemption is exactly what
+  // let "local Ghana roles or remote-for-abroad opportunities" survive inside
+  // a closing question after the same guard had already fired earlier in the
+  // same reply on a non-question sentence. No exemption for questions here.
+  const kept = sentences.filter((s) => !invented(s));
+  return kept.join(" ").trim();
+}
+
+// The prompt already tells the model every opener used so far in this
+// conversation and asks for a different one ("different first words,
+// different shape") — but on live transcripts it still reused the same
+// opening clause ("That back-and-forth is...", twice, one turn apart) with
+// only the back half changed, which reads as a fresh sentence to the model
+// but is the same tic to her. A third reminder is not going to land where a
+// second one didn't — this checks it instead, same 4-word key the
+// noRepeatedOpeners test uses, so the guard and the check agree.
+function openerKey(sentence) {
+  return sentence.trim().toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean).slice(0, 4).join(" ");
+}
+function stripRepeatedOpener(text, previousReplies) {
+  if (!previousReplies.length) return text;
+  const used = new Set(previousReplies.map((r) => openerKey(splitSentences(r)[0] || "")));
+  const sentences = splitSentences(text);
+  if (sentences.length < 2 || !used.has(openerKey(sentences[0]))) return text;
+  return sentences.slice(1).join(" ").trim();
 }
 
 // ── Web search — call one of two ────────────────────────────────────────────
@@ -559,18 +625,19 @@ const CLASSIFY_TOOL = [{
   type: "function",
   function: {
     name: "placeInArea",
-    description: "Decide which stage of the Salary & Negotiation area this message belongs to, or whether the user is leaving the area.",
+    description: `Decide which stage of the ${AREA.name} area this message belongs to, or whether the user is leaving the area.`,
     parameters: {
       type: "object",
       properties: {
         stage: {
           type: "string",
-          enum: ["A", "B", "C", "leaving"],
+          // Stage letters are whatever the area config defines — 2 to 4 of
+          // them, not always exactly A/B/C. Hardcoding three here is what
+          // broke Getting Started's first pass when it needed a 4th (D).
+          enum: [...Object.keys(STAGES), "leaving"],
           description: [
-            "A — " + STAGES.A.describes,
-            "B — " + STAGES.B.describes,
-            "C — " + STAGES.C.describes,
-            "leaving — the message is not about their pay at all: they want another subject, they are pricing a job they do not have, or the real blocker is confidence rather than tactics.",
+            ...Object.keys(STAGES).map((k) => `${k} — ${STAGES[k].describes}`),
+            `leaving — the message is not about ${AREA.name} at all: they want a different subject, or the real blocker belongs to another area entirely (e.g. confidence rather than tactics).`,
           ].join(" | "),
         },
         leaveTo: {
@@ -597,7 +664,7 @@ const CLASSIFY_TOOL = [{
   },
 }];
 
-async function classify(message, history, covered) {
+async function classify(message, history, covered, maxTokens = 2000) {
   const sys = [
     `You are placing a message inside the "${AREA.name}" discussion area of a tech career coach.`,
     `Decide which stage of that area it belongs to, or whether the user has left the area.`,
@@ -610,7 +677,7 @@ async function classify(message, history, covered) {
     { role: "system", content: sys },
     ...history.slice(-10),
     { role: "user", content: message },
-  ], { tools: CLASSIFY_TOOL });
+  ], { tools: CLASSIFY_TOOL, maxTokens });
 }
 
 // ── Generation: stage-scoped wordalisation ──────────────────────────────────
@@ -1008,6 +1075,32 @@ async function main() {
       continue;
     }
 
+    // The model can call the tool but drop a required field anyway (seen on
+    // Getting Started's very first turn) — same failure shape as `!call`
+    // above, just one layer deeper, and it used to crash the whole harness
+    // with a TypeError on STAGES[undefined] instead of speaking. One retry,
+    // then speak rather than throw, same as every other failure path here.
+    if (placed.stage !== "leaving" && !STAGES[placed.stage]) {
+      console.log(C.dim(`  [classification missing/invalid stage "${placed.stage}" — retrying once at double the token budget]`));
+      // Same reasoning-model shape as the empty-content retry in callAzure():
+      // a longer system prompt (more stages, more description text, per area)
+      // means more hidden reasoning before the model can emit the tool call,
+      // so the same 2000-token budget that worked for 3 stages started
+      // dropping the required field more often at 4. Double it here rather
+      // than raising the default for every call — most classifications don't
+      // need it.
+      const retried = DRY ? null : await classify(input, history, state.covered_stages, 4000).catch(() => null);
+      if (retried && (retried.stage === "leaving" || STAGES[retried.stage])) {
+        placed = retried;
+      } else {
+        console.log(C.dim("  [still no valid stage after retry]"));
+        console.log(`\n${C.wine("Botema")}`);
+        console.log(wrap(COULD_NOT_ANSWER));
+        console.log("");
+        continue;
+      }
+    }
+
     console.log(C.dim(`  [stage ${placed.stage} — ${placed.why}]`));
 
     // Layer 1 — the classifier itself.
@@ -1147,20 +1240,34 @@ async function main() {
       continue;
     }
 
-    const { text: guarded, stripped } = search ? { text: reply, stripped: false } : stripFigures(reply);
+    const { text: figureGuarded, stripped } = search ? { text: reply, stripped: false } : stripFigures(reply);
     if (stripped) console.log(C.amber("  [figure guard fired — a figure or source claim was removed]"));
+    const guarded = stripInventedLocation(figureGuarded, saidByUser);
+    if (guarded !== figureGuarded) console.log(C.amber("  [invented-location guard fired — an unstated place was removed]"));
     const priorReplies = history.filter((m) => m.role === "assistant").map((m) => m.content);
-    const deduped = dropRepeatedSentences(guarded, priorReplies);
-    if (deduped !== guarded) console.log(C.amber("  [repeated advice removed]"));
+    const openerFixed = stripRepeatedOpener(guarded, priorReplies);
+    if (openerFixed !== guarded) console.log(C.amber("  [repeated-opener guard fired — a reused opening clause was dropped]"));
+    const deduped = dropRepeatedSentences(openerFixed, priorReplies);
+    if (deduped !== openerFixed) console.log(C.amber("  [repeated advice removed]"));
     if (!deduped) {
       // The whole reply was advice she has already had. That is the stall
       // condition, not something to fill with more words.
+      //
+      // Confirmed live on the constrained-runway scenario: this branch logged
+      // "entirely repetition" and incremented stallCount correctly, but the
+      // line below still fell back to `openerFixed` — the untouched,
+      // fully-repetitive text — so the exact SQL/Python rundown from the
+      // previous turn got shown again verbatim anyway. Counting a stall while
+      // still displaying the thing the stall exists to prevent defeated the
+      // check. Falling through to the empty string here instead means the
+      // "nothing survived the guards" branch further down does its job and
+      // substitutes the area's fallback question.
       console.log(C.amber("  [reply was entirely repetition — treating as a stall]"));
       state.stallCount += 1;
       if (state.stallCount >= 2) { await closeArea("nothing new left to say — the stall rule"); break; }
     }
-    const plausible = stripAdsOversell(stripImplausiblePeriods(stripImplausibleFigures(deduped || guarded)));
-    if (plausible !== guarded) console.log(C.amber("  [implausible figure removed — outlier, mixed currency, or wrong period]"));
+    const plausible = stripAdsOversell(stripImplausiblePeriods(stripImplausibleFigures(deduped)));
+    if (plausible !== openerFixed) console.log(C.amber("  [implausible figure removed — outlier, mixed currency, or wrong period]"));
     let { text, capped } = capSentences(flattenInlineList(plausible), search ? 5 : 3);
     // Every reply must end on a question — it is how the coach leads. When the
     // model does not manage one, append the area's own rather than strand her.

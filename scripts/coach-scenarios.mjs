@@ -12,8 +12,15 @@
 // one claim the storyboard makes; the `checks` field is that claim, asserted
 // against what actually came back.
 //
-// Output lands in examples/ — transcripts are committed so a later change can
-// be compared against what the coach used to say.
+// Output lands in examples/<area>/ — transcripts are committed so a later
+// change can be compared against what the coach used to say.
+//
+// One subfolder per area, not a flat examples/ — a shared directory meant
+// running one area's sweep deleted another area's committed transcripts as
+// "stale" (the cleanup below only knows the current area's scenario IDs, so
+// anything else looked orphaned). Found running Getting Started's sweep,
+// which silently removed all five of Salary's transcripts and overwrote its
+// README. Scoping by area means the same cleanup logic is now safe.
 // ============================================================================
 
 import { execFileSync } from "node:child_process";
@@ -23,12 +30,13 @@ import { dirname, join } from "node:path";
 import { replyOf, everyReplyAsks, noRepeatedOpeners, jargonPerReply, maxRepeatOverlap } from "./checks.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const OUT = join(ROOT, "examples");
 
 // ── The area under test ─────────────────────────────────────────────────────
 // Named, not numbered — `--area=salary`.
 const areaArg = process.argv.find((a) => a.startsWith("--area="));
 const AREA_SLUG = areaArg ? areaArg.slice(7).toLowerCase() : "salary";
+
+const OUT = join(ROOT, "examples", AREA_SLUG);
 
 let SCENARIOS;
 let AREA_NAME = AREA_SLUG;
@@ -140,5 +148,5 @@ const index = [
 ].join("\n");
 writeFileSync(join(OUT, "README.md"), index);
 
-console.log(`\n  ${passed}/${results.length} passed — examples/README.md written\n`);
+console.log(`\n  ${passed}/${results.length} passed — examples/${AREA_SLUG}/README.md written\n`);
 process.exit(passed === results.length ? 0 : 1);

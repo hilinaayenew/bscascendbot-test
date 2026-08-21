@@ -964,7 +964,7 @@
 
     <div class="sub-tab-bar">
       <button class="sub-tab-btn active" onclick="switchSubTab('area9', this)"><span class="sn">09</span>Salary &amp; Negotiation</button>
-      <button class="sub-tab-btn" onclick="switchSubTab('area1', this)"><span class="sn">01</span>Getting Started <span class="todo">TO WRITE</span></button>
+      <button class="sub-tab-btn" onclick="switchSubTab('area1', this)"><span class="sn">01</span>Getting Started</button>
       <button class="sub-tab-btn" onclick="switchSubTab('area6', this)"><span class="sn">06</span>Confidence <span class="todo">TO WRITE</span></button>
     </div>
 
@@ -1608,56 +1608,331 @@
     <div id="sub-area1" class="sub-panel">
       <div class="section">
         <div class="section-title">Area Flow · Area 1</div>
-        <h2 class="section-heading">Inside Getting Started <span class="st proposed">TO WRITE</span></h2>
-        <p class="prompt-intro">For Hilina. Salary &amp; Negotiation is worked through in full on the first tab — use it as the pattern, not as a template to copy. <strong>It is the busiest area — most people arrive here first, so it is where the model will be judged.</strong></p>
+        <h2 class="section-heading">Inside Getting Started <span class="st proposed">PROPOSED</span></h2>
+        <p class="prompt-intro">First pass through the Salary pattern, done 2026-08-17, reworked from 3 stages to 4 on 2026-08-19. Same non-router shape: one classification call places the user in a stage, the stage scopes which of Otema's answers get injected, the model writes the reply. <strong>This is the busiest area — most people arrive here first — but this pass is still deliberately narrower than Salary's: fewer drafted answers, no full dead-end sweep yet, scenario sweeps run rather than an area-tester pass.</strong> Several sweeps run 2026-08-19 through 2026-08-21 chasing every real failure down to a code fix rather than a reworded prompt — the current sweep passes 5/5 clean. Treat the stage model and the fixes below as solid; treat the coverage itself (dead ends, drafted-answer depth) as still a first draft.</p>
 
         <div class="banner spec">
-          <strong>Do the stages first, and do them honestly.</strong> Everything else follows from them. Salary's three stages are <em>situational</em> — before an offer, offer on the table, already in the job — because that is what actually separates one salary conversation from another. Getting Started may not divide situationally at all: the distinguishing thing might be how much the person has already decided. If the stages are wrong, no amount of good content will rescue the area.
+          <strong>The stages are NOT situational, on purpose — and not purely "how far along" either.</strong> Salary's three stages are situational — before an offer, offer on the table, already in the job — because that's what actually separates one salary conversation from another. Getting Started doesn't have an external situation like that. The first pass split purely on how much had been decided (deciding → choosing method → executing), but that lumped a career changer's "how does my past count" question in with a first-timer's method choice — genuinely different material, not just a different point on the same line. So <strong>who they are</strong> now gets its own stage, alongside <strong>how far along</strong> they are:
+          <br><br>
+          <strong>A</strong> — no prior career, hasn't settled on a direction · <strong>B</strong> — has a prior career in a different field, working out how it translates · <strong>C</strong> — direction settled, deciding HOW to learn · <strong>D</strong> — method chosen, wants concrete execution detail.
+          <br><br>
+          The known risk with this split: A and B can blur when someone has a prior career AND is still field-unsure. The rule adopted is that the prior career wins — B is about background, not certainty — and that's exactly what scenario 02 in the test sweep is built to probe.
+        </div>
+
+        <div class="banner info">
+          <strong>A harness bug found and fixed building this area.</strong> The stage-classification tool schema in <code>scripts/coach-local.mjs</code> had Salary's own wording hardcoded into its top-level description and its "leaving" definition ("Decide which stage of the Salary &amp; Negotiation area…", "not about their pay at all…"). That directly contradicted the system prompt for every other area, and on Getting Started's very first test turn it caused gpt-5-nano to drop the required <code>stage</code> field entirely — crashing the harness with <code>TypeError: Cannot read properties of undefined (reading 'facets')</code> instead of speaking. Fixed two ways: the hardcoded text now reads from <code>AREA.name</code> generically, and a missing/invalid stage now retries once and then speaks a fallback line rather than throwing — same "retry, then speak, never throw" pattern already used for the null-tool-call and empty-content cases in that file.
+          <br><br>
+          <strong>A second generalization, found moving to 4 stages:</strong> the same file also hardcoded the stage enum itself to exactly <code>["A","B","C","leaving"]</code>, and separately hardcoded three description lines (<code>STAGES.A</code>/<code>.B</code>/<code>.C</code>) rather than reading whatever stages the area actually defines. Both now build from <code>Object.keys(STAGES)</code>, so an area can define 2 to 4 stages without touching the harness. Worth carrying over first, whenever Confidence or any later area gets built.
+        </div>
+
+        <div class="banner info">
+          <strong>Three more structural bugs found and fixed chasing a clean sweep, 2026-08-21.</strong> All three showed up as real conversation failures, not a matter of phrasing preference:
+          <br><br>
+          <strong>1. Openers repeating despite the prompt already listing every one used so far.</strong> Turn 1 opened "That back-and-forth is normal, not a failure"; turn 2 opened "That back-and-forth is real and okay" — a different tail on the same opening clause, which satisfies the instruction's literal "different first words" while missing its point entirely. A prompt reminder had already failed once on this exact shape of problem (the freelance-rate case, see the guarantees note below). Second failure, so per the standing rule it got a check instead of a third reword: <code>stripRepeatedOpener()</code> compares the first four words of the new reply against every prior reply's opener — the same key <code>noRepeatedOpeners</code> already used in the test — and drops the sentence if it matches.
+          <br><br>
+          <strong>2. The invented-location guard had a hole for questions.</strong> It exempted any sentence ending in "?", on the theory that a clarifying question isn't a false assertion — but "are you aiming for local Ghana roles or remote-for-abroad opportunities?" presumes Ghana exactly as much as stating it outright would, and it survived a full sweep run this way, unflagged by any check. No exemption for questions now.
+          <br><br>
+          <strong>3. A fully-repetitive reply was still shown in full while being counted as a stall.</strong> <code>dropRepeatedSentences()</code> correctly recognised one reply as entirely repetition and returned an empty string — but the line reading it fell back to the untouched pre-dedup text whenever that happened, so the exact repeated SQL/Python plan from the turn before got shown again anyway. Counting the stall while still displaying the thing the stall exists to prevent defeated the check. A fully-repetitive reply now falls through to the area's own closing question instead.
+        </div>
+
+        <div class="banner info">
+          <strong>Also observed, not yet root-caused:</strong> <code>stripImplausibleFigures</code> fired on replies containing plain time ranges like "4–6 hours this week" — content with no currency or salary figure in it at all. That guard was built and tested against Salary's currency/pay-period bugs specifically; it may be pattern-matching numeric ranges too broadly outside that context. Worth checking before trusting it generically across every area.
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 1 · Step 1</div><h2 class="section-heading">Name the stages</h2>
-        <div class="scaffold">
-          <h4>What separates one conversation in this area from another?</h4>
-          <p>Two to four stages. Each needs a description that names <em>what distinguishes it from the others</em>, not just what it is about — the salary classifier flipped between two stages until the descriptions said "prospective employer" versus "already work there".</p>
-          <p class="hint">Write each as: who the person is, what has already happened to them, and the giveaway words that place them here.</p>
+        <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area</h2>
+        <div class="stage-map">
+          <svg viewBox="0 0 900 260" role="img" aria-label="Four stages. Deciding whether/which and Translating a previous career both feed into Choosing how to learn, which leads to Executing the plan. A bypass edge skips Translating a previous career for anyone with no prior career. A return path leads from Executing the plan back to Deciding whether/which.">
+            <defs>
+              <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+              </marker>
+            </defs>
+
+            <rect class="sm-box" x="15" y="20" width="165" height="80" rx="9" />
+            <text class="sm-label" x="28" y="40">STAGE A</text>
+            <text class="sm-title" x="28" y="60">Deciding whether/which</text>
+            <text class="sm-sub" x="28" y="79">S1 · S1a · S7 · S7a · S8 · G3</text>
+
+            <rect class="sm-box" x="15" y="145" width="165" height="80" rx="9" />
+            <text class="sm-label" x="28" y="165">STAGE B</text>
+            <text class="sm-title" x="28" y="185">Translating a career</text>
+            <text class="sm-sub" x="28" y="204">S5 · G4</text>
+
+            <rect class="sm-box" x="365" y="82" width="165" height="80" rx="9" />
+            <text class="sm-label" x="378" y="102">STAGE C</text>
+            <text class="sm-title" x="378" y="122">Choosing how to learn</text>
+            <text class="sm-sub" x="378" y="141">S2 · S2a · G1</text>
+
+            <rect class="sm-box" x="715" y="82" width="165" height="80" rx="9" />
+            <text class="sm-label" x="728" y="102">STAGE D</text>
+            <text class="sm-title" x="728" y="122">Executing the plan</text>
+            <text class="sm-sub" x="728" y="141">S3 · S4 · S6 · G2</text>
+
+            <g style="color:var(--accent)">
+              <line class="sm-edge" x1="180" y1="60" x2="358" y2="105" marker-end="url(#ah2)" />
+              <line class="sm-edge" x1="180" y1="185" x2="358" y2="140" marker-end="url(#ah2)" />
+              <line class="sm-edge" x1="530" y1="122" x2="708" y2="122" marker-end="url(#ah2)" />
+              <path class="sm-edge" d="M 100 20 C 100 -32, 447 -32, 447 79" marker-end="url(#ah2)" fill="none" />
+              <polyline class="sm-edge" points="797,162 797,238 97,238 97,103" marker-end="url(#ah2)" />
+            </g>
+            <text class="sm-edge-label" x="188" y="72">career surfaces</text>
+            <text class="sm-edge-label" x="188" y="168">ready to pick a method</text>
+            <text class="sm-edge-label" x="535" y="112">method chosen</text>
+            <text class="sm-edge-label" x="250" y="-16">no prior career to translate</text>
+            <text class="sm-edge-label" x="300" y="232">reconsiders — not sure this is even right</text>
+          </svg>
+        </div>
+        <div class="key">
+          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's eight real answers, numbered in question-bank order (S1–S8 = Q1–Q8). <span class="chip">G</span> is one of the four drafted gap-filling answers.</p>
+          <div class="key-grid">
+            <div><span class="chip">S1</span> No background, where do I begin?</div>
+            <div><span class="chip">S2</span> Self-teach vs bootcamp vs degree</div>
+            <div><span class="chip">S3</span> Beginner-friendly languages</div>
+            <div><span class="chip">S4</span> Realistic time to job-ready</div>
+            <div><span class="chip">S5</span> Transferable skills, career changer</div>
+            <div><span class="chip">S6</span> Free resources</div>
+            <div><span class="chip">S7</span> Which field is right for me</div>
+            <div><span class="chip">S8</span> What a typical day looks like</div>
+            <div><span class="chip">G1</span> Is this bootcamp legitimate?</div>
+            <div><span class="chip">G2</span> Savings needed before full-time study</div>
+            <div><span class="chip">G3</span> Torn between fields, built nothing yet</div>
+            <div><span class="chip">G4</span> Prior seniority, starting at the bottom</div>
+          </div>
+        </div>
+        <div class="flow-note">No cross-cutting box here, unlike Salary's G9. Nothing found so far attaches across every stage the way "will I seem difficult" does for every stage of a negotiation.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 12 Facets and Where Each Leads</h2>
+        <p class="prompt-intro">Each card shows the question the answer currently ends on, and the facets that closer plausibly hands off to — read off the actual closing questions, not yet confirmed by a dead-end sweep the way Salary's edges were. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still <code>unreviewed</code>. Response-branch facets are their own cards further down, same convention as Salary — they live in the same stage's facet pool in code, just shown separately here since they answer a specific follow-up rather than opening the topic.</p>
+
+        <div class="stage-band"><span class="sb-id">Stage A</span><h3>Deciding whether, or which direction</h3><span class="sb-note">no prior career, no field settled</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S1</span><h4>No background, where do I begin?</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What drew you to tech in the first place?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip">S1a</span><span class="chip">G3</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S7</span><h4>Which field is right for me</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What kind of problems do you enjoy solving?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip">S7a</span><span class="chip">G3</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S8</span><h4>What a typical day looks like</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What role are you picturing?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip">S2</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G3</span><h4>Torn between fields, built nothing yet</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"Which of them have you actually tried building something in?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip">S3</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+
+        <div class="stage-band"><span class="sb-id">Stage B</span><h3>Translating a previous career</h3><span class="sb-note">real prior work experience in a different field — the distinguishing fact, whether or not the field is also still undecided</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S5</span><h4>Transferable skills, career changer</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What was your last role?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">G4</span><span class="chip">S2</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G4</span><h4>Prior seniority, starting at the bottom</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What kind of management or leadership did you actually do?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip">S2</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+
+        <div class="stage-band"><span class="sb-id">Stage C</span><h3>Choosing how to learn</h3><span class="sb-note">direction settled or not the live question — method is</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S2</span><h4>Self-teach vs bootcamp vs degree</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's your runway looking like, time and budget-wise?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S2a</span><span class="chip">G1</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G1</span><h4>Is this bootcamp legitimate?</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What's the one you're looking at telling you about their outcomes?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S2a</span><span class="chip">S4</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+
+        <div class="stage-band"><span class="sb-id">Stage D</span><h3>Actively executing a chosen plan</h3><span class="sb-note">wants a thing to use, not a decision to make</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S3</span><h4>Beginner-friendly languages</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"Which direction interests you more?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S6</span><span class="chip">S4</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S4</span><h4>Realistic time to job-ready</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What field are you targeting?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip">S6</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S6</span><h4>Free resources</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What area are you leaning toward?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip">S4</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G2</span><h4>Savings needed before full-time study</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What does your runway look like right now?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S2a</span><span class="chip">S6</span><span class="chip self">stays</span></div>
+          </div>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 1 · Step 2</div><h2 class="section-heading">Sort the existing answers into stages</h2>
-        <div class="scaffold">
-          <h4>How do Q1–8 divide up?</h4>
-          <p>Every answer belongs to at least one stage; some belong to several. This mapping is the coverage map — it decides which material the model is shown when someone is at that point, and nothing else.</p>
-          <p class="hint">A stage with only one or two answers behind it will produce thin, repetitive replies. That is the signal to draft more, not to merge the stage away.</p>
+        <div class="section-title">Area Flow · Response branches</div>
+        <h2 class="section-heading">What Happens After the Question <span class="st proposed">PROPOSED</span></h2>
+        <div class="banner info"><strong>Three dead ends found reading the closers above, not the full sweep Salary got.</strong> S1's closer assumes a passion-framed answer and has no branch for "I just want stable pay." S7's closer assumes she's tried something already. S2's closer asks about runway and has no branch for "very little of either." All three are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here. They live in their parent facet's stage pool (S1a and S7a in Stage A, S2a in Stage C), same as Salary's own response branches. More will surface once a full sweep or an area-tester pass is run against this area.</div>
+        <div class="facet-grid">
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S1a</span><h4>Motivation is money, not passion</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span></span></div>
+            <p class="closer">"What does 'stable and well-paying' look like to you specifically?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip">S2</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S7a</span><h4>Doesn't know what she'd enjoy yet</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S7</span></span></div>
+            <p class="closer">"What's the one field that comes up most when you imagine yourself working in tech?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip">G3</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S2a</span><h4>Very little time and money</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S2</span></span></div>
+            <p class="closer">"How much time can you actually protect each week, even if it's small?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip">S6</span></div>
+          </div>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 1 · Step 3</div><h2 class="section-heading">Find the dead ends</h2>
-        <div class="scaffold">
-          <h4>For each answer's closing question, what will people actually reply?</h4>
-          <p>Three or four realistic replies each. Mark the ones with no answer waiting — in Salary this found 16 dead ends out of 44 replies, including every branch of "they said no". A question that promises help and can't follow through is worse than not asking.</p>
-          <p class="hint">Drafted answers go in <code>botema-generated-examples.ts</code>, never straight into Otema's file, and stay <code>unreviewed</code> until she has seen them.</p>
+        <div class="section-title">Area Flow · Leaving</div><h2 class="section-heading">When to Suggest a Different Area</h2>
+        <p class="prompt-intro">The Flow C hand-off, triggered from inside the area rather than by the user asking.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>What's happening</th><th>What it actually means</th><th>Offer instead</th></tr></thead>
+            <tbody>
+              <tr><td>They start naming numbers, offers, or negotiating</td><td>They've moved past deciding whether/how to learn into pricing themselves for a role</td><td><strong>Area 9</strong> · Salary &amp; Negotiation</td></tr>
+              <tr><td>The blocker is self-doubt, not a decision — "I'm too old", "I'm not smart enough"</td><td>No amount of resource-listing or method advice touches a confidence problem</td><td><strong>Area 6</strong> · Confidence &amp; Imposter Syndrome</td></tr>
+              <tr><td>They ask about a master's, a specific postgraduate programme, or formal accreditation in depth</td><td>S2 covers the self-teach/bootcamp/degree choice at a high level; a real further-education decision needs its own depth</td><td><strong>Area 2</strong> · Further Education</td></tr>
+              <tr><td>They're already learning and start asking about CVs, applying, or interviews</td><td>They've left "getting started" and are now job-searching</td><td><strong>Area 7 / 8</strong> · Job Search &amp; Applications / Interview Preparation</td></tr>
+              <tr><td>They ask specifically for a person to talk to, not a resource</td><td>Otema's own S1 answer already points to peers and mentors as a signal — this is that need, named directly</td><td><strong>Area 4</strong> · Mentorship</td></tr>
+              <tr><td>Two turns with no new information, or a facet revisited with nothing added</td><td>The area is done, whether or not every facet was covered</td><td>Sum up and offer the remaining areas</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 1 · Step 4</div><h2 class="section-heading">Decide what leaves, and what searches</h2>
-        <div class="scaffold">
-          <h4>When should the coach suggest a different area?</h4>
-          <p>Name the cases where staying is the wrong answer — a missing precondition, a blocker that belongs elsewhere, a question this area simply cannot help with. Salary has five.</p>
-          <p class="hint">Then mark any facet <code>W</code> that needs the live web. Salary has three of fifteen. If your area has more than a couple, check whether the knowledge base has a gap that search would be papering over.</p>
+        <div class="section-title">Area Flow · To build</div><h2 class="section-heading">What This Needs</h2>
+        <div class="grid-2">
+          <div class="scope-card can">
+            <div class="scope-head">Already true</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Runs end-to-end in the local harness</strong><div class="example"><code>npm run coach -- --area=getting-started</code> — stage classification, facet selection, generation, all tested live, on both the 3-stage and 4-stage versions</div></div>
+              <div class="scope-item"><strong>Every answer ends in a question</strong><div class="example">All 12, real and drafted</div></div>
+              <div class="scope-item"><strong>The A/B boundary rule tested and confirmed</strong><div class="example">"I'm a teacher and want to switch into tech" correctly classified stage B, and correctly progressed to D once the questions turned concrete</div></div>
+              <div class="scope-item"><strong>5 scenarios written, sweep passes 5/5 clean</strong><div class="example"><code>scripts/scenarios/getting-started.mjs</code> — same 5-turn-minimum rule as Salary. Last clean run: 2026-08-21.</div></div>
+              <div class="scope-item"><strong>An invented-location guard, hardened</strong><div class="example"><span class="st changed">FIXED, 2026-08-19 → 2026-08-21</span> — added after the model volunteered "Ghana" and "local firms" with no location ever given, then hardened again once the same fabrication turned up surviving inside a closing question. See the banner above.</div></div>
+              <div class="scope-item"><strong>The missing-stage retry rate fixed</strong><div class="example"><span class="st changed">FIXED, 2026-08-19</span> — the required <code>stage</code> field was dropping on 2 of 4 turns in one run. Fixed by shortening the stage descriptions and doubling the token budget on retry; zero retries needed in the current clean sweep.</div></div>
+              <div class="scope-item"><strong>A repeated-opener guard, in code rather than just the prompt</strong><div class="example"><span class="st changed">NEW, 2026-08-21</span> — see the banner above. The prompt already listed every prior opener; the model still reused one with a different tail, so this is now also checked in code.</div></div>
+              <div class="scope-item"><strong>The stall-fallback bug fixed</strong><div class="example"><span class="st changed">FIXED, 2026-08-21</span> — a reply judged entirely repetitive was being shown in full anyway. See the banner above.</div></div>
+            </div>
+          </div>
+          <div class="scope-card cant">
+            <div class="scope-head">Doesn't exist yet</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Wired into the real edge function</strong><div class="example">Same gap as Salary — this only runs in the standalone harness, not <code>botema-coach.ts</code></div></div>
+              <div class="scope-item"><strong>A full dead-end sweep</strong><div class="example">Only 3 branches found so far, reading closers rather than running an area-tester pass the way Salary got 16</div></div>
+              <div class="scope-item"><strong>The figure-guard false-positive investigated</strong><div class="example">Flagged above — plain time ranges are being caught by a guard built for currency figures</div></div>
+              <div class="scope-item"><strong>The filler-opener instruction in the harness</strong><div class="example">Same known gap as Salary — <code>coach-local.mjs</code>'s system prompt is missing the "never start with 'Great question'" rule that <code>botema-coach.ts</code> has for real</div></div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 1 · Step 5</div><h2 class="section-heading">Run it before saying it's done</h2>
-        <div class="scaffold">
-          <h4><code>npm run coach</code>, five turns minimum</h4>
-          <p>Add the area to <code>STAGES</code> in <code>scripts/coach-local.mjs</code> and talk to it. One or two turns will make almost any area look fine; the problems — wrong stage, repetition, a conversation that stops leading anywhere — only show up over five.</p>
-          <p class="hint">Then add three scenarios to <code>scripts/coach-scenarios.mjs</code> so the behaviour is pinned and a later change can be diffed against it.</p>
+        <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">All Answers in Full</h2>
+        <p class="prompt-intro">The complete question and answer behind every facet above, in ID order. <span class="src real">OTEMA</span> answers are her real words from the questionnaire. <span class="src drafted">DRAFTED</span> answers are AI-written in her voice and <strong>unreviewed</strong> — not served to anyone until she has approved them.</p>
+        <div class="full-list">
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S1</span><h4>No background, where do I begin?</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">I have no tech background at all. Where do I even begin?</p>
+            <p class="ff-a">Ask yourself first — genuine interest, or just following the trend? Once that's clear, explore the areas that connect to what you already care about, and talk to people already in the field. What drew you to tech in the first place?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S2</span><h4>Self-teach vs bootcamp vs degree</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What is the difference between self-teaching and bootcamps and a computer science degree, which should I choose?</p>
+            <p class="ff-a">If you have the time and funds, I'd always advocate for a degree — but if not, start free online, then move into a guided bootcamp for structure and direction. Just don't trust anyone promising mastery in three months. What's your runway looking like, time and budget-wise?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S3</span><h4>Beginner-friendly languages</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What are the most beginner friendly programming languages to start with?</p>
+            <p class="ff-a">Python is the most beginner-friendly — it reads almost like plain English. HTML/CSS and JavaScript are what most people start with for web development instead. Which direction interests you more?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S4</span><h4>Realistic time to job-ready</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How long does it realistically take to be job ready in tech from scratch?</p>
+            <p class="ff-a">The three-month promise is a facade — realistically it's a year or two of focused self-study, or the length of a degree plus an internship. Start applying once you're half-ready and build projects alongside; the real learning happens on the job hunt. What field are you targeting?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S5</span><h4>Transferable skills, career changer</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">I'm switching careers from a completely non-tech field, what transferable skills do I have?</p>
+            <p class="ff-a">Whatever you did before transfers more than you'd think — tech is just a tool for solving problems, and your domain knowledge is the advantage. Someone from finance moving into fintech data science, or from customer service into UX, both carry real value in. What was your last role?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S6</span><h4>Free resources</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What free resources do you recommend for someone starting in tech today?</p>
+            <p class="ff-a">YouTube first, then freeCodeCamp, GeeksforGeeks, Coursera, or Harvard's courses through EdX — and don't forget Ascendency's own courses. What area are you leaning toward?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S7</span><h4>Which field is right for me</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I figure out which area of tech is right for me, development vs data vs UX vs cybersecurity?</p>
+            <p class="ff-a">Stay open at first — read and watch across a few fields, then build one small project in whichever pulls at you most. If solving its problems satisfies you, that's a sign; if it just frustrates you, pivot. What kind of problems do you enjoy solving?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S8</span><h4>What a typical day looks like</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What does a typical day look like for someone early in their tech career?</p>
+            <p class="ff-a">As a learner it's dedicated hours behind the screen on practice problems; once you're working, it's more standups, deadlines, and learning from teammates' code reviews. What role are you picturing?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">G4</span><h4>Prior seniority, starting at the bottom</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">I was a manager in my old field. Will I have to start at the bottom in tech?</p>
+            <p class="ff-a">On title and pay, mostly yes at first — that part's real, and I won't pretend otherwise. But not on how you're treated: a good team still leans on the judgement you already built, even while the job title says junior. Where I'd push back hard is a company that won't credit any of your experience just because it isn't technical — that's a red flag about them, not a fact about career changes in general. What kind of management or leadership did you actually do?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">G1</span><h4>Is this bootcamp legitimate?</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">How do I know if a bootcamp is actually legitimate, or just going to take my money?</p>
+            <p class="ff-a">Ask for outcomes, not promises: what percentage of the last three cohorts got a job within six months, and can they put you in touch with someone who finished it. Be wary of anything promising mastery in under three months, or one that won't show you a real placement number. In my experience the honest ones are upfront about how much work it actually is. What's the one you're looking at telling you about their outcomes?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">G2</span><h4>Savings needed before full-time study</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">How much money should I have saved before I try to learn full-time?</p>
+            <p class="ff-a">Aim for at least six months of living costs if you're not earning while you learn — the real risk isn't the learning, it's running out of runway before you're job-ready and taking the first thing that comes along out of panic. If you can't get to six months, learn part-time alongside work instead of quitting outright. What does your runway look like right now?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">G3</span><h4>Torn between fields, built nothing yet</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">I keep going back and forth between two or three fields and can't settle on one. Is that a problem?</p>
+            <p class="ff-a">Not yet — it's only a problem once it stops you actually building anything. Give yourself one small project in each field you're torn between, with a deadline, then let the work itself decide rather than thinking your way to an answer. Which of them have you actually tried building something in?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">S1a</span><h4>Motivation is money, not passion</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">Honestly I don't care about passion, I just want a stable job that pays well.</p>
+            <p class="ff-a">That's a completely fair reason to get into tech, and I'd rather you're honest about it than pretend otherwise. Wanting stability just means you should weight your choice toward fields with steady, high demand — like data or backend development — over ones that need more genuine enthusiasm to stick with, like open-source or research-heavy work. What does "stable and well-paying" look like to you specifically?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">S7a</span><h4>Doesn't know what she'd enjoy yet</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">I honestly don't know what kind of problems I enjoy solving — I haven't tried anything yet.</p>
+            <p class="ff-a">That's normal this early — you can't know yet what you haven't tried. Pick the field that sounds least boring on paper and give it one weekend project before judging it; the enjoyment question only becomes answerable once you're actually doing something, not thinking about doing it. What's the one field that comes up most when you imagine yourself working in tech?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">S2a</span><h4>Very little time and money</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">I have very little time and very little money to put toward this.</p>
+            <p class="ff-a">Then self-teaching is your realistic starting point, not a bootcamp or a degree — free resources, an hour or two a day, no cost pressure forcing you to rush. It will take longer than someone with more runway, and that's fine; slow and finished beats fast and abandoned. How much time can you actually protect each week, even if it's small?</p>
+          </div>
         </div>
       </div>
     </div>

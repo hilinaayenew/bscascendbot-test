@@ -51,6 +51,95 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
 
   adviseOnCareerTopic: [
 
+    // ── Area 1 · Getting Started ────────────────────────────────────────────
+    // Three gaps identified 2026-08-17 filling out the thin "choosing how to
+    // learn" and "executing" stages, plus three dead-end follow-ups found by
+    // reading Q1/Q2/Q7's closing questions the way Salary's 16 were found.
+    // G4 added 2026-08-19 when the area moved from 3 stages to 4: pulling
+    // career-changer content (S5) into its own stage left it with only one
+    // real answer behind it — the same "thin stage" signal that meant draft
+    // more, not merge it away.
+    // First pass, not the exhaustive treatment Salary got — more will surface
+    // once this runs through `npm run coach` for real.
+
+    {
+      question: "How do I know if a bootcamp is actually legitimate, or just going to take my money?",
+      answer:
+        "Ask for outcomes, not promises: what percentage of the last three cohorts got a job within six months, and can they put you in touch with someone who finished it. Be wary of anything promising mastery in under three months, or one that won't show you a real placement number. In my experience the honest ones are upfront about how much work it actually is. What's the one you're looking at telling you about their outcomes?",
+      topic: "getting_started",
+      area: 1,
+      facet: "G1",
+      gap: "Evaluating whether a specific bootcamp is worth paying for",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-17",
+    },
+
+    {
+      question: "How much money should I have saved before I try to learn full-time?",
+      answer:
+        "Aim for at least six months of living costs if you're not earning while you learn — the real risk isn't the learning, it's running out of runway before you're job-ready and taking the first thing that comes along out of panic. If you can't get to six months, learn part-time alongside work instead of quitting outright. What does your runway look like right now?",
+      topic: "getting_started",
+      area: 1,
+      facet: "G2",
+      gap: "Financial runway needed before going full-time on self-study",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-17",
+    },
+
+    {
+      question: "I keep going back and forth between two or three fields and can't settle on one. Is that a problem?",
+      answer:
+        "Not yet — it's only a problem once it stops you actually building anything. Give yourself one small project in each field you're torn between, with a deadline, then let the work itself decide rather than thinking your way to an answer. Which of them have you actually tried building something in?",
+      topic: "getting_started",
+      area: 1,
+      facet: "G3",
+      gap: "Indecision between fields becoming a blocker on its own",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-17",
+    },
+
+    {
+      question: "I was a manager in my old field. Will I have to start at the bottom in tech?",
+      answer:
+        "On title and pay, mostly yes at first — that part's real, and I won't pretend otherwise. But not on how you're treated: a good team still leans on the judgement you already built, even while the job title says junior. Where I'd push back hard is a company that won't credit any of your experience just because it isn't technical — that's a red flag about them, not a fact about career changes in general. What kind of management or leadership did you actually do?",
+      topic: "getting_started",
+      area: 1,
+      facet: "G4",
+      gap: "Career changer with prior seniority worried about starting over at the bottom",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-19",
+    },
+
+    {
+      question: "Honestly I don't care about passion, I just want a stable job that pays well.",
+      answer:
+        "That's a completely fair reason to get into tech, and I'd rather you're honest about it than pretend otherwise. Wanting stability just means you should weight your choice toward fields with steady, high demand — like data or backend development — over ones that need more genuine enthusiasm to stick with, like open-source or research-heavy work. What does \"stable and well-paying\" look like to you specifically?",
+      topic: "getting_started", area: 1, facet: "S1a", respondsTo: "S1",
+      userSaid: "Honestly I just want a stable, well-paying job, not really passion",
+      gap: "Motivation is purely financial, not interest-driven — the real answer shouldn't moralise about that",
+      reviewStatus: "unreviewed", drafted: "2026-08-17",
+    },
+
+    {
+      question: "I honestly don't know what kind of problems I enjoy solving — I haven't tried anything yet.",
+      answer:
+        "That's normal this early — you can't know yet what you haven't tried. Pick the field that sounds least boring on paper and give it one weekend project before judging it; the enjoyment question only becomes answerable once you're actually doing something, not thinking about doing it. What's the one field that comes up most when you imagine yourself working in tech?",
+      topic: "getting_started", area: 1, facet: "S7a", respondsTo: "S7",
+      userSaid: "I don't know, I haven't tried anything yet",
+      gap: "No basis yet to answer 'what problems do you enjoy solving'",
+      reviewStatus: "unreviewed", drafted: "2026-08-17",
+    },
+
+    {
+      question: "I have very little time and very little money to put toward this.",
+      answer:
+        "Then self-teaching is your realistic starting point, not a bootcamp or a degree — free resources, an hour or two a day, no cost pressure forcing you to rush. It will take longer than someone with more runway, and that's fine; slow and finished beats fast and abandoned. How much time can you actually protect each week, even if it's small?",
+      topic: "getting_started", area: 1, facet: "S2a", respondsTo: "S2",
+      userSaid: "I have very little time and very little money",
+      gap: "Severely constrained runway — the method decision needs a real answer, not just encouragement",
+      reviewStatus: "unreviewed", drafted: "2026-08-17",
+    },
+
     // ── Area 9 · Salary & Negotiation ─────────────────────────────────────
     // Four gaps identified 2026-08-14: none of these are in the 57-question
     // bank, and neither KNOWLEDGE_BASE.salary nor her real examples cover them.

@@ -965,7 +965,7 @@
     <div class="sub-tab-bar">
       <button class="sub-tab-btn active" onclick="switchSubTab('area9', this)"><span class="sn">09</span>Salary &amp; Negotiation</button>
       <button class="sub-tab-btn" onclick="switchSubTab('area1', this)"><span class="sn">01</span>Getting Started</button>
-      <button class="sub-tab-btn" onclick="switchSubTab('area6', this)"><span class="sn">06</span>Confidence <span class="todo">TO WRITE</span></button>
+      <button class="sub-tab-btn" onclick="switchSubTab('area6', this)"><span class="sn">06</span>Confidence</button>
     </div>
 
     <div id="sub-area9" class="sub-panel active">
@@ -1920,56 +1920,184 @@
     <div id="sub-area6" class="sub-panel">
       <div class="section">
         <div class="section-title">Area Flow · Area 6</div>
-        <h2 class="section-heading">Inside Confidence &amp; Imposter Syndrome <span class="st proposed">TO WRITE</span></h2>
-        <p class="prompt-intro">For Hilina. Salary &amp; Negotiation is worked through in full on the first tab — use it as the pattern, not as a template to copy. <strong>It is the one most likely to break the model — and better to find that out on purpose.</strong></p>
+        <h2 class="section-heading">Inside Confidence &amp; Imposter Syndrome <span class="st proposed">PROPOSED</span></h2>
+        <p class="prompt-intro">Spec written before any code, per the target-spec order: this section is the design to build against, not a record of what exists. Nothing below is implemented yet — no area config, no scenarios, no drafted answers, no live testing. Otema's real material is 5 answers (Q36–40 in the training bank), all currently grouped under one function, <code>addressMindsetChallenge</code>, in <code>botema-examples.ts</code>.</p>
 
         <div class="banner spec">
-          <strong>Do the stages first, and do them honestly.</strong> Everything else follows from them. Salary's three stages are <em>situational</em> — before an offer, offer on the table, already in the job — because that is what actually separates one salary conversation from another. Confidence almost certainly does not have situational stages. The stages here may be about what the feeling attaches to — the work, the room, or the person — and if the stage idea fails anywhere, it fails here first. That is worth knowing early. If the stages are wrong, no amount of good content will rescue the area.
+          <strong>Two stages, not situational: what the self-doubt is doing, not what triggered it.</strong> <strong>A</strong> — an internal narrative being processed: comparing yourself to others, discounting your own wins, not feeling like you belong. <strong>B</strong> — self-doubt that has stalled a concrete action: not speaking up, not applying, not putting yourself forward. The distinguishing question is whether there's a decision sitting behind it. A is "I feel this way", B is "I'm not doing this because I feel this way" — and B is where the coach's job changes from processing a feeling to unsticking a choice.
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 6 · Step 1</div><h2 class="section-heading">Name the stages</h2>
-        <div class="scaffold">
-          <h4>What separates one conversation in this area from another?</h4>
-          <p>Two to four stages. Each needs a description that names <em>what distinguishes it from the others</em>, not just what it is about — the salary classifier flipped between two stages until the descriptions said "prospective employer" versus "already work there".</p>
-          <p class="hint">Write each as: who the person is, what has already happened to them, and the giveaway words that place them here.</p>
+        <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area <span class="st proposed">PROPOSED</span></h2>
+        <div class="stage-map">
+          <svg viewBox="0 0 900 180" role="img" aria-label="Two stages. Processing the narrative and A stalled action. An edge runs from the narrative stage to the stalled-action stage when the feeling is named as the reason for not doing something, and a return edge runs back when the block resolves and a new feeling surfaces.">
+            <defs>
+              <marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+              </marker>
+            </defs>
+            <rect class="sm-box" x="60" y="35" width="230" height="90" rx="9" />
+            <text class="sm-label" x="75" y="58">STAGE A</text>
+            <text class="sm-title" x="75" y="80">Processing the narrative</text>
+            <text class="sm-sub" x="75" y="100">S1 · S2 · S5 · G1</text>
+            <rect class="sm-box" x="590" y="35" width="230" height="90" rx="9" />
+            <text class="sm-label" x="605" y="58">STAGE B</text>
+            <text class="sm-title" x="605" y="80">A stalled action</text>
+            <text class="sm-sub" x="605" y="100">S3 · S4 · G2</text>
+            <g style="color:var(--accent)">
+              <line class="sm-edge" x1="292" y1="65" x2="588" y2="65" marker-end="url(#ah6)" />
+              <line class="sm-edge" x1="588" y1="100" x2="292" y2="100" marker-end="url(#ah6)" />
+            </g>
+            <text class="sm-edge-label" x="330" y="55">names it as why she isn't doing something</text>
+            <text class="sm-edge-label" x="330" y="122">the block lifts, a different feeling surfaces</text>
+          </svg>
+        </div>
+        <div class="key">
+          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's five real answers, numbered in question-bank order (S1–S5 = Q36–40). <span class="chip">G</span> is a proposed gap — named here, not yet drafted.</p>
+          <div class="key-grid">
+            <div><span class="chip">S1</span> Don't feel like I belong (Q36)</div>
+            <div><span class="chip">S2</span> Feel less competent than colleagues (Q37)</div>
+            <div><span class="chip">S3</span> Confidence speaking up in meetings (Q38)</div>
+            <div><span class="chip">S4</span> Holding back from applying, underqualified (Q39)</div>
+            <div><span class="chip">S5</span> Can't internalise my own achievements (Q40)</div>
+            <div><span class="chip">G1</span> Discounting other people's praise as politeness or luck</div>
+            <div><span class="chip">G2</span> Declining a stretch opportunity — a project, a talk, a promotion — before it's even offered properly</div>
+          </div>
+        </div>
+        <div class="flow-note">No cross-cutting facet proposed yet. Worth watching for one once this is tested live — Salary's needed one ("will I seem difficult") and this area's subject matter makes a similar constant plausible.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 7 Facets and Where Each Might Lead <span class="st proposed">PROPOSED</span></h2>
+        <p class="prompt-intro">Edges here are a guess, not yet read off real closing questions the way Getting Started's were — Otema's five real answers all end on a question, so the closers exist, but nothing has been tested live to see what people actually say back. Treat the edges as provisional. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> marks a proposed gap with no text written yet.</p>
+
+        <div class="stage-band"><span class="sb-id">Stage A</span><h3>Processing the narrative</h3><span class="sb-note">a feeling being worked through, no action stalled on it yet</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S1</span><h4>Don't feel like I belong in tech</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's making you feel this way right now?"</p>
+            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S2</span><span class="chip">G1</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S2</span><h4>Feel less competent than colleagues</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's bringing this up right now?"</p>
+            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S1</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S5</span><h4>Can't internalise my own achievements</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What did you achieve recently that you shrugged off?"</p>
+            <div class="edges"><span class="elabel">might lead to</span><span class="chip">G1</span><span class="chip">S2</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G1</span><h4>Discounting other people's praise</h4><span class="src drafted">PROPOSED</span></div>
+            <p class="closer">proposed: something like "what did they actually say, in their words?"</p>
+            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+
+        <div class="stage-band"><span class="sb-id">Stage B</span><h3>A stalled action</h3><span class="sb-note">the self-doubt is the stated reason something isn't happening</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S3</span><h4>Confidence speaking up in meetings</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's holding you back in the room?"</p>
+            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S4</span><span class="chip">G2</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S4</span><h4>Holding back from applying, underqualified</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What roles have you been holding back from?"</p>
+            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S3</span><span class="chip">G2</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G2</span><h4>Declining a stretch opportunity before it's properly offered</h4><span class="src drafted">PROPOSED</span></div>
+            <p class="closer">proposed: something like "what did you actually say when it came up?"</p>
+            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S3</span><span class="chip">S4</span><span class="chip self">stays</span></div>
+          </div>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 6 · Step 2</div><h2 class="section-heading">Sort the existing answers into stages</h2>
-        <div class="scaffold">
-          <h4>How do Q36–40 divide up?</h4>
-          <p>Every answer belongs to at least one stage; some belong to several. This mapping is the coverage map — it decides which material the model is shown when someone is at that point, and nothing else.</p>
-          <p class="hint">A stage with only one or two answers behind it will produce thin, repetitive replies. That is the signal to draft more, not to merge the stage away.</p>
+        <div class="section-title">Area Flow · Response branches</div>
+        <h2 class="section-heading">The One Branch Worth Naming Before Any Testing <span class="st proposed">PROPOSED</span></h2>
+        <div class="banner info"><strong>Not a dead end found by testing — a distinction worth building in from the start.</strong> S1's and S3's closers both invite an answer that isn't a confidence problem at all: "everyone in the room is a man and talks over me every time" or "I'm the only one who gets asked to justify my numbers." <code>BOTEMA_VALUES</code> already has a pattern for exactly this shape — <code>STAND_WITH_HER</code> validates a documented, common experience of discrimination with a fact before advising, rather than coaching a structural problem as if it were a personal one. This area needs the same move named as its own response branch, not left to the general instruction to carry alone — that instruction has already had to become code once elsewhere in this coach.</div>
+        <div class="facet-grid">
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S1a</span><h4>The reason is structural, not internal</h4><span class="src drafted">PROPOSED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span><span class="chip">S3</span></span></div>
+            <p class="closer">proposed: validate first, then ask what she wants to do about the specific pattern rather than about how she feels</p>
+            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S1</span><span class="chip">S3</span></div>
+          </div>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 6 · Step 3</div><h2 class="section-heading">Find the dead ends</h2>
-        <div class="scaffold">
-          <h4>For each answer's closing question, what will people actually reply?</h4>
-          <p>Three or four realistic replies each. Mark the ones with no answer waiting — in Salary this found 16 dead ends out of 44 replies, including every branch of "they said no". A question that promises help and can't follow through is worse than not asking.</p>
-          <p class="hint">Drafted answers go in <code>botema-generated-examples.ts</code>, never straight into Otema's file, and stay <code>unreviewed</code> until she has seen them.</p>
+        <div class="section-title">Area Flow · Leaving</div><h2 class="section-heading">When to Suggest a Different Area <span class="st proposed">PROPOSED</span></h2>
+        <p class="prompt-intro">Proposed, not yet tested. The Flow C hand-off, triggered from inside the area rather than by the user asking.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>What's happening</th><th>What it actually means</th><th>Offer instead</th></tr></thead>
+            <tbody>
+              <tr><td>The stall resolves into a live negotiation or pay question — "how much should I ask for", "will I seem difficult"</td><td>The confidence question has become a pricing question</td><td><strong>Area 9</strong> · Salary &amp; Negotiation</td></tr>
+              <tr><td>Exhaustion, burnout, or needing a break becomes the main subject rather than self-doubt</td><td>A wellbeing problem wearing a confidence problem's clothes</td><td><strong>Area 5</strong> · Wellbeing &amp; Balance</td></tr>
+              <tr><td>They're ready to act and start asking about the CV, application, or interview itself</td><td>The stall has lifted; the live question is now mechanical, not emotional</td><td><strong>Area 7 / 8</strong> · Job Search &amp; Applications / Interview Preparation</td></tr>
+              <tr><td>They ask specifically for a person to talk to, not a technique</td><td>A named need for a mentor rather than more coaching on the feeling</td><td><strong>Area 4</strong> · Mentorship</td></tr>
+              <tr><td>Two turns with no new information, or a facet revisited with nothing added</td><td>The area is done, whether or not every facet was covered</td><td>Sum up and offer the remaining areas</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 6 · Step 4</div><h2 class="section-heading">Decide what leaves, and what searches</h2>
-        <div class="scaffold">
-          <h4>When should the coach suggest a different area?</h4>
-          <p>Name the cases where staying is the wrong answer — a missing precondition, a blocker that belongs elsewhere, a question this area simply cannot help with. Salary has five.</p>
-          <p class="hint">Then mark any facet <code>W</code> that needs the live web. Salary has three of fifteen. If your area has more than a couple, check whether the knowledge base has a gap that search would be papering over.</p>
+        <div class="section-title">Area Flow · To build</div><h2 class="section-heading">What This Needs <span class="st proposed">PROPOSED</span></h2>
+        <div class="grid-2">
+          <div class="scope-card can">
+            <div class="scope-head">Already true</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Otema's 5 real answers exist and are usable</strong><div class="example">Q36–40, currently all under one function key in <code>botema-examples.ts</code>; sorted into stages above</div></div>
+              <div class="scope-item"><strong>A stage split, reasoned through and confirmed</strong><div class="example">Two stages: an internal narrative being processed, versus self-doubt that has stalled a concrete action</div></div>
+            </div>
+          </div>
+          <div class="scope-card cant">
+            <div class="scope-head">Doesn't exist yet</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>An area config</strong><div class="example"><code>scripts/areas/confidence.mjs</code> — the coverage map above, written into code</div></div>
+              <div class="scope-item"><strong>G1 and G2 drafted</strong><div class="example">Named as concepts above, not yet written in Otema's voice into <code>botema-generated-examples.ts</code></div></div>
+              <div class="scope-item"><strong>S1a drafted</strong><div class="example">The structural-vs-internal response branch, named above but not written</div></div>
+              <div class="scope-item"><strong>Any live testing at all</strong><div class="example">Nothing here has talked to gpt-5-nano yet — the whole point of writing the spec first is to have something concrete to test against, not to have tested it</div></div>
+              <div class="scope-item"><strong>5 scenarios</strong><div class="example">Including one built specifically to probe the A/B boundary, and one built to trigger S1a</div></div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area 6 · Step 5</div><h2 class="section-heading">Run it before saying it's done</h2>
-        <div class="scaffold">
-          <h4><code>npm run coach</code>, five turns minimum</h4>
-          <p>Add the area to <code>STAGES</code> in <code>scripts/coach-local.mjs</code> and talk to it. One or two turns will make almost any area look fine; the problems — wrong stage, repetition, a conversation that stops leading anywhere — only show up over five.</p>
-          <p class="hint">Then add three scenarios to <code>scripts/coach-scenarios.mjs</code> so the behaviour is pinned and a later change can be diffed against it.</p>
+        <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">Otema's 5 Real Answers <span class="st proposed">PROPOSED</span></h2>
+        <p class="prompt-intro">Everything Otema actually said for this area, in question-bank order. No drafted answers exist yet — <span class="src drafted">PROPOSED</span> facets above are concepts, not text.</p>
+        <div class="full-list">
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S1</span><h4>Don't feel like I belong in tech</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">I constantly feel like I don't belong in tech.</p>
+            <p class="ff-a">Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space? Talk to a mentor or supervisor who can help you navigate either. What's making you feel this way right now?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S2</span><h4>Feel less competent than colleagues</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I handle moments when I feel less competent than my colleagues?</p>
+            <p class="ff-a">You're likely comparing their output to yours without seeing their struggles — that's often imposter syndrome talking, not reality. Shadow someone you admire and ask about their process; you might realise you're not doing as badly as you think. What's bringing this up right now?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S3</span><h4>Confidence speaking up in meetings</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I build confidence speaking up in meetings or presenting my work?</p>
+            <p class="ff-a">Know your subject well enough to back it up when challenged — that matters more than being the most vocal in the room. Then just start small: one comment in a team discussion, done afraid if needed. What's holding you back in the room?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S4</span><h4>Holding back from applying, underqualified</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I stop holding myself back from applying to roles I feel underqualified for?</p>
+            <p class="ff-a">Apply anyway — job descriptions are rarely even half of what the role actually turns out to be. Start with roles slightly below your level to build the confidence to reach higher. What roles have you been holding back from?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S5</span><h4>Can't internalise my own achievements</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I actually internalise my achievements instead of brushing them off?</p>
+            <p class="ff-a">Write your wins down as they happen, no matter how small, and refer back to them before interviews. When you catch yourself deflecting praise, try "thank you, that took real work" instead of brushing it off. What did you achieve recently that you shrugged off?</p>
+          </div>
         </div>
       </div>
     </div>

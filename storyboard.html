@@ -1609,34 +1609,14 @@
       <div class="section">
         <div class="section-title">Area Flow · Area 1</div>
         <h2 class="section-heading">Inside Getting Started <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">First pass through the Salary pattern, done 2026-08-17, reworked from 3 stages to 4 on 2026-08-19. Same non-router shape: one classification call places the user in a stage, the stage scopes which of Otema's answers get injected, the model writes the reply. <strong>This is the busiest area — most people arrive here first — but this pass is still deliberately narrower than Salary's: fewer drafted answers, no full dead-end sweep yet, scenario sweeps run rather than an area-tester pass.</strong> Several sweeps run 2026-08-19 through 2026-08-21 chasing every real failure down to a code fix rather than a reworded prompt — the current sweep passes 5/5 clean. Treat the stage model and the fixes below as solid; treat the coverage itself (dead ends, drafted-answer depth) as still a first draft.</p>
+        <p class="prompt-intro">One classification call per message places the user in one of four stages; the stage scopes which of Otema's answers, plus a small set of drafted gap-fillers, the model is shown; the model writes the reply from that material. Not a router — the edges recorded below are a coverage map read off actual closing questions, never consulted to decide what to say. <strong>This is the busiest area — most people arrive here first.</strong> Current status: runs end-to-end in the local harness, all 5 scenarios passing as of 2026-08-21; not yet wired into the live edge function, and no full dead-end sweep has been run against it.</p>
 
         <div class="banner spec">
-          <strong>The stages are NOT situational, on purpose — and not purely "how far along" either.</strong> Salary's three stages are situational — before an offer, offer on the table, already in the job — because that's what actually separates one salary conversation from another. Getting Started doesn't have an external situation like that. The first pass split purely on how much had been decided (deciding → choosing method → executing), but that lumped a career changer's "how does my past count" question in with a first-timer's method choice — genuinely different material, not just a different point on the same line. So <strong>who they are</strong> now gets its own stage, alongside <strong>how far along</strong> they are:
+          <strong>The stages split on two axes: how far along someone is, and who they are.</strong> A pure how-far-along split (deciding → choosing method → executing) lumped a career changer's "how does my past count" question in with a first-timer's method choice — genuinely different material, not just a different point on the same line. So <strong>who they are</strong> gets its own stage too, alongside <strong>how far along</strong> they are:
           <br><br>
           <strong>A</strong> — no prior career, hasn't settled on a direction · <strong>B</strong> — has a prior career in a different field, working out how it translates · <strong>C</strong> — direction settled, deciding HOW to learn · <strong>D</strong> — method chosen, wants concrete execution detail.
           <br><br>
           The known risk with this split: A and B can blur when someone has a prior career AND is still field-unsure. The rule adopted is that the prior career wins — B is about background, not certainty — and that's exactly what scenario 02 in the test sweep is built to probe.
-        </div>
-
-        <div class="banner info">
-          <strong>A harness bug found and fixed building this area.</strong> The stage-classification tool schema in <code>scripts/coach-local.mjs</code> had Salary's own wording hardcoded into its top-level description and its "leaving" definition ("Decide which stage of the Salary &amp; Negotiation area…", "not about their pay at all…"). That directly contradicted the system prompt for every other area, and on Getting Started's very first test turn it caused gpt-5-nano to drop the required <code>stage</code> field entirely — crashing the harness with <code>TypeError: Cannot read properties of undefined (reading 'facets')</code> instead of speaking. Fixed two ways: the hardcoded text now reads from <code>AREA.name</code> generically, and a missing/invalid stage now retries once and then speaks a fallback line rather than throwing — same "retry, then speak, never throw" pattern already used for the null-tool-call and empty-content cases in that file.
-          <br><br>
-          <strong>A second generalization, found moving to 4 stages:</strong> the same file also hardcoded the stage enum itself to exactly <code>["A","B","C","leaving"]</code>, and separately hardcoded three description lines (<code>STAGES.A</code>/<code>.B</code>/<code>.C</code>) rather than reading whatever stages the area actually defines. Both now build from <code>Object.keys(STAGES)</code>, so an area can define 2 to 4 stages without touching the harness. Worth carrying over first, whenever Confidence or any later area gets built.
-        </div>
-
-        <div class="banner info">
-          <strong>Three more structural bugs found and fixed chasing a clean sweep, 2026-08-21.</strong> All three showed up as real conversation failures, not a matter of phrasing preference:
-          <br><br>
-          <strong>1. Openers repeating despite the prompt already listing every one used so far.</strong> Turn 1 opened "That back-and-forth is normal, not a failure"; turn 2 opened "That back-and-forth is real and okay" — a different tail on the same opening clause, which satisfies the instruction's literal "different first words" while missing its point entirely. A prompt reminder had already failed once on this exact shape of problem (the freelance-rate case, see the guarantees note below). Second failure, so per the standing rule it got a check instead of a third reword: <code>stripRepeatedOpener()</code> compares the first four words of the new reply against every prior reply's opener — the same key <code>noRepeatedOpeners</code> already used in the test — and drops the sentence if it matches.
-          <br><br>
-          <strong>2. The invented-location guard had a hole for questions.</strong> It exempted any sentence ending in "?", on the theory that a clarifying question isn't a false assertion — but "are you aiming for local Ghana roles or remote-for-abroad opportunities?" presumes Ghana exactly as much as stating it outright would, and it survived a full sweep run this way, unflagged by any check. No exemption for questions now.
-          <br><br>
-          <strong>3. A fully-repetitive reply was still shown in full while being counted as a stall.</strong> <code>dropRepeatedSentences()</code> correctly recognised one reply as entirely repetition and returned an empty string — but the line reading it fell back to the untouched pre-dedup text whenever that happened, so the exact repeated SQL/Python plan from the turn before got shown again anyway. Counting the stall while still displaying the thing the stall exists to prevent defeated the check. A fully-repetitive reply now falls through to the area's own closing question instead.
-        </div>
-
-        <div class="banner info">
-          <strong>Also observed, not yet root-caused:</strong> <code>stripImplausibleFigures</code> fired on replies containing plain time ranges like "4–6 hours this week" — content with no currency or salary figure in it at all. That guard was built and tested against Salary's currency/pay-period bugs specifically; it may be pattern-matching numeric ranges too broadly outside that context. Worth checking before trusting it generically across every area.
         </div>
       </div>
 
@@ -1701,12 +1681,12 @@
             <div><span class="chip">G4</span> Prior seniority, starting at the bottom</div>
           </div>
         </div>
-        <div class="flow-note">No cross-cutting box here, unlike Salary's G9. Nothing found so far attaches across every stage the way "will I seem difficult" does for every stage of a negotiation.</div>
+        <div class="flow-note">No cross-cutting facet found yet. Nothing so far attaches across every stage the way a single universal worry might.</div>
       </div>
 
       <div class="section">
         <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 12 Facets and Where Each Leads</h2>
-        <p class="prompt-intro">Each card shows the question the answer currently ends on, and the facets that closer plausibly hands off to — read off the actual closing questions, not yet confirmed by a dead-end sweep the way Salary's edges were. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still <code>unreviewed</code>. Response-branch facets are their own cards further down, same convention as Salary — they live in the same stage's facet pool in code, just shown separately here since they answer a specific follow-up rather than opening the topic.</p>
+        <p class="prompt-intro">Each card shows the question the answer currently ends on, and the facets that closer plausibly hands off to — read off the actual closing questions, not yet confirmed by a full dead-end sweep. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still <code>unreviewed</code>. Response-branch facets are their own cards further down; they live in the same stage's facet pool in code, just shown separately here since they answer a specific follow-up rather than opening the topic.</p>
 
         <div class="stage-band"><span class="sb-id">Stage A</span><h3>Deciding whether, or which direction</h3><span class="sb-note">no prior career, no field settled</span></div>
         <div class="facet-grid">
@@ -1788,7 +1768,7 @@
       <div class="section">
         <div class="section-title">Area Flow · Response branches</div>
         <h2 class="section-heading">What Happens After the Question <span class="st proposed">PROPOSED</span></h2>
-        <div class="banner info"><strong>Three dead ends found reading the closers above, not the full sweep Salary got.</strong> S1's closer assumes a passion-framed answer and has no branch for "I just want stable pay." S7's closer assumes she's tried something already. S2's closer asks about runway and has no branch for "very little of either." All three are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here. They live in their parent facet's stage pool (S1a and S7a in Stage A, S2a in Stage C), same as Salary's own response branches. More will surface once a full sweep or an area-tester pass is run against this area.</div>
+        <div class="banner info"><strong>Three dead ends found reading the closers above, not from a full sweep.</strong> S1's closer assumes a passion-framed answer and has no branch for "I just want stable pay." S7's closer assumes she's tried something already. S2's closer asks about runway and has no branch for "very little of either." All three are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here. They live in their parent facet's stage pool (S1a and S7a in Stage A, S2a in Stage C). More will surface once a full sweep or an area-tester pass is run against this area.</div>
         <div class="facet-grid">
           <div class="facet drafted">
             <div class="facet-top"><span class="facet-id">S1a</span><h4>Motivation is money, not passion</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span></span></div>
@@ -1835,20 +1815,20 @@
               <div class="scope-item"><strong>Runs end-to-end in the local harness</strong><div class="example"><code>npm run coach -- --area=getting-started</code> — stage classification, facet selection, generation, all tested live, on both the 3-stage and 4-stage versions</div></div>
               <div class="scope-item"><strong>Every answer ends in a question</strong><div class="example">All 12, real and drafted</div></div>
               <div class="scope-item"><strong>The A/B boundary rule tested and confirmed</strong><div class="example">"I'm a teacher and want to switch into tech" correctly classified stage B, and correctly progressed to D once the questions turned concrete</div></div>
-              <div class="scope-item"><strong>5 scenarios written, sweep passes 5/5 clean</strong><div class="example"><code>scripts/scenarios/getting-started.mjs</code> — same 5-turn-minimum rule as Salary. Last clean run: 2026-08-21.</div></div>
-              <div class="scope-item"><strong>An invented-location guard, hardened</strong><div class="example"><span class="st changed">FIXED, 2026-08-19 → 2026-08-21</span> — added after the model volunteered "Ghana" and "local firms" with no location ever given, then hardened again once the same fabrication turned up surviving inside a closing question. See the banner above.</div></div>
+              <div class="scope-item"><strong>5 scenarios written, sweep passes 5/5 clean</strong><div class="example"><code>scripts/scenarios/getting-started.mjs</code> — five-turn conversations. Last clean run: 2026-08-21.</div></div>
+              <div class="scope-item"><strong>An invented-location guard, hardened</strong><div class="example"><span class="st changed">FIXED, 2026-08-19 → 2026-08-21</span> — added after the model volunteered "Ghana" and "local firms" with no location ever given; hardened again after the same fabrication survived inside a closing question the guard was exempting.</div></div>
               <div class="scope-item"><strong>The missing-stage retry rate fixed</strong><div class="example"><span class="st changed">FIXED, 2026-08-19</span> — the required <code>stage</code> field was dropping on 2 of 4 turns in one run. Fixed by shortening the stage descriptions and doubling the token budget on retry; zero retries needed in the current clean sweep.</div></div>
-              <div class="scope-item"><strong>A repeated-opener guard, in code rather than just the prompt</strong><div class="example"><span class="st changed">NEW, 2026-08-21</span> — see the banner above. The prompt already listed every prior opener; the model still reused one with a different tail, so this is now also checked in code.</div></div>
-              <div class="scope-item"><strong>The stall-fallback bug fixed</strong><div class="example"><span class="st changed">FIXED, 2026-08-21</span> — a reply judged entirely repetitive was being shown in full anyway. See the banner above.</div></div>
+              <div class="scope-item"><strong>A repeated-opener guard, in code rather than just the prompt</strong><div class="example"><span class="st changed">NEW, 2026-08-21</span> — the prompt already listed every prior opener the model had used; it still reused one with a different tail ("That back-and-forth is normal, not a failure" → "...is real and okay"), so this is now also checked in code.</div></div>
+              <div class="scope-item"><strong>The stall-fallback bug fixed</strong><div class="example"><span class="st changed">FIXED, 2026-08-21</span> — a reply judged entirely repetitive was still shown in full because the code fell back to the pre-dedup text; now it falls through to the area's closing question instead.</div></div>
             </div>
           </div>
           <div class="scope-card cant">
             <div class="scope-head">Doesn't exist yet</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>Wired into the real edge function</strong><div class="example">Same gap as Salary — this only runs in the standalone harness, not <code>botema-coach.ts</code></div></div>
-              <div class="scope-item"><strong>A full dead-end sweep</strong><div class="example">Only 3 branches found so far, reading closers rather than running an area-tester pass the way Salary got 16</div></div>
-              <div class="scope-item"><strong>The figure-guard false-positive investigated</strong><div class="example">Flagged above — plain time ranges are being caught by a guard built for currency figures</div></div>
-              <div class="scope-item"><strong>The filler-opener instruction in the harness</strong><div class="example">Same known gap as Salary — <code>coach-local.mjs</code>'s system prompt is missing the "never start with 'Great question'" rule that <code>botema-coach.ts</code> has for real</div></div>
+              <div class="scope-item"><strong>Wired into the real edge function</strong><div class="example">This only runs in the standalone harness, not <code>botema-coach.ts</code></div></div>
+              <div class="scope-item"><strong>A full dead-end sweep</strong><div class="example">Only 3 branches found so far, reading closers rather than running a full tester pass</div></div>
+              <div class="scope-item"><strong>The figure-guard false-positive investigated</strong><div class="example"><code>stripImplausibleFigures</code> fires on plain time ranges like "4–6 hours this week" — content with no currency figure in it at all. Built for currency/pay-period bugs; may be pattern-matching numeric ranges too broadly here.</div></div>
+              <div class="scope-item"><strong>The filler-opener instruction in the harness</strong><div class="example"><code>coach-local.mjs</code>'s system prompt is missing the "never start with 'Great question'" rule that the live edge function has for real</div></div>
             </div>
           </div>
         </div>

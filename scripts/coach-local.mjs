@@ -62,25 +62,58 @@ const DRY = process.argv.includes("--dry") || !AZURE.endpoint || !AZURE.apiKey;
 
 const unq = (s) => s.replace(/\\"/g, '"').replace(/\\n/g, "\n");
 
-function loadReal(topic) {
+// Most areas' real answers share one topic tag, so matching on AREA_TOPIC is
+// enough. Confidence doesn't: its 5 real answers in botema-examples.ts carry
+// granular pre-v4 tags ("belonging", "confidence" ×3, "general") because the
+// live BoteMindset.loadFewShotExamples() still filters on that same field by
+// challenge_type — so retagging them to one area-level topic would quietly
+// change what the deployed coach serves. Worse, "general" is also the tag on
+// an unrelated Wellbeing answer (Q35), so even matching all of Confidence's
+// tags together would pull that one in too. An area can set `realQuestions`
+// (the exact question text, in the order it wants S1.. to land) to sidestep
+// both problems — matched by literal text instead of by topic at all.
+function loadReal(area) {
   const src = readFileSync(join(FN, "botema-examples.ts"), "utf8");
+  if (area.realQuestions) {
+    return area.realQuestions
+      .map((q) => {
+        const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const m = src.match(new RegExp(`question:\\s*"${escaped}",\\s*\\n\\s*answer:\\s*"((?:[^"\\\\]|\\\\.)*)"`));
+        return m ? { question: q, answer: unq(m[1]), source: "OTEMA" } : null;
+      })
+      .filter(Boolean);
+  }
   const re = new RegExp(
-    `question:\\s*"((?:[^"\\\\]|\\\\.)*)",\\s*\\n\\s*answer:\\s*"((?:[^"\\\\]|\\\\.)*)",\\s*\\n\\s*topic:\\s*"${topic}"`,
+    `question:\\s*"((?:[^"\\\\]|\\\\.)*)",\\s*\\n\\s*answer:\\s*"((?:[^"\\\\]|\\\\.)*)",\\s*\\n\\s*topic:\\s*"${area.topic}"`,
     "g",
   );
   return [...src.matchAll(re)].map((m) => ({ question: unq(m[1]), answer: unq(m[2]), source: "OTEMA" }));
 }
 
-function loadDrafted() {
+// Facet IDs are only unique WITHIN an area — Getting Started's G1 (bootcamp
+// legitimacy) and Salary's G1 (pay equity) are different content sharing one
+// name, and Confidence's G1/G2 make it a three-way collision. Without the
+// area filter, whichever area's same-named facet appears later in the source
+// file silently overwrites the earlier one in the flat facet map, for every
+// area being tested — not just the one that collided. Scoped by the `area:`
+// number every entry already carries.
+function loadDrafted(areaN) {
   const src = readFileSync(join(FN, "botema-generated-examples.ts"), "utf8");
   const body = src.slice(src.indexOf("adviseOnCareerTopic: ["));
   const out = [];
-  for (const chunk of body.split(/\n    \{\n/).slice(1)) {
-    const e = chunk.split(/\n    \},/)[0];
+  // botema-generated-examples.ts checks out as CRLF on this machine; a literal
+  // \n split never matched a single chunk boundary, so this returned nothing
+  // for every area, every time, all session — every "0 drafted" in every
+  // transcript so far is this bug, not an actual absence of drafted material.
+  // loadReal() was unaffected because \s*\n\s* already absorbs \r; this split
+  // used a bare \n.
+  for (const chunk of body.split(/\r?\n    \{\r?\n/).slice(1)) {
+    const e = chunk.split(/\r?\n    \},/)[0];
     const q = e.match(/question:\s*"((?:[^"\\]|\\.)*)"/);
     const a = e.match(/answer:\s*\n?\s*"((?:[^"\\]|\\.)*)"/);
     const f = e.match(/facet:\s*"([A-Za-z0-9]+)"/);
-    if (q && a && f) out.push({ question: unq(q[1]), answer: unq(a[1]), facet: f[1], source: "DRAFTED" });
+    const ar = e.match(/area:\s*(\d+)/);
+    if (q && a && f && ar && Number(ar[1]) === areaN) out.push({ question: unq(q[1]), answer: unq(a[1]), facet: f[1], source: "DRAFTED" });
   }
   return out;
 }
@@ -98,34 +131,40 @@ function loadKnowledge(topic) {
   return m ? m[1].trim() : "";
 }
 
+// All five of these matched `;\n` literally. converser.ts checks out as CRLF
+// on this machine, so the actual text is `;\r\n` — the match failed outright,
+// every function fell back to "", and every one of these guards has been
+// silently absent from the system prompt for every test run this session,
+// across every area: STAND_WITH_HER, NEVER_OFFER_TO_ACT, PLAIN_LANGUAGE,
+// ASK_WITHOUT_EXTRACTING, NO_INVENTED_FIGURES. `;\r?\n` fixes all five.
 function loadStandWithHer() {
   const src = readFileSync(join(FN, "converser.ts"), "utf8");
-  const m = src.match(/export const STAND_WITH_HER =\s*([\s\S]*?);\n/);
-  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
+  const m = src.match(/export const STAND_WITH_HER =\s*([\s\S]*?);\r?\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
 }
 
 function loadNeverAct() {
   const src = readFileSync(join(FN, "converser.ts"), "utf8");
-  const m = src.match(/export const NEVER_OFFER_TO_ACT =\s*([\s\S]*?);\n/);
-  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
+  const m = src.match(/export const NEVER_OFFER_TO_ACT =\s*([\s\S]*?);\r?\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
 }
 
 function loadPlainLanguage() {
   const src = readFileSync(join(FN, "converser.ts"), "utf8");
-  const m = src.match(/export const PLAIN_LANGUAGE =\s*([\s\S]*?);\n/);
-  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
+  const m = src.match(/export const PLAIN_LANGUAGE =\s*([\s\S]*?);\r?\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
 }
 
 function loadAskWell() {
   const src = readFileSync(join(FN, "converser.ts"), "utf8");
-  const m = src.match(/export const ASK_WITHOUT_EXTRACTING =\s*([\s\S]*?);\n/);
-  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
+  const m = src.match(/export const ASK_WITHOUT_EXTRACTING =\s*([\s\S]*?);\r?\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
 }
 
 function loadFigureGuard() {
   const src = readFileSync(join(FN, "converser.ts"), "utf8");
-  const m = src.match(/export const NO_INVENTED_FIGURES =\s*([\s\S]*?);\n/);
-  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\n\s*"/g, "").trim() : "";
+  const m = src.match(/export const NO_INVENTED_FIGURES =\s*([\s\S]*?);\r?\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
 }
 
 // ── The area under test ─────────────────────────────────────────────────────
@@ -141,7 +180,10 @@ const AREA_SLUG = areaArg ? areaArg.slice(7).toLowerCase() : "salary";
 const AREAS_BUILT = [
   "salary",
   "getting-started",
-  // "confidence",        ← Hilina
+  "confidence",
+  "career-paths",
+  "further-education",
+  "mentorship",
 ];
 
 if (!AREAS_BUILT.includes(AREA_SLUG)) {
@@ -164,8 +206,8 @@ const FALLBACK_QUESTION = areaConfig.fallbackQuestion || "What would you like to
 
 function buildFacets() {
   const f = {};
-  loadReal(AREA_TOPIC).forEach((e, i) => { if (S_ORDER[i]) f[S_ORDER[i]] = { ...e, id: S_ORDER[i] }; });
-  loadDrafted().forEach((e) => { f[e.facet] = { ...e, id: e.facet }; });
+  loadReal(areaConfig).forEach((e, i) => { if (S_ORDER[i]) f[S_ORDER[i]] = { ...e, id: S_ORDER[i] }; });
+  loadDrafted(AREA_N).forEach((e) => { f[e.facet] = { ...e, id: e.facet }; });
   return f;
 }
 
@@ -349,6 +391,30 @@ function dropRepeatedSentences(text, previousReplies, threshold = 0.45) {
       return shared / w.size >= threshold;
     });
   };
+  // repeats() exempts anything with fewer than 4 words over 4 letters — right
+  // for a normal sentence, but a closing question that survives this far has
+  // often already had its substance stripped by the loop below, leaving just
+  // a few words ("Would you try that next session and tell me how it goes?"
+  // has exactly one: "session"). That's too thin for repeats() to ever engage,
+  // so a closer that's nearly identical to the turn immediately before it —
+  // the single worst place for a repeat to land — slipped through untouched.
+  // Checked only against the ONE most recent reply's own closer, with a lower
+  // word bar and a stricter ratio, rather than loosening repeats() itself and
+  // risking new false positives against the whole conversation's history.
+  const lastCloser = (() => {
+    const prevSentences = splitSentences(previousReplies[previousReplies.length - 1] || "");
+    const last = prevSentences[prevSentences.length - 1] || "";
+    return last.trim().endsWith("?") ? last : null;
+  })();
+  const echoesLastCloser = (s) => {
+    if (!lastCloser || !s.trim().endsWith("?")) return false;
+    const lowWords = (t) => new Set(t.toLowerCase().replace(/[^a-z\s]/g, " ").split(/\s+/).filter((w) => w.length > 3));
+    const a = lowWords(s), b = lowWords(lastCloser);
+    if (!a.size || !b.size) return false;
+    let shared = 0;
+    a.forEach((w) => { if (b.has(w)) shared++; });
+    return shared / a.size >= 0.6;
+  };
   const kept = [];
   for (const sentence of splitSentences(text)) {
     if (!sentence.trim().endsWith("?")) {
@@ -371,13 +437,13 @@ function dropRepeatedSentences(text, previousReplies, threshold = 0.45) {
       // checked like any other sentence; if it repeats, the reply simply
       // lands without a closing question that turn, which is an accepted
       // shape already (see everyReplyAsks — not every reply needs one).
-      if (!repeats(sentence)) kept.push(sentence);
+      if (!repeats(sentence) && !echoesLastCloser(sentence)) kept.push(sentence);
       continue;
     }
     const body = sentence.slice(0, lastBreak + 1).trim();
     const question = sentence.slice(lastBreak + 1).trim();
     if (!repeats(body)) kept.push(sentence);
-    else if (question) kept.push(question);
+    else if (question && !echoesLastCloser(question)) kept.push(question);
   }
   return kept.length ? kept.join(" ").trim() : "";
 }
@@ -653,7 +719,14 @@ const CLASSIFY_TOOL = [{
         location: { type: "string", description: "The city or country, if the user has given one." },
         newInformation: {
           type: "boolean",
-          description: "Did this message add anything the coach did not already know — a fact, a constraint, an answer to what was asked? False for filler, restatements, or a shrug.",
+          // Confirmed live on Mentorship: "is that going to be a problem" and
+          // "what should I actually tell my mentor" both scored false under
+          // the old wording — true by the letter (no fact/constraint/answer),
+          // but each was a genuinely new question, and two in a row closed
+          // the whole area on someone who was actively engaging, not stuck.
+          // Asking something not asked before is forward motion; only an
+          // actual repeat, filler, or shrug is a stall.
+          description: "Did this message move the conversation forward — a fact, a constraint, an answer to what was asked, OR a genuinely new question she hasn't asked before? False only for filler, a restatement of something already said, or a shrug.",
         },
         why: { type: "string", description: "One short clause explaining the choice." },
       },
@@ -898,6 +971,10 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     grounding,
     "",
     "NOW THE RULES FOR YOUR REPLY, WHICH OVERRIDE EVERYTHING ABOVE:",
+    // Present in botema-coach.ts's real prompt, missing here — the harness's
+    // "Great question." opener on a live career-paths test turn confirmed
+    // this documented gap is real, not just theoretical, for every area.
+    'Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point.',
     loadStandWithHer(),
     loadNeverAct(),
     loadPlainLanguage(),

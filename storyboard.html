@@ -965,6 +965,9 @@
     <div class="sub-tab-bar">
       <button class="sub-tab-btn active" onclick="switchSubTab('area9', this)"><span class="sn">09</span>Salary &amp; Negotiation</button>
       <button class="sub-tab-btn" onclick="switchSubTab('area1', this)"><span class="sn">01</span>Getting Started</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('area2', this)"><span class="sn">02</span>Further Education</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('area3', this)"><span class="sn">03</span>Career Paths &amp; Roadmaps</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('area4', this)"><span class="sn">04</span>Mentorship</button>
       <button class="sub-tab-btn" onclick="switchSubTab('area6', this)"><span class="sn">06</span>Confidence</button>
     </div>
 
@@ -1912,6 +1915,132 @@
             <div class="ff-top"><span class="facet-id">S2a</span><h4>Very little time and money</h4><span class="src drafted">DRAFTED</span></div>
             <p class="ff-q">I have very little time and very little money to put toward this.</p>
             <p class="ff-a">Then self-teaching is your realistic starting point, not a bootcamp or a degree — free resources, an hour or two a day, no cost pressure forcing you to rush. It will take longer than someone with more runway, and that's fine; slow and finished beats fast and abandoned. How much time can you actually protect each week, even if it's small?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sub-area2" class="sub-panel">
+      <div class="section">
+        <div class="section-title">Area Flow · Area 2</div>
+        <h2 class="section-heading">Inside Further Education <span class="st proposed">PROPOSED</span></h2>
+        <p class="prompt-intro">Built fast under a deadline (2026-08-23) to reach six areas — a lighter design and test pass than Salary or Confidence got, spec and implementation done together rather than spec-first. Otema's 7 real answers (Q9-15) split cleanly along one decision: is further study worth it at all versus a cheaper alternative, which programme to choose once that's settled, and the logistics of actually doing it.</p>
+        <div class="banner spec">
+          <strong>Three stages, following the decision itself rather than a "how far along" guess:</strong> <strong>A</strong> — deciding whether a master's (or further study at all) is worth it versus a certification. <strong>B</strong> — a specific programme or field is the live question. <strong>C</strong> — funding and balancing it with a full-time job, once a path is chosen or close to it.
+        </div>
+        <div class="key">
+          <div class="key-grid">
+            <div><span class="chip">S1</span> Do I need a master's? (Q9)</div>
+            <div><span class="chip">S2</span> Which fields benefit most? (Q10)</div>
+            <div><span class="chip">S3</span> What to look for choosing a programme (Q11)</div>
+            <div><span class="chip">S4</span> Before or after work experience? (Q12)</div>
+            <div><span class="chip">S5</span> Certifications vs a master's (Q13)</div>
+            <div><span class="chip">S6</span> Funding and scholarships (Q14)</div>
+            <div><span class="chip">S7</span> Balancing it with full-time work (Q15)</div>
+          </div>
+        </div>
+        <div class="flow-note">Stage A: S1, S5 · Stage B: S2, S3, S4 · Stage C: S6, S7. No drafted gaps yet — all 7 facets are Otema's real answers.</div>
+        <div class="grid-2">
+          <div class="scope-card can">
+            <div class="scope-head">Already true</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Runs end-to-end in the harness</strong><div class="example"><code>npm run coach -- --area=further-education</code></div></div>
+              <div class="scope-item"><strong>4 of 5 scenarios pass clean</strong><div class="example">Certifications are treated as a real alternative, not a lesser one; work-experience-first timing advice matches Otema's own stated position; funding and balancing both get real answers, not just the first one asked.</div></div>
+            </div>
+          </div>
+          <div class="scope-card cant">
+            <div class="scope-head">Doesn't exist yet / open</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only, same as every other area here</div></div>
+              <div class="scope-item"><strong>One residual A/B boundary blur</strong><div class="example">"Are certifications respected by employers?" classified B in one run (evidence-gathering toward a near-decision) where A (still deciding) is also defensible — not chased further given time; likely inherent classification variance rather than a structural bug</div></div>
+              <div class="scope-item"><strong>No dead-end sweep or drafted gap-filling yet</strong><div class="example">First pass — deeper coverage work is a follow-up, not urgent</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sub-area3" class="sub-panel">
+      <div class="section">
+        <div class="section-title">Area Flow · Area 3</div>
+        <h2 class="section-heading">Inside Career Paths &amp; Roadmaps <span class="st proposed">PROPOSED</span></h2>
+        <p class="prompt-intro">Built fast under a deadline (2026-08-23), spec and implementation together. Otema's 8 real answers (Q16-23) are almost entirely one shape — "give me the roadmap for field X" — with exactly one (Q23) actually about choosing between fields. The stage split follows that fault line directly.</p>
+        <div class="banner spec">
+          <strong>Two stages: choosing a specialisation, versus the roadmap for one already chosen.</strong> The moment a single field is named, every later message about it — background constraints, realism checks on a specific job title, timelines — stays in stage B. That had to be stated explicitly: a live test drifted back to stage A on "I have zero IT background" and "is 'ethical hacker' realistic" before the stage description was tightened to say so directly, the same shape of fix Getting Started's A/B tie-break needed.
+        </div>
+        <div class="key">
+          <div class="key-grid">
+            <div><span class="chip">S1</span> Software developer roadmap (Q16)</div>
+            <div><span class="chip">S2</span> Data science / ML, non-technical start (Q17)</div>
+            <div><span class="chip">S3</span> UX/UI designer steps (Q18)</div>
+            <div><span class="chip">S4</span> Cybersecurity roadmap (Q19)</div>
+            <div><span class="chip">S5</span> Product management (Q20)</div>
+            <div><span class="chip">S6</span> Cloud / DevOps roadmap (Q21)</div>
+            <div><span class="chip">S7</span> Transition into tech project management (Q22)</div>
+            <div><span class="chip">S8</span> Choosing between specialisations (Q23)</div>
+            <div><span class="chip">G1</span> No basis yet to compare fields — hasn't tried any hands-on</div>
+          </div>
+        </div>
+        <div class="flow-note">Stage A: S8, G1 · Stage B: S1-S7.</div>
+        <div class="grid-2">
+          <div class="scope-card can">
+            <div class="scope-head">Already true</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Runs end-to-end in the harness</strong><div class="example"><code>npm run coach -- --area=career-paths</code></div></div>
+              <div class="scope-item"><strong>4 of 5 scenarios pass clean</strong><div class="example">Corrects the "ethical hacker as a first job" assumption rather than going along with it; treats an internal move (engineering → PM) as the normal path; picks up the mobile-first/low-bandwidth African-market detail rather than giving a generic UX answer</div></div>
+              <div class="scope-item"><strong>The A/B tie-break tightened after a live test caught the drift</strong><div class="example">See banner above</div></div>
+            </div>
+          </div>
+          <div class="scope-card cant">
+            <div class="scope-head">Doesn't exist yet / open</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only</div></div>
+              <div class="scope-item"><strong>One residual opening-turn misclassification</strong><div class="example">"What does a career path in cybersecurity actually look like" — a field named outright — classified A once, with the model's own reasoning incorrectly saying no field was named. Not chased further given time; the tightened description already fixed the more common drift on later turns.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sub-area4" class="sub-panel">
+      <div class="section">
+        <div class="section-title">Area Flow · Area 4</div>
+        <h2 class="section-heading">Inside Mentorship <span class="st proposed">PROPOSED</span></h2>
+        <p class="prompt-intro">Built fast under a deadline (2026-08-23), spec and implementation together. Otema's 6 real answers (Q24-29) split on whether she already has a mentor: finding and approaching one, versus making an existing relationship work.</p>
+        <div class="banner spec">
+          <strong>Two stages: finding a mentor, versus making it work.</strong> A is "no mentor yet"; B covers sessions, the mentor/sponsor distinction, maintaining it long-term, and using the BSC programme's structure once a relationship exists.
+        </div>
+        <div class="banner info">
+          <strong>A real, shared-code bug found and fixed here, benefiting every area:</strong> the stall detector's <code>newInformation</code> field only counted a fact, constraint, or answer as progress — a genuinely new QUESTION that added no new fact about her ("is that going to be a problem?", "what should I actually tell my mentor?") scored false. Two of those in a row closed the whole area after 3 of 5 turns, on someone who was actively engaging, not stuck. The field now explicitly counts a new question she hasn't asked before as forward motion; only an actual repeat, filler, or shrug is a stall. This lives in <code>coach-local.mjs</code>, so it was fixed once for every area, not just this one.
+        </div>
+        <div class="banner info">
+          <strong>Also observed, not a code bug:</strong> one live run had the coach say cold LinkedIn outreach is "not weird at all," directly contradicting the real answer it had just been given as material (Otema's actual S2: "cold-messaging a stranger on LinkedIn rarely works well"). A model-fidelity slip, not a mechanical one — worth an Otema-review pass before this area goes live, flagged rather than chased under this deadline.
+        </div>
+        <div class="key">
+          <div class="key-grid">
+            <div><span class="chip">S1</span> How to find a mentor (Q24)</div>
+            <div><span class="chip">S2</span> What to look for / how to approach (Q25)</div>
+            <div><span class="chip">S3</span> Making the most of sessions (Q26)</div>
+            <div><span class="chip">S4</span> Mentor vs sponsor (Q27)</div>
+            <div><span class="chip">S5</span> Maintaining it long-term (Q28)</div>
+            <div><span class="chip">S6</span> Using the BSC programme with an unclear goal (Q29)</div>
+          </div>
+        </div>
+        <div class="flow-note">Stage A: S1, S2 · Stage B: S3, S4, S5, S6.</div>
+        <div class="grid-2">
+          <div class="scope-card can">
+            <div class="scope-head">Already true</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Runs end-to-end in the harness</strong><div class="example"><code>npm run coach -- --area=mentorship</code></div></div>
+              <div class="scope-item"><strong>The stall-detection bug fixed and verified</strong><div class="example">See banner above — a global fix, not area-specific. 5 of 5 scenarios pass clean after the fix.</div></div>
+            </div>
+          </div>
+          <div class="scope-card cant">
+            <div class="scope-head">Doesn't exist yet / open</div>
+            <div class="scope-body">
+              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only</div></div>
+              <div class="scope-item"><strong>The cold-LinkedIn content contradiction</strong><div class="example">Flagged above — surfaced once, didn't recur in the re-run, but worth an Otema-review pass before this area goes live regardless</div></div>
+            </div>
           </div>
         </div>
       </div>

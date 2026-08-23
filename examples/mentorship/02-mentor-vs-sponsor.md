@@ -1,0 +1,109 @@
+# Has a mentor already, but wants to know if she also needs a sponsor
+
+_Run 2026-08-23 19:46 UTC · 5 turns · gpt-5-nano via Azure_
+
+**What this tests.** Draws on S4 and keeps the mentor/sponsor distinction clear (advice vs advocacy) rather than blurring the two together.
+
+## Transcript
+
+```
+BSC Coach — local area harness
+  Area 4 · Mentorship · live via gpt-5-nano
+  Type freely. 'state' to inspect, 'quit' to stop.
+
+  you > I have a mentor already but I keep hearing about sponsors too, what's the actual difference
+  [stage B — They already have a mentor and are asking about the distinction and how sponsors differ to guide their use of both.]
+  → enterDiscussionArea(4 · Mentorship)
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S4, S5, S3 — 3 Otema, 0 drafted]
+  [voice only: S6]
+
+Botema
+  Mentor vs sponsor: a mentor guides you with advice and perspective; a
+  sponsor actively advocates for you in rooms you’re not in, pushing you
+  toward opportunities and promotions. You can have more than one sponsor, and
+  sometimes the same person can be both, but sponsorship is about influence
+  and visibility, not just feedback. Do you have someone in mind who could be
+  a sponsor, or would you like help mapping potential sponsors and crafting a
+  clear ask?
+
+  you > do I need both or is a mentor enough
+  [stage B — User already has a mentor and asks whether sponsorship is needed alongside mentorship.]
+  [drew on S4, S6, S5 — 3 Otema, 0 drafted]
+  [voice only: S3]
+
+Botema
+  In Africa, a sponsor actively vouches for you in rooms you’re not in, while
+  a mentor helps you grow the skills and plan you need. You don’t need a
+  sponsor to start, but if you want to accelerate into leadership or
+  high-visibility projects, start identifying potential sponsors who can
+  credibly advocate for you while you keep working with your mentor. What’s
+  your next target role or project, and who in your network could credibly
+  advocate for you to get there?
+
+  you > nobody really advocates for me in rooms I'm not in though
+  [stage B — User is in mentorship stage B and reports lacking advocates in rooms they’re not in; question indicates need to move toward establishing sponsors.]
+  [drew on S4, S5, S3 — 3 Otema, 0 drafted]
+  [voice only: S6]
+
+Botema
+  That’s real—and sponsorship is rarer than mentorship, but it does exist.
+  Since no one in your rooms advocates for you yet, pick two or three people
+  who already have influence there and ask them for concrete, time-bound
+  advocacy; give them a crisp pitch and a clear ask, like “advocate for me for
+  this project or role and introduce me to X decision-maker.” Do you have
+  someone in mind who could credibly advocate for you, or would you like help
+  identifying potential sponsors and drafting a precise ask?
+
+  you > should I ask my mentor to do that, or is that a different person entirely
+  [stage B — User asked whether to involve the mentor as sponsor or a different sponsor; this is a governance/usage question within the B stage.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on S4, S5, S3 — 3 Otema, 0 drafted]
+  [voice only: S6]
+
+Botema
+  Ask your mentor first to either take on sponsorship for you or to connect
+  you with two credible sponsors who can advocate in the rooms you want to
+  access.
+
+  you > how do I even bring this up with them
+  [stage B — User asked how to bring up sponsorship with mentor; stays in B stage]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on S4, S3, S5 — 3 Otema, 0 drafted]
+  [voice only: S6]
+
+Botema
+  Be direct and respectful: ask for a 15-minute chat to set a concrete path,
+  then say, “I’m targeting [role/project] and would value your sponsorship to
+  move there—either by advocating for me for this opportunity or by
+  introducing me to two senior sponsors who can advocate in the rooms where
+  decisions happen.” Can we schedule 15 minutes this week to lock in the
+  target, draft a crisp one-page brief, and map a simple 6–8 week plan with
+  concrete milestones?
+
+  you > quit
+
+  ── state ─────────────────────────────────────────────
+  active_area     4 · Mentorship
+  covered_stages  B
+  touched_facets  S3, S4, S5, S6
+  closed_areas    —
+  role/location   mentor / —
+  trying to do    She has a mentor already and is weighing whether she needs both a mentor and a sponsor, or if a mentor alone is enough. Nobody advocates for her in rooms she isn't in. She is considering whether to ask her mentor to advocate for her or to engage a separate sponsor. She is asking how to bring this up with her mentor.
+
+  Nothing was written to any database.
+```
+
+## Checks
+
+- PASS — classified stage B
+- PASS — draws on S4 (mentor vs sponsor)
+- PASS — keeps the distinction clear: advice vs advocacy
+- PASS — most replies still end on a question
+- PASS — no two replies open the same way
+
+---
+
+_Generated by `npm run coach:scenarios` against live Azure. Regenerate after changing prompts or content._

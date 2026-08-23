@@ -15,12 +15,25 @@
 // previous one. Openers were the visible symptom; this catches restating the
 // same advice in fresh words, which is the actual failure.
 export function maxRepeatOverlap(out) {
-  const replies = replyOf(out).split("\n\n").filter(Boolean);
+  // Two network failures in a row produce the identical COULD_NOT_ANSWER line
+  // twice — a real fixed string matching itself, not the coach repeating
+  // itself. noRepeatedOpeners already excludes it; this one didn't, and a
+  // run that hit consecutive fetch failures scored 100% overlap and failed a
+  // scenario that never actually generated two replies to compare.
+  const replies = replyOf(out).split("\n\n").filter(Boolean).filter((r) => !FALLBACK_LINE.test(r));
   const words = (r) => new Set(r.toLowerCase().replace(/[^a-z ]/g, " ").split(/\s+/).filter((w) => w.length > 4));
   let worst = 0;
   for (let i = 1; i < replies.length; i++) {
     const a = words(replies[i - 1]), b = words(replies[i]);
-    if (!b.size) continue;
+    // A reply this thin is usually one the runtime's own repeat-guard has
+    // already stripped down to a single validating line — "That pattern is
+    // real—and it's not your fault." has exactly two words over 4 letters,
+    // and sharing just one of them with a much longer previous reply (the
+    // conversation is still on the same subject, which is normal) pushes the
+    // ratio to 0.5 on a sample of 2. Below this size the ratio is noise, not
+    // evidence — mirrors the size gate dropRepeatedSentences() already uses
+    // for the same reason, one level down at the sentence level.
+    if (b.size < 3) continue;
     let shared = 0;
     b.forEach((w) => { if (a.has(w)) shared++; });
     worst = Math.max(worst, shared / b.size);

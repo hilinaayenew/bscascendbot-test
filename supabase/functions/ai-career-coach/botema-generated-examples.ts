@@ -140,6 +140,23 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
       reviewStatus: "unreviewed", drafted: "2026-08-17",
     },
 
+    // ── Area 3 · Career Paths & Roadmaps ──────────────────────────────────
+    // One gap, 2026-08-23: her 8 real answers are all "roadmap for field X"
+    // once a field is named — nothing covers not having tried any of them
+    // yet, which is the actual blocker behind stage A.
+
+    {
+      question: "I don't really know enough about any of these fields to know which one I'd even be good at or enjoy.",
+      answer:
+        "You don't figure that out by reading about it, you figure it out by trying a small piece of each — a one-day tutorial building a webpage, a one-day tutorial cleaning a dataset, a one-day tutorial designing a screen in Figma. Whichever one you didn't want to stop is the one worth going deeper on first. What have you actually tried building or making so far, even something small?",
+      topic: "career_paths",
+      area: 3,
+      facet: "G1",
+      gap: "No real basis yet to compare specialisations — hasn't tried any of them hands-on",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-23",
+    },
+
     // ── Area 9 · Salary & Negotiation ─────────────────────────────────────
     // Four gaps identified 2026-08-14: none of these are in the 57-question
     // bank, and neither KNOWLEDGE_BASE.salary nor her real examples cover them.
@@ -426,7 +443,64 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
 
   ],
 
-  addressMindsetChallenge: [],
+  addressMindsetChallenge: [
+
+    // ── Area 6 · Confidence & Imposter Syndrome ───────────────────────────
+    // Two gaps identified 2026-08-21 building the storyboard spec, plus two
+    // response branches for the one distinction worth building in before any
+    // testing: S1's and S3's real closers both invite an answer that isn't a
+    // confidence problem at all — being talked over or dismissed because of
+    // who she is, not how she feels about herself. BOTEMA_VALUES already has
+    // STAND_WITH_HER for exactly this shape; these two branches are that
+    // pattern named for this area specifically, not left for the general
+    // instruction to carry alone.
+    // First pass, not yet tested — nothing here has talked to gpt-5-nano.
+
+    {
+      question: "Whenever someone compliments my work I assume they're just being nice, or that I got lucky.",
+      answer:
+        "Notice what you do with it instead of arguing over whether it's true — saying \"thank you, that took real work\" out loud is practice for believing it, even before you fully do. And if it keeps happening from the same person, that's not politeness anymore, that's a pattern; kind once is possible, three times is information. What did they actually say, in their own words?",
+      topic: "mindset",
+      area: 6,
+      facet: "G1",
+      gap: "Discounting genuine external praise as politeness or luck, not just discounting your own wins",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-21",
+    },
+
+    {
+      question: "I turned down a chance to lead a small project because I didn't feel ready, and now I think I made a mistake.",
+      answer:
+        "Notice that you decided you weren't ready before anyone actually tested that — \"not ready\" is a feeling, not a qualification someone checked you against. If it's still open, go back and ask whether the offer still stands; if it's gone, treat it as data for the next one rather than proof you were right to say no. What did you actually say when it came up?",
+      topic: "mindset",
+      area: 6,
+      facet: "G2",
+      gap: "Declining a stretch opportunity — a project, a talk, a promotion — before it's even properly offered",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-21",
+    },
+
+    {
+      question: "It's not really in my head — I'm the only woman on my team and I get interrupted or talked over almost every time I try to say something.",
+      answer:
+        "That's a documented pattern, not a confidence problem to work on in yourself — women get interrupted and talked over in mixed-gender meetings far more than men, and noticing it is accurate, not oversensitive. The move isn't to build your nerve, it's to decide what you want to happen about this specific pattern — naming it in the room in the moment, raising it with whoever runs the meeting, or something else. What do you want to happen the next time it comes up?",
+      topic: "mindset", area: 6, facet: "S1a", respondsTo: "S1",
+      userSaid: "the reason is structural — being talked over or dismissed because of who she is, not a feeling about herself",
+      gap: "S1's real closer assumes the belonging feeling is internal; it isn't always",
+      reviewStatus: "unreviewed", drafted: "2026-08-21",
+    },
+
+    {
+      question: "I don't think it's nerves — every time I speak up in that meeting specifically, someone talks over me or repeats what I said back as their own idea.",
+      answer:
+        "Then the room has a problem, not you — being interrupted or having your point repeated back as someone else's idea is a well-documented pattern, and reading it correctly isn't a confidence issue. Practising delivery won't fix a room that isn't listening; naming it plainly in the moment (\"I'd like to finish that point\") or raising the pattern with whoever runs the meeting might. What do you want to happen the next time it comes up?",
+      topic: "mindset", area: 6, facet: "S3a", respondsTo: "S3",
+      userSaid: "same structural pattern, tied specifically to the meeting where she's trying to speak up",
+      gap: "S3's real closer assumes the barrier is nerve; sometimes the room itself is the barrier",
+      reviewStatus: "unreviewed", drafted: "2026-08-21",
+    },
+
+  ],
 };
 
 /**

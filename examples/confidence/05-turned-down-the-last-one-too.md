@@ -1,0 +1,103 @@
+# A lead role just opened up, and she's already decided not to put her name forward
+
+_Run 2026-08-23 19:21 UTC · 5 turns · gpt-5-nano via Azure_
+
+**What this tests.** Classifies as stage B — a decision, not just a feeling — and redirects from the feeling to a concrete, testable action rather than either pushing her to apply outright or simply validating the avoidance.
+
+## Transcript
+
+```
+BSC Coach — local area harness
+  Area 6 · Confidence & Imposter Syndrome · live via gpt-5-nano
+  Type freely. 'state' to inspect, 'quit' to stop.
+
+  you > there's a lead role opening up on my team, but I don't think I'm ready for it
+  [stage B — Self-doubt is the stated reason something concrete isn't happening: not applying to or stepping into the lead role.]
+  → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
+  [drew on G2, S3, S4 — 2 Otema, 1 drafted]
+  [voice only: S3a]
+
+Botema
+  That pull is real, but I’d always recommend applying anyway—job descriptions
+  are a wish list, not a verdict on your capability. If possible, ask for a
+  short stretch assignment or co-leading a pilot to prove you can handle it,
+  and map a 6–8 week plan to close the gaps. What are the top two gaps you
+  feel you’d need to close, and what one concrete step could you take this
+  week to test your readiness?
+
+  you > honestly I'll probably just let it go
+  [stage B — User expressed plan to let go of applying for a lead role due to feeling not ready, which signals stage B (self-doubt leading to concrete inaction).]
+  [drew on S3a, G2, S3 — 1 Otema, 2 drafted]
+  [voice only: S4]
+
+Botema
+  That decision is real—and I won’t pretend it isn’t hard; letting the lead
+  role go would slow your growth and reduce visibility. I’d still push for a
+  concrete test: a 6–8 week pilot where you co-lead a project with clear
+  success criteria to prove you’re ready. What one concrete step can you take
+  this week to test readiness, and which path feels most doable: pilot
+  leadership or mentorship/shadowing?
+
+  you > I did the same thing last year too — turned down a chance to present at a conference
+  [stage B — The user just stated they turned down a conference presentation last year, indicating a concrete opportunity they avoided due to self-doubt.]
+  [drew on G2, S3, S4 — 2 Otema, 1 drafted]
+  [voice only: S3a]
+
+Botema
+  That’s real, and turning down speaking opportunities is a pattern that costs
+  you visibility and growth. I’d push you to test the water with a tiny
+  slot—7–10 minutes internal talk or a lightning slot at a local conference—by
+  preparing a two-slide outline on a current problem you’ve solved, rehearsing
+  with a peer, and asking for feedback. Which path feels more doable this
+  quarter: internal meetup or external conference, and what’s the first step
+  you’ll take this week to start?
+
+  you > I regretted that one afterwards, if I'm honest
+  [stage B — User indicates regret after declining a speaking opportunity, which signals self-doubt influencing concrete action (stage B).]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G2, S3, S4 — 2 Otema, 1 drafted]
+  [voice only: S3a]
+
+Botema
+  That regret is real—and you’re not alone in feeling it after passing on
+  opportunities. The fastest way forward is to test a micro moment: a 7–10
+  minute internal talk or a lightning slot at a local event.
+
+  you > should I actually go for this one or not
+  [stage B — User is explicitly asking whether to pursue the current opportunity, signaling a concrete decision point and self-doubt about readiness.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G2, S3, S4 — 2 Otema, 1 drafted]
+  [voice only: S3a]
+
+Botema
+  Yes—go for it and test your readiness.
+
+  you > quit
+
+  ── state ─────────────────────────────────────────────
+  active_area     6 · Confidence & Imposter Syndrome
+  covered_stages  B
+  touched_facets  S3, S4, G2, S3a
+  closed_areas    —
+  role/location   lead role or speaking opportunity on current track / —
+  where she is    There is a lead role opening up on her team, and she is weighing whether to pursue it. She regrets turning down a conference presentation last year, signaling a pattern of declining opportunities she wants to change.
+  trying to do    She wants to grow into leadership, but her tendency to decline opportunities remains a barrier. She has to decide whether to apply for the lead role or let it go again, building on the experience of turning down the conference presentation.
+
+  Nothing was written to any database.
+```
+
+## Checks
+
+- PASS — classified stage B
+- PASS — draws on G2
+- **FAIL** — redirects to a concrete, testable action rather than resolving readiness first
+- PASS — does not just validate the avoidance without pushing back on it
+- PASS — most replies still end on a question
+- PASS — no two replies open the same way
+- PASS — no reply mostly restates the one before it
+
+---
+
+_Generated by `npm run coach:scenarios` against live Azure. Regenerate after changing prompts or content._

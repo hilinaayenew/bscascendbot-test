@@ -51,13 +51,13 @@ export default {
       label: "Processing the narrative",
       describes:
         "A feeling being worked through, with no action currently stalled on it: comparing yourself to colleagues, not feeling like you belong, discounting your own achievements or other people's praise. Giveaway words: \"I feel like\", \"don't belong\", \"less competent\", \"brush off\", \"imposter\". If the message names a specific thing she is NOT doing because of the feeling — not applying, not speaking up, not putting herself forward — that's stage B instead, even if the feeling itself sounds the same.",
-      facets: ["S1", "S2", "S5", "G1", "S1a"],
+      facets: ["S1", "S1b", "S2", "S5", "S5a", "G1", "G3", "G5", "G6", "G7", "G8", "G9", "G10", "S1a"],
     },
     B: {
       label: "A stalled action",
       describes:
         "Self-doubt is the stated reason something concrete isn't happening: not speaking up in a meeting, not applying to a role, not accepting or asking for an opportunity. The distinguishing fact is a decision sitting behind the feeling, not just the feeling on its own. Giveaway words: \"holding myself back\", \"scared to apply\", \"won't speak up\", \"turned it down\", \"didn't put myself forward\".",
-      facets: ["S3", "S4", "G2", "S3a"],
+      facets: ["S3", "S3b", "S3c", "S4", "G2", "G4", "S3a"],
     },
   },
 };

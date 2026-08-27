@@ -88,30 +88,38 @@ export default [
     ],
     checks: [
       ["draws on S2 (which fields benefit)", (o) => facetsDrawn(o).has("S2")],
-      ["picks up the visa angle", (o) => /(visa|migration)/i.test(replyOf(o))],
+      // Broadened 2026-08-26: a real reply covered the Skilled Worker route,
+      // Graduate Route, CRS/Express Entry and PGWP in real depth without ever
+      // using the literal words "visa" or "migration" — this failed a
+      // scenario whose substance was actually right. Named routes are the
+      // actual giveaway, not the word "visa" itself.
+      ["picks up the visa angle", (o) => /(visa|migrat|immigrat|sponsor|work permit|skilled worker|graduate route|express entry|\bpgwp\b)/i.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
     ],
   },
   {
-    id: "05-cost-conscious-cert-vs-masters",
-    title: "Torn between a master's and certifications, money is tight, wants to get hired fast",
-    claim: "Stays in stage A throughout — nothing is chosen yet — draws on S5, and takes the cost/speed constraint as a real reason to lean toward certifications rather than defaulting to 'a degree is always better'.",
+    // NEW this run
+    id: "05-bootcamp-grad-drifts-into-programme-and-funding",
+    title: "A bootcamp grad wonders if a master's is worth stacking on top, then drifts into programme quality and funding without ever declaring a decision",
+    claim: "'Bootcamp' is not the literal word 'certification', and she never says anything like 'let's say I go with a master's' — so this checks whether the classifier can still follow her out of stage A into B and C on the substance of what she's asking, rather than getting stuck reading a stray early mention as a certification-vs-master's comparison that's still live.",
     turns: [
-      "I'm trying to decide between a master's and just doing certifications",
-      "money is a real constraint for me",
-      "I want something that gets me hired faster",
-      "are certifications actually respected by employers",
-      "so which one should I lean toward",
+      "so I did a coding bootcamp last year and now everyone's saying I should think about a master's too, idk",
+      "like is it even worth doing both",
+      "the programs I've been looking at are mostly data science ones, how do I actually tell if one is any good vs just picking by ranking",
+      "would part time even work, I can't afford to stop working",
+      "is there scholarship money out there for something like this",
     ],
     checks: [
-      ["stays in stage A throughout", (o) => stagesInOrder(o).every((s) => s === "A")],
-      ["draws on S5 (certs vs master's)", (o) => facetsDrawn(o).has("S5")],
-      ["names a specific certification example", (o) => /(aws|pmp|security\+|azure)/i.test(replyOf(o))],
-      ["leans toward certifications given the stated cost/speed constraint, not just 'a degree is always better'", (o) => !/^\W*a (master.?s|degree) is (always|generally) (better|the way to go)/im.test(replyOf(o))],
+      ["classified stage A on the opening message", (o) => stagesInOrder(o)[0] === "A"],
+      ["treats the bootcamp as real prior work, not dismissed or ignored", (o) => /bootcamp/i.test(replyOf(o))],
+      ["moves out of stage A once the question is programme quality, not cert-vs-master's", (o) => stagesInOrder(o).slice(2).some((s) => s !== "A")],
+      ["draws on S3 (what to look for in a programme) once that's the live question", (o) => facetsDrawn(o).has("S3")],
+      ["draws on S6 or S7 once funding/balancing come up", (o) => { const f = facetsDrawn(o); return f.has("S6") || f.has("S7"); }],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
+      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
     ],
   },
 ];

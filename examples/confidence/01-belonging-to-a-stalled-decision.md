@@ -1,6 +1,6 @@
 # Feeling like she doesn't belong, then naming a promotion she hasn't applied for
 
-_Run 2026-08-23 19:21 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-27 15:41 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stays in stage A while she's processing the feeling on its own, then moves to stage B once she names a concrete decision the feeling has stalled — without dismissing the feeling once it turns out to be attached to something real.
 
@@ -12,78 +12,84 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I constantly feel like I don't belong in this field
-  [stage A — User is expressing a core imposter-syndrome feeling (not belonging) without referencing a concrete action they are avoiding; it fits stage A.]
+  [stage A — She states a persistent feeling of not belonging, which indicates an internal confidence issue rather than a concrete action (like applying or speaking up).]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
-  [drew on S1, S2, S5 — 3 Otema, 0 drafted]
-  [voice only: S1a, G1]
+  [drew on S1, G5, S2 — 2 Otema, 1 drafted]
+  [voice only: S5, G9, G8, G1]
 
 Botema
-  You’re not imagining it—and it’s a real pattern many women in tech in Africa
-  face, not a personal failing. The way forward is to anchor belonging with
-  one small, concrete step: find a mentor or a women-in-tech circle, and do
-  one low-stakes thing this week—like posting a quick note about what you
-  learned or asking a question in a meeting. What would be the simplest step
-  you can take this week to start feeling like you belong?
+  You’re not imagining it—and you’re not alone. In tech across Africa,
+  imposter feelings are real because the environment can undermine newcomers
+  in concrete ways. What was the most recent moment that triggered this for
+  you, and what one small step could you take this week to test your value (a
+  quick comment in a meeting, a tiny contribution, or a chat with a mentor)?
 
   you > everyone around me seems so much more sure of themselves than I am
-  [stage A — User expresses comparison and feeling of not belonging/low confidence (imposter feelings) without concrete action yet.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S1, G1, S1a — 1 Otema, 2 drafted]
-  [voice only: S2, S5]
-
-Botema
-  That feeling is real, and it’s a common pattern for women in tech to look
-  around and think others are more sure of themselves. Confidence grows when
-  you claim a small, visible moment. Which one feels safest for you to try
-  first?
-
-  you > there's actually a promotion open right now and I haven't put my name forward because of exactly this feeling
-  [stage B — The user is not applying due to self-doubt; applying is the concrete action blocked by the feeling.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
-  [drew on G2, S4, S3a — 1 Otema, 2 drafted]
-  [voice only: S3]
-
-Botema
-  I would always recommend you put your name forward for the promotion.
-  Prepare a concise 3-bullet case of your impact that aligns with the role,
-  and send a brief note to your manager asking for the process and a quick
-  15-minute chat to discuss it. What is the simplest first step you can take
-  today to move this forward—send the note with the bullets, or ask for the
-  process details first?
-
-  you > I keep telling myself I'm just not ready for it yet
-  [stage B — User states self-doubt is preventing them from applying for a promotion (concrete action blocked by confidence concerns).]
-  [no new information — stall 1/2]
+  [stage A — New expression of imposter feelings; it's a continuing comparison and insecurity about belonging.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G2, S4, S3 — 2 Otema, 1 drafted]
-  [voice only: S3a]
+  [drew on S1, G7, G9 — 1 Otema, 2 drafted]
+  [voice only: G1, S5a, G5, S5]
 
 Botema
-  That “not ready” thought is a feeling, not a fact—and many women feel it
-  right before stepping up.
+  That feeling is real and common—the room can make others look more certain
+  than they are, and you’re not alone in noticing it. The practical fix is
+  small, repeatable wins: pick one micro-contribution this week where you
+  speak up or take ownership, and note what happened.
+
+  you > there's actually a promotion open right now and I haven't put my name forward because of exactly this feeling
+  [classification missing/invalid stage "undefined" — retrying once at double the token budget]
+  [stage B — User reports self-doubt preventing applying for a promotion (concrete action not taken)]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G2, S3b, S4 — 1 Otema, 2 drafted]
+  [voice only: S3a, S3, G4, S3c]
+
+Botema
+  That’s real, and it’s exactly why so many capable women don’t push for what
+  they deserve. I would always recommend you move forward with a tight plan:
+  pick a deadline to apply this week, draft a short case for why you fit the
+  role with 3–4 concrete impact bullets, and book a 15-minute chat with your
+  manager to express interest and get feedback. What are the top 3 criteria
+  this promotion is evaluating, and which of your recent results best map to
+  those points?
+
+  you > I keep telling myself I'm just not ready for it yet
+  [stage B — User expressed self-doubt as the reason they haven't applied for the promotion, indicating action is stalled by imposter feelings (stage B).]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G2, G4, S3b — 0 Otema, 3 drafted]
+  [voice only: S3, S3a, S4, S3c]
+
+Botema
+  That belief is the imposter story, not a real barrier—promotion readiness is
+  proven by impact, not perfection.
 
   you > so what should I actually do
-  [stage B — User is experiencing self-doubt and has stalled a concrete action (applying for promotion); the user asked for actual steps, which is a concrete action.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
-  [drew on G2, S4, S3a — 1 Otema, 2 drafted]
-  [voice only: S3]
+  [stage B — User asked for concrete steps to apply for a promotion blocked by imposter feelings.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on G2, S3b, S3a — 0 Otema, 3 drafted]
+  [voice only: S3, S3c, G4, S4]
 
 Botema
-  Draft a brief note to your manager with three concrete impacts you’ve
-  driven, show how they map to the role, ask for the promotion process, and
-  request a 15-minute chat; send it today. Does that feel doable, or would you
-  like me to tailor the bullets to your exact achievements?
+  Do this now: identify the top 3 criteria the promotion will evaluate, map
+  3–4 concrete outcomes from your recent work to those criteria, and draft a
+  tight 150–200 word case with 3–4 impact bullets. What are the 2 bullets you
+  already have that best map to the role, and who can you show them to for
+  fast feedback before you submit?
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     6 · Confidence & Imposter Syndrome
   covered_stages  A, B
-  touched_facets  S1, S2, S5, G1, S1a, S3, S4, G2, S3a
+  touched_facets  S1, S1b, S2, S5, S5a, G1, G3, G5, G6, G7, G8, G9, G10, S1a, S3, S3b, S3c, S4, G2, G4, S3a
   closed_areas    —
-  role/location   promotion candidate / —
-  trying to do    She wants to belong in the field and to feel more confident, and now there is a promotion open that she would like to pursue. The barrier is the same sense that she doesn't belong and that everyone around her seems more sure of themselves. She has not stated any steps she has already tried, and she has not put her name forward for the open promotion because of this feeling.
+  role/location   — / —
+  where she is    There is a promotion open right now. She hasn't put her name forward because of exactly this feeling.
+  trying to do    She wants to apply for the open promotion. She hasn't yet because of the imposter feeling. She keeps telling herself she's not ready yet. She asked what she should actually do.
 
   Nothing was written to any database.
 ```

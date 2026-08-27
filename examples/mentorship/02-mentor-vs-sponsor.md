@@ -1,6 +1,6 @@
 # Has a mentor already, but wants to know if she also needs a sponsor
 
-_Run 2026-08-23 19:46 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-27 13:15 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Draws on S4 and keeps the mentor/sponsor distinction clear (advice vs advocacy) rather than blurring the two together.
 
@@ -12,86 +12,82 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I have a mentor already but I keep hearing about sponsors too, what's the actual difference
-  [stage B — They already have a mentor and are asking about the distinction and how sponsors differ to guide their use of both.]
+  [stage B — User has a mentor but asks about sponsor vs mentor, which is a new topic in the mentorship area.]
   → enterDiscussionArea(4 · Mentorship)
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S4, S5, S3 — 3 Otema, 0 drafted]
-  [voice only: S6]
+  [drew on S4a, S3a, S4 — 1 Otema, 2 drafted]
+  [voice only: S5, S6, S3]
 
 Botema
-  Mentor vs sponsor: a mentor guides you with advice and perspective; a
-  sponsor actively advocates for you in rooms you’re not in, pushing you
-  toward opportunities and promotions. You can have more than one sponsor, and
-  sometimes the same person can be both, but sponsorship is about influence
-  and visibility, not just feedback. Do you have someone in mind who could be
-  a sponsor, or would you like help mapping potential sponsors and crafting a
-  clear ask?
+  Mentors coach you and help you navigate decisions; sponsors actively
+  advocate for you in rooms you’re not in, putting your name forward for
+  opportunities. Sponsorship usually comes after you’ve proven real impact,
+  and your mentor can help you identify a senior sponsor who can champion a
+  concrete next step. What’s the next opportunity you want a sponsor to help
+  you access, and who in your network could potentially be a sponsor for that?
 
   you > do I need both or is a mentor enough
-  [stage B — User already has a mentor and asks whether sponsorship is needed alongside mentorship.]
-  [drew on S4, S6, S5 — 3 Otema, 0 drafted]
-  [voice only: S3]
+  [stage B — User asked about needing both a mentor and a sponsor; this moves the topic from 'how to use mentor' to 'how sponsorship fits' within the B stage]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on S5, S4, S3 — 3 Otema, 0 drafted]
+  [voice only: S6, S3a, S4a]
 
 Botema
-  In Africa, a sponsor actively vouches for you in rooms you’re not in, while
-  a mentor helps you grow the skills and plan you need. You don’t need a
-  sponsor to start, but if you want to accelerate into leadership or
-  high-visibility projects, start identifying potential sponsors who can
-  credibly advocate for you while you keep working with your mentor. What’s
-  your next target role or project, and who in your network could credibly
-  advocate for you to get there?
+  You can progress with a strong mentor alone, but sponsorship accelerates
+  momentum once you’ve demonstrated impact. Who could be a sponsor for your
+  next milestone, and what would you want them to advocate for first?
 
   you > nobody really advocates for me in rooms I'm not in though
-  [stage B — User is in mentorship stage B and reports lacking advocates in rooms they’re not in; question indicates need to move toward establishing sponsors.]
-  [drew on S4, S5, S3 — 3 Otema, 0 drafted]
-  [voice only: S6]
+  [stage B — User says no advocate in rooms they’re not in; we should classify and respond within the B stage and provide guidance on building sponsorship.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on S4a, S4, S6 — 2 Otema, 1 drafted]
+  [voice only: S5, S3, S3a]
 
 Botema
-  That’s real—and sponsorship is rarer than mentorship, but it does exist.
-  Since no one in your rooms advocates for you yet, pick two or three people
-  who already have influence there and ask them for concrete, time-bound
-  advocacy; give them a crisp pitch and a clear ask, like “advocate for me for
-  this project or role and introduce me to X decision-maker.” Do you have
-  someone in mind who could credibly advocate for you, or would you like help
-  identifying potential sponsors and drafting a precise ask?
+  That’s real—and sponsorship is the lever that gets you named for
+  opportunities in rooms you’re not in. I’d suggest you pick 1–2 senior people
+  who influence the rooms you want, have your mentor help with a warm intro,
+  and propose a concrete win for them to back (with a clear timeline you can
+  deliver).
 
   you > should I ask my mentor to do that, or is that a different person entirely
-  [stage B — User asked whether to involve the mentor as sponsor or a different sponsor; this is a governance/usage question within the B stage.]
+  [stage B — User asks whether to involve mentor or a different person to facilitate sponsorship; it moves the conversation forward.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S4, S5, S3 — 3 Otema, 0 drafted]
-  [voice only: S6]
+  [drew on S4, S4a, S3a — 1 Otema, 2 drafted]
+  [voice only: S5, S6, S3]
 
 Botema
-  Ask your mentor first to either take on sponsorship for you or to connect
-  you with two credible sponsors who can advocate in the rooms you want to
-  access.
+  Yes—start with your mentor. If they’re not sure who to approach, ask for
+  names or for guidance on who would be the best sponsor to start with. If you
+  want a quick line you can send: “Hi [Name], I’m [Your Name], and I’ve
+  delivered [impact]. I’d value your sponsorship to advocate for me in
+  [rooms/opportunities], starting with [milestone] by [date]. Could we chat or
+  could you introduce me to someone who could sponsor this?” Who do you think
+  your mentor should approach first, and what would your first sponsor-backed
+  milestone be?
 
   you > how do I even bring this up with them
-  [stage B — User asked how to bring up sponsorship with mentor; stays in B stage]
+  [stage B — The user is asking for how to bring up sponsorship with an existing mentor, which is a mentorship-use case (stage B).]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S4, S3, S5 — 3 Otema, 0 drafted]
-  [voice only: S6]
+  [drew on S4, S4a, S3a — 1 Otema, 2 drafted]
+  [voice only: S5, S3, S6]
 
 Botema
-  Be direct and respectful: ask for a 15-minute chat to set a concrete path,
-  then say, “I’m targeting [role/project] and would value your sponsorship to
-  move there—either by advocating for me for this opportunity or by
-  introducing me to two senior sponsors who can advocate in the rooms where
-  decisions happen.” Can we schedule 15 minutes this week to lock in the
-  target, draft a crisp one-page brief, and map a simple 6–8 week plan with
-  concrete milestones?
+  If you’re stuck on names, ask for 1–2 senior people your mentor would
+  recommend.
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     4 · Mentorship
   covered_stages  B
-  touched_facets  S3, S4, S5, S6
+  touched_facets  S3, S3a, S4, S4a, S5, S6
   closed_areas    —
-  role/location   mentor / —
-  trying to do    She has a mentor already and is weighing whether she needs both a mentor and a sponsor, or if a mentor alone is enough. Nobody advocates for her in rooms she isn't in. She is considering whether to ask her mentor to advocate for her or to engage a separate sponsor. She is asking how to bring this up with her mentor.
+  role/location   — / —
+  trying to do    She wants to bring up sponsorship with her mentor and is unsure how to start the conversation. She has a mentor and is seeking guidance on the best way to initiate—what to say, when to say it, and whether the mentor should initiate contact with a potential sponsor or if someone else should. She’s looking for a simple line or script to open the topic and propose a concrete next step with a timeline.
 
   Nothing was written to any database.
 ```
@@ -101,7 +97,7 @@ Botema
 - PASS — classified stage B
 - PASS — draws on S4 (mentor vs sponsor)
 - PASS — keeps the distinction clear: advice vs advocacy
-- PASS — most replies still end on a question
+- **FAIL** — most replies still end on a question
 - PASS — no two replies open the same way
 
 ---

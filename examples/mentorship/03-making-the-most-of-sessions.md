@@ -1,6 +1,6 @@
 # Shows up to mentorship sessions without much to say
 
-_Run 2026-08-23 19:46 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-27 13:15 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Draws on S3 and pushes toward bringing initiative rather than just reassuring her that showing up with questions is enough.
 
@@ -12,78 +12,81 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > how do I actually make the most of my mentorship sessions
-  [stage B — User asks for actionable ways to maximize value from ongoing mentorship sessions, implying an existing mentorship relationship.]
+  [stage B — User is already in a mentorship and asks how to maximize value from sessions.]
   → enterDiscussionArea(4 · Mentorship)
   [sentence cap fired — the model wrote a rundown]
-  [drew on S3, S4, S5 — 3 Otema, 0 drafted]
-  [voice only: S6]
+  [drew on S3, S4a, S3a — 1 Otema, 2 drafted]
+  [voice only: S4, S5, S6]
 
 Botema
-  Mentorship pays off when you drive it end-to-end—clear goals, a tight
-  session plan, and timely follow-through. Here’s how I’d structure it: -
-  Align on a clear goal and cadence up front. What outcome do you want to move
-  forward with in your next session, and is there a specific introduction or
-  sponsor target you’d like your mentor to help you unlock?
+  Go into every session with 2–3 concrete decisions or asks that tie to a real
+  outcome, and use the time to get direct critique on a deliverable you can
+  point to. After each call, send a brief recap of your takeaways and the
+  exact next steps with deadlines, and keep a simple goals tracker you review
+  with your mentor every few sessions. What’s the one change you want to make
+  in how you use your mentor right now, and what outcome would that unlock for
+  you?
 
   you > I feel like I show up without much to say sometimes
-  [stage B — User is in ongoing mentorship stage and asked for strategies to prepare and participate more effectively in sessions.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S3, S6, S4 — 3 Otema, 0 drafted]
-  [voice only: S5]
-
-Botema
-  That feeling is real, and mentors actually team up to help you shape your
-  own path—not to be fed a running commentary. Try a tight 3-item agenda for
-  every session: 1) a concrete decision you need from them, 2) one skill or
-  context you want direct feedback on, and 3) one introduction or sponsor
-  you’d like them to help you secure. What would your three items be for the
-  next talk, and which one is the top priority?
-
-  you > is it okay to just ask them general questions
-  [stage B — The user is asking about using general questions within an existing mentorship relationship, which fits stage B (using a mentor) and moves the conversation forward.]
-  [drew on S3, S4, S5 — 3 Otema, 0 drafted]
-  [voice only: S6]
-
-Botema
-  Yes, general questions are fine for context, but you’ll get more value if
-  you pair them with concrete asks. Try a two-then-one approach: bring two
-  specific decisions you need their input on, and one broader question to
-  frame your next moves. What two concrete asks would you bring next session,
-  and what broad question do you want to surface?
-
-  you > how often should we even be meeting
-  [stage B — Question about cadence in an ongoing mentor relationship; moves the conversation forward in stage B.]
-  [drew on S3, S4, S5 — 3 Otema, 0 drafted]
-  [voice only: S6]
-
-Botema
-  There isn’t one right cadence, but for active goals I’d start with weekly
-  30–45 minute sessions for 4–6 weeks, then shift to biweekly, then monthly as
-  you gain traction. If you’re focusing on steady growth with limited time,
-  biweekly or monthly can work; pair each session with a brief follow-up and a
-  planned agenda for the next one. How does your mentor’s schedule look, and
-  what outcome are you driving in the next 6–8 weeks?
-
-  you > what should I bring to the next one
-  [stage B — User asked how to prepare for next mentor session; this advances the mentorship planning]
+  [stage B — User is in a mentorship (stage B) but feels under-equipped to contribute; seeks strategies to engage more effectively.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S3, S4, S5 — 3 Otema, 0 drafted]
-  [voice only: S6]
+  [voice only: S3a, S6, S4a]
 
 Botema
-  Include any relevant material (a quick one-page update or a short deck) so
-  they don’t have to chase you for basics.
+  That’s real, and you’re not alone. To fix it, prep with a 60–90 second
+  update, two concrete asks, and one deliverable you want feedback on. Start
+  the session by delivering the update, drop the two asks, and agree one next
+  step with a deadline; then send a brief recap with those actions.
+
+  you > is it okay to just ask them general questions
+  [stage B — The user asked if it's okay to ask general questions, which is a move forward in clarifying how to use the mentorship effectively.]
+  [drew on S3, S3a, S6 — 2 Otema, 1 drafted]
+  [voice only: S4, S4a, S5]
+
+Botema
+  General questions are okay, but they land best when they push you toward a
+  concrete next step. Pair each question with a deliverable or decision and a
+  deadline—e.g., “What’s the fastest path to mastering Z, and who should I
+  talk to this month to start?” Does that approach feel useful for your next
+  session?
+
+  you > how often should we even be meeting
+  [stage B — User asked about how often to meet with mentor in B stage]
+  [drew on S3, S3a, S4 — 2 Otema, 1 drafted]
+  [voice only: S4a, S5, S6]
+
+Botema
+  Default to every 2 weeks. If you’re in a sprint or pushing toward a
+  milestone, do weekly for 4–6 weeks, then step back to biweekly, always
+  pairing sessions with between-session updates and defined deliverables. What
+  milestone are you aiming for in the next 6–8 weeks, and how much prep time
+  can you realistically commit between sessions?
+
+  you > what should I bring to the next one
+  [stage B — classifying the message to keep mentorship area consistent]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [drew on S3, S3a, S4 — 2 Otema, 1 drafted]
+  [voice only: S5, S4a, S6]
+
+Botema
+  Bring a tight 60–90 second progress update, two concrete asks for input, and
+  one deliverable you want feedback on, plus a quick recap of what you did
+  since the last session and any blockers. If you have it, include a short
+  deck or notes that illustrate your plan for the next two weeks and the
+  deadlines you’re aiming for.
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     4 · Mentorship
   covered_stages  B
-  touched_facets  S3, S4, S5, S6
+  touched_facets  S3, S3a, S4, S4a, S5, S6
   closed_areas    —
-  role/location   — / —
-  trying to do    She wants to know how often they should be meeting with her mentor. She continues to pursue getting the most out of mentorship sessions and has felt she shows up without much to say. She now asks what she should bring to the next mentorship session.
+  role/location   mentor / —
+  trying to do    She is trying to figure out how to make the most of her mentorship sessions, and is now asking what she should bring to the next one. She has been seeking clarity on how often they should be meeting to maximize impact and whether it's okay to ask general questions during those sessions. She sometimes feels she shows up with not much to say.
 
   Nothing was written to any database.
 ```

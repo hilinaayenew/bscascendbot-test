@@ -1668,7 +1668,7 @@
           </svg>
         </div>
         <div class="key">
-          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's eight real answers, numbered in question-bank order (S1–S8 = Q1–Q8). <span class="chip">G</span> is one of the four drafted gap-filling answers.</p>
+          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's eight real answers, numbered in question-bank order (S1–S8 = Q1–Q8). <span class="chip">G</span> is one of the four drafted gap-filling answers. Response-branch facets (S1a, S7a, S2a, S8a, G3a, G1a, S4a, S6a) are their own cards further down.</p>
           <div class="key-grid">
             <div><span class="chip">S1</span> No background, where do I begin?</div>
             <div><span class="chip">S2</span> Self-teach vs bootcamp vs degree</div>
@@ -1689,7 +1689,7 @@
 
       <div class="section">
         <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 12 Facets and Where Each Leads</h2>
-        <p class="prompt-intro">Each card shows the question the answer currently ends on, and the facets that closer plausibly hands off to — read off the actual closing questions, not yet confirmed by a full dead-end sweep. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still <code>unreviewed</code>. Response-branch facets are their own cards further down; they live in the same stage's facet pool in code, just shown separately here since they answer a specific follow-up rather than opening the topic.</p>
+        <p class="prompt-intro">Each card shows the question the answer currently ends on, and the facets that closer plausibly hands off to — read off the actual closing questions. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still <code>unreviewed</code>. Response-branch facets are their own cards further down; they live in the same stage's facet pool in code, just shown separately here since they answer a specific follow-up rather than opening the topic.</p>
 
         <div class="stage-band"><span class="sb-id">Stage A</span><h3>Deciding whether, or which direction</h3><span class="sb-note">no prior career, no field settled</span></div>
         <div class="facet-grid">
@@ -1771,7 +1771,7 @@
       <div class="section">
         <div class="section-title">Area Flow · Response branches</div>
         <h2 class="section-heading">What Happens After the Question <span class="st proposed">PROPOSED</span></h2>
-        <div class="banner info"><strong>Three dead ends found reading the closers above, not from a full sweep.</strong> S1's closer assumes a passion-framed answer and has no branch for "I just want stable pay." S7's closer assumes she's tried something already. S2's closer asks about runway and has no branch for "very little of either." All three are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here. They live in their parent facet's stage pool (S1a and S7a in Stage A, S2a in Stage C). More will surface once a full sweep or an area-tester pass is run against this area.</div>
+        <div class="banner info"><strong>Eight dead ends found reading the closers above.</strong> S1's closer assumes a passion-framed answer and has no branch for "I just want stable pay." S7's closer assumes she's tried something already. S2's closer asks about runway and has no branch for "very little of either." S8's closer has no branch for doubting the day-to-day is worth it at all. G3's closer assumes she's already tried building something. G1's closer has no branch for an income-share-agreement bootcamp. S4's closer has no branch for a genuinely compressed timeline. S6's closer has no branch for someone without reliable connectivity — the exact access gap <code>BOTEMA_VALUES</code> names directly. All eight are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here.</div>
         <div class="facet-grid">
           <div class="facet drafted">
             <div class="facet-top"><span class="facet-id">S1a</span><h4>Motivation is money, not passion</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span></span></div>
@@ -1787,6 +1787,31 @@
             <div class="facet-top"><span class="facet-id">S2a</span><h4>Very little time and money</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S2</span></span></div>
             <p class="closer">"How much time can you actually protect each week, even if it's small?"</p>
             <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip">S6</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S8a</span><h4>Doubts the day-to-day is worth it</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S8</span></span></div>
+            <p class="closer">"What part of a day like that, if any, actually sounds interesting to you?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G3a</span><h4>No idea how to start a project</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">G3</span></span></div>
+            <p class="closer">"Which of those sounds least intimidating to actually start?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G1a</span><h4>Income-share agreement bootcamp</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">G1</span></span></div>
+            <p class="closer">"What percentage and time period are they asking for?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S2a</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S4a</span><h4>Genuinely compressed timeline</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S4</span></span></div>
+            <p class="closer">"What's driving the three months?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S6</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S6a</span><h4>No reliable connectivity</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S6</span></span></div>
+            <p class="closer">"What does your connection actually allow you to do reliably?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip">S4</span></div>
           </div>
         </div>
       </div>
@@ -1924,11 +1949,16 @@
       <div class="section">
         <div class="section-title">Area Flow · Area 2</div>
         <h2 class="section-heading">Inside Further Education <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">Built fast under a deadline (2026-08-23) to reach six areas — a lighter design and test pass than Salary or Confidence got, spec and implementation done together rather than spec-first. Otema's 7 real answers (Q9-15) split cleanly along one decision: is further study worth it at all versus a cheaper alternative, which programme to choose once that's settled, and the logistics of actually doing it.</p>
+        <p class="prompt-intro">One classification call per message places the user in one of three stages; the stage scopes which of Otema's 7 real answers the model is shown; the model writes the reply from that material. The 7 answers (Q9-15) split cleanly along one decision: is further study worth it at all versus a cheaper alternative, which programme to choose once that's settled, and the logistics of actually doing it. Runs end-to-end in the local harness; not yet wired into the live edge function.</p>
         <div class="banner spec">
-          <strong>Three stages, following the decision itself rather than a "how far along" guess:</strong> <strong>A</strong> — deciding whether a master's (or further study at all) is worth it versus a certification. <strong>B</strong> — a specific programme or field is the live question. <strong>C</strong> — funding and balancing it with a full-time job, once a path is chosen or close to it.
+          <strong>Three stages, following the decision itself rather than a "how far along" guess:</strong> <strong>A</strong> — deciding whether a master's (or further study at all) is worth it versus a certification. A certification mentioned once keeps the conversation eligible for stage A for as long as it is genuinely still being weighed, even a few turns later — this is deliberately sticky, not a fresh read each message. <strong>B</strong> — a specific programme or field is the live question, and no certification has been mentioned anywhere in the conversation so far. <strong>C</strong> — funding and balancing it with a full-time job, once a path is chosen or close to it. A bare mention of money, savings or time in stage C only pulls the conversation back to stage A if a certification is still genuinely on the table — if none was ever mentioned, it has nothing to fall back to and stays in C.
         </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area</h2>
         <div class="key">
+          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's seven real answers, numbered in question-bank order (S1–S7 = Q9–15). No standalone <span class="chip">G</span> gap facets — every drafted answer here is a response branch off an existing closer (S1a, S4a, S5a, S6a, S6b, S7a), shown as their own cards further down.</p>
           <div class="key-grid">
             <div><span class="chip">S1</span> Do I need a master's? (Q9)</div>
             <div><span class="chip">S2</span> Which fields benefit most? (Q10)</div>
@@ -1939,22 +1969,175 @@
             <div><span class="chip">S7</span> Balancing it with full-time work (Q15)</div>
           </div>
         </div>
-        <div class="flow-note">Stage A: S1, S5 · Stage B: S2, S3, S4 · Stage C: S6, S7. No drafted gaps yet — all 7 facets are Otema's real answers.</div>
+        <div class="flow-note">All 7 real facets belong to Otema; the 6 drafted ones are all response branches, not standalone gap topics. No standalone gap-filling topic (a "G" facet with no real-answer parent) identified yet. No cross-cutting facet identified yet.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 7 Facets and Where Each Leads</h2>
+        <p class="prompt-intro">Edges are read off the actual closing questions. All 7 are <span class="src real">OTEMA</span>'s real questionnaire answers.</p>
+
+        <div class="stage-band"><span class="sb-id">Stage A</span><h3>Whether it's worth it</h3><span class="sb-note">no programme chosen yet — weighing further study against a cheaper alternative; sticky once a certification is mentioned</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S1</span><h4>Do I need a master's?</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"Is there a role you're eyeing where it's actually required?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip">S2</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S5</span><h4>Certifications vs a master's</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What field are you looking at?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+
+        <div class="stage-band"><span class="sb-id">Stage B</span><h3>Choosing a programme</h3><span class="sb-note">further study is decided — the live question is which one, or when — and no certification has come up anywhere yet</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S2</span><h4>Which fields benefit most</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What field are you considering?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S3</span><h4>What to look for choosing a programme</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's pulling you toward a master's?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S4</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S4</span><h4>Before or after work experience?</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's driving this?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S6</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+
+        <div class="stage-band"><span class="sb-id">Stage C</span><h3>Funding and balancing it</h3><span class="sb-note">a programme is chosen or close to it — the live question is logistics; a bare money/time mention stays here unless a certification is genuinely still on the table</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S6</span><h4>Funding and scholarships</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What programme are you considering?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S7</span><h4>Balancing it with full-time work</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's your workload like right now?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S6</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Response branches</div>
+        <h2 class="section-heading">What Happens After the Question <span class="st proposed">PROPOSED</span></h2>
+        <div class="banner info"><strong>Six dead ends found reading the closers above.</strong> S1's closer has no branch for immigration-motivated study. S4's closer has no branch for a live, time-boxed employer funding offer that conflicts with the general "wait" advice. S5's closer and S2's real answer both skip mobile/web development — arguably the single most common career-changer field. S6's closer has no branch for non-gender-specific funding routes, or for funding a certification rather than a masters. S7's closer frames the whole tradeoff around paid employment, with no branch for unpaid caregiving. All six are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here.</div>
+        <div class="facet-grid">
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S1a</span><h4>Immigration-motivated study</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span></span></div>
+            <p class="closer">"Which country are you and your family looking at, and do you know if tech is on their skilled list?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S5a</span><h4>Unlisted field — mobile/web development</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S5</span></span></div>
+            <p class="closer">"What's actually pulling you toward further study for this field specifically?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S4a</span><h4>Live employer funding offer, tied to a deadline</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S4</span></span></div>
+            <p class="closer">"What does the offer actually require of you?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S6</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S6a</span><h4>Non-gender-specific funding routes</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S6</span></span></div>
+            <p class="closer">"Has your employer ever mentioned a training or education budget?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S6b</span><h4>Funding a certification, not a masters</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S6</span></span></div>
+            <p class="closer">"Has your employer got a training budget you could put this toward?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S7a</span><h4>Unpaid caregiving, not paid employment</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S7</span></span></div>
+            <p class="closer">"What kind of support do you have around you day to day?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Leaving</div><h2 class="section-heading">When to Suggest a Different Area</h2>
+        <p class="prompt-intro">The Flow C hand-off, triggered from inside the area rather than by the user asking.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>What's happening</th><th>What it actually means</th><th>Offer instead</th></tr></thead>
+            <tbody>
+              <tr><td>They start asking what the qualification is actually worth in pay terms</td><td>The education question has become a pricing question</td><td><strong>Area 9</strong> · Salary &amp; Negotiation</td></tr>
+              <tr><td>Self-doubt about being capable of the programme becomes the main subject</td><td>A confidence problem wearing an education decision's clothes</td><td><strong>Area 6</strong> · Confidence &amp; Imposter Syndrome</td></tr>
+              <tr><td>A programme is finished or nearly so and they start asking about applying, CVs, or interviews</td><td>They've left the education decision and are now job-searching</td><td><strong>Area 7 / 8</strong> · Job Search &amp; Applications / Interview Preparation</td></tr>
+              <tr><td>They ask specifically for a person to talk to about the decision, not a fact</td><td>A named need for a mentor rather than more comparison</td><td><strong>Area 4</strong> · Mentorship</td></tr>
+              <tr><td>Two turns with no new information, or a facet revisited with nothing added</td><td>The area is done, whether or not every facet was covered</td><td>Sum up and offer the remaining areas</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · To build</div><h2 class="section-heading">What This Needs</h2>
         <div class="grid-2">
           <div class="scope-card can">
             <div class="scope-head">Already true</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>Runs end-to-end in the harness</strong><div class="example"><code>npm run coach -- --area=further-education</code></div></div>
-              <div class="scope-item"><strong>4 of 5 scenarios pass clean</strong><div class="example">Certifications are treated as a real alternative, not a lesser one; work-experience-first timing advice matches Otema's own stated position; funding and balancing both get real answers, not just the first one asked.</div></div>
+              <div class="scope-item"><strong>Runs end-to-end in the local harness</strong><div class="example"><code>npm run coach -- --area=further-education</code></div></div>
+              <div class="scope-item"><strong>5 scenarios written, sweep passes 4/5</strong><div class="example"><code>scripts/scenarios/further-education.mjs</code> — treats certifications as a real alternative, not a lesser one; recommends work experience first per Otema's own stated position; gives real answers to both funding and balancing rather than only the first one asked</div></div>
             </div>
           </div>
           <div class="scope-card cant">
-            <div class="scope-head">Doesn't exist yet / open</div>
+            <div class="scope-head">Doesn't exist yet</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only, same as every other area here</div></div>
-              <div class="scope-item"><strong>One residual A/B boundary blur</strong><div class="example">"Are certifications respected by employers?" classified B in one run (evidence-gathering toward a near-decision) where A (still deciding) is also defensible — not chased further given time; likely inherent classification variance rather than a structural bug</div></div>
-              <div class="scope-item"><strong>No dead-end sweep or drafted gap-filling yet</strong><div class="example">First pass — deeper coverage work is a follow-up, not urgent</div></div>
+              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only, same gap as every area on this branch</div></div>
+              <div class="scope-item"><strong>A full dead-end sweep</strong><div class="example">Edges above are read off closing questions, not confirmed by a tester pass</div></div>
+              <div class="scope-item"><strong>Any drafted gap-filling</strong><div class="example">All 7 facets are real; no gaps identified yet</div></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">All Answers in Full</h2>
+        <p class="prompt-intro">The complete question and answer behind every facet above, in ID order — all of them Otema's real words from the questionnaire.</p>
+        <div class="full-list">
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S1</span><h4>Do I need a master's?</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">Do I need a master's degree to succeed in tech?</p>
+            <p class="ff-a">Not to succeed generally — but if you're aiming for leadership or decision-making roles, it can give you real leverage. Is there a role you're eyeing where it's actually required?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S2</span><h4>Which fields benefit most</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">Which tech fields benefit most from having a postgraduate qualification?</p>
+            <p class="ff-a">Machine learning and AI research roles often expect it, as do statistics-heavy data science and cybersecurity governance work — it can also help with skilled-migration visas in places like the UK or Canada. What field are you considering?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S3</span><h4>What to look for choosing a programme</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What should I look for when choosing a master's programme in a tech related field?</p>
+            <p class="ff-a">Check that the actual modules map to your goals, not just the course title, and look at the faculty's real strength in that specific field, not just the school's overall name. What's pulling you toward a master's?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S4</span><h4>Before or after work experience?</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">Is it better to do a master's before or after gaining work experience?</p>
+            <p class="ff-a">After, in my experience — work experience gives you clarity on what you actually want to go deeper in, and builds the time-management muscle a master's demands. What's driving this?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S5</span><h4>Certifications vs a master's</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">Are there certifications that are more valued than a master's degree in tech?</p>
+            <p class="ff-a">For cloud, project management, or security specifically — AWS/Azure certs, PMP, or Security+ are cheaper, faster, and tied directly to tools employers actually use. A degree still tells a broader story about you, but for these fields a certification can carry real weight. What field are you looking at?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S6</span><h4>Funding and scholarships</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I fund further education in tech, are there scholarships for women?</p>
+            <p class="ff-a">There are real scholarships out there for women in tech — strong grades and projects that show applied skill are what make you competitive for them. What programme are you considering?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S7</span><h4>Balancing it with full-time work</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I balance working full time while pursuing further academic qualifications?</p>
+            <p class="ff-a">Ideally you'd pause work and focus fully if you can afford to — if not, an online or hybrid program with evening or weekend classes lets you do both, but it takes real discipline to protect the time. What's your workload like right now?</p>
           </div>
         </div>
       </div>
@@ -1964,11 +2147,16 @@
       <div class="section">
         <div class="section-title">Area Flow · Area 3</div>
         <h2 class="section-heading">Inside Career Paths &amp; Roadmaps <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">Built fast under a deadline (2026-08-23), spec and implementation together. Otema's 8 real answers (Q16-23) are almost entirely one shape — "give me the roadmap for field X" — with exactly one (Q23) actually about choosing between fields. The stage split follows that fault line directly.</p>
+        <p class="prompt-intro">One classification call per message places the user in one of two stages; the stage scopes which of Otema's answers, plus one drafted gap, the model is shown; the model writes the reply from that material. Otema's 8 real answers (Q16-23) are almost entirely one shape — the roadmap for a named field — with exactly one (Q23) actually about choosing between fields. The stage split follows that fault line directly. Runs end-to-end in the local harness; not yet wired into the live edge function.</p>
         <div class="banner spec">
-          <strong>Two stages: choosing a specialisation, versus the roadmap for one already chosen.</strong> The moment a single field is named, every later message about it — background constraints, realism checks on a specific job title, timelines — stays in stage B. That had to be stated explicitly: a live test drifted back to stage A on "I have zero IT background" and "is 'ethical hacker' realistic" before the stage description was tightened to say so directly, the same shape of fix Getting Started's A/B tie-break needed.
+          <strong>Two stages: choosing a specialisation, versus the roadmap for one already chosen.</strong> The moment a single field is named, every later message about it — background constraints, realism checks on a specific job title, timelines — stays in stage B, not a return to choosing. Only an explicit reopening of the choice between fields moves it back to stage A.
         </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area</h2>
         <div class="key">
+          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's eight real answers, numbered in question-bank order (S1–S8 = Q16–23). <span class="chip">G</span> is a drafted gap-filling answer. Response-branch facets (S8a, G1a, S4a, S5a) are their own cards further down.</p>
           <div class="key-grid">
             <div><span class="chip">S1</span> Software developer roadmap (Q16)</div>
             <div><span class="chip">S2</span> Data science / ML, non-technical start (Q17)</div>
@@ -1981,22 +2169,184 @@
             <div><span class="chip">G1</span> No basis yet to compare fields — hasn't tried any hands-on</div>
           </div>
         </div>
-        <div class="flow-note">Stage A: S8, G1 · Stage B: S1-S7.</div>
+        <div class="flow-note">No cross-cutting facet identified yet.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 9 Facets and Where Each Leads</h2>
+        <p class="prompt-intro">Edges are read off the actual closing questions. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still <code>unreviewed</code>.</p>
+
+        <div class="stage-band"><span class="sb-id">Stage A</span><h3>Choosing a specialisation</h3><span class="sb-note">no field named yet, or explicitly comparing more than one</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S8</span><h4>Choosing between specialisations</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What have you enjoyed building?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">G1</span><span class="chip self">stays</span><span class="elabel">or any of S1–S7 once named</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G1</span><h4>No basis yet to compare fields</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What have you actually tried building or making so far, even something small?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S8</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+
+        <div class="stage-band"><span class="sb-id">Stage B</span><h3>The roadmap for a chosen field</h3><span class="sb-note">a single field is named; the live question is the concrete steps for it</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S1</span><h4>Software developer roadmap</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What have you built so far?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S2</span><h4>Data science / ML, non-technical start</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What field are you coming from?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S3</span><h4>UX/UI designer steps</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"Have you started designing anything yet?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S4</span><h4>Cybersecurity roadmap</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"Any IT background already?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S5</span><h4>Product management</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's your current background?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S6</span><h4>Cloud / DevOps roadmap</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"Any scripting experience yet?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S7</span><h4>Transition into tech project management</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's your current role?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Response branches</div>
+        <h2 class="section-heading">What Happens After the Question <span class="st proposed">PROPOSED</span></h2>
+        <div class="banner info"><strong>Four dead ends found reading the closers above.</strong> S8's closer, and G1's own closer, only ever compare sub-specialisations of software engineering — cybersecurity, UX/UI, PM and TPM are never actually weighed against each other, despite Stage A's own definition naming all of them. S4's closer has no branch for someone already past the entry point it names as the finish line. S5's closer (and S7's, the same shape) assumes an existing job to move sideways from, with nothing for zero work history. G1's closer also has no branch for someone with no time to experiment hands-on at all. All four are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here.</div>
+        <div class="facet-grid">
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S8a</span><h4>Choosing between fields never actually compared</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S8</span></span></div>
+            <p class="closer">"Have you tried either one hands-on yet?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G1a</span><h4>No time to experiment hands-on</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">G1</span></span></div>
+            <p class="closer">"What does the job market look like near you?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S4a</span><h4>Already past the entry point</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S4</span></span></div>
+            <p class="closer">"What part of the work has felt most like you so far?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S5a</span><h4>Zero work history to move sideways from</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S5</span></span></div>
+            <p class="closer">"What's realistic for you to start with right now?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Leaving</div><h2 class="section-heading">When to Suggest a Different Area</h2>
+        <p class="prompt-intro">The Flow C hand-off, triggered from inside the area rather than by the user asking.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>What's happening</th><th>What it actually means</th><th>Offer instead</th></tr></thead>
+            <tbody>
+              <tr><td>They start naming numbers, offers, or negotiating</td><td>They've moved past the roadmap into pricing themselves for a role</td><td><strong>Area 9</strong> · Salary &amp; Negotiation</td></tr>
+              <tr><td>Self-doubt about being good enough becomes the main subject, not the path itself</td><td>A confidence problem wearing a roadmap question's clothes</td><td><strong>Area 6</strong> · Confidence &amp; Imposter Syndrome</td></tr>
+              <tr><td>They ask in depth about a master's, a specific postgraduate programme, or which certification to pursue</td><td>The roadmap question has become a further-education decision, which needs its own depth</td><td><strong>Area 2</strong> · Further Education</td></tr>
+              <tr><td>The roadmap is settled and they start asking about the CV, applying, or interviews</td><td>They've left "which path" and are now job-searching</td><td><strong>Area 7 / 8</strong> · Job Search &amp; Applications / Interview Preparation</td></tr>
+              <tr><td>They ask specifically for a person to talk to, not a resource</td><td>A named need for a mentor rather than more roadmap detail</td><td><strong>Area 4</strong> · Mentorship</td></tr>
+              <tr><td>Two turns with no new information, or a facet revisited with nothing added</td><td>The area is done, whether or not every facet was covered</td><td>Sum up and offer the remaining areas</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · To build</div><h2 class="section-heading">What This Needs</h2>
         <div class="grid-2">
           <div class="scope-card can">
             <div class="scope-head">Already true</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>Runs end-to-end in the harness</strong><div class="example"><code>npm run coach -- --area=career-paths</code></div></div>
-              <div class="scope-item"><strong>4 of 5 scenarios pass clean</strong><div class="example">Corrects the "ethical hacker as a first job" assumption rather than going along with it; treats an internal move (engineering → PM) as the normal path; picks up the mobile-first/low-bandwidth African-market detail rather than giving a generic UX answer</div></div>
-              <div class="scope-item"><strong>The A/B tie-break tightened after a live test caught the drift</strong><div class="example">See banner above</div></div>
+              <div class="scope-item"><strong>Runs end-to-end in the local harness</strong><div class="example"><code>npm run coach -- --area=career-paths</code></div></div>
+              <div class="scope-item"><strong>5 scenarios written, sweep passes 4/5</strong><div class="example"><code>scripts/scenarios/career-paths.mjs</code> — corrects the "ethical hacker as a first job" assumption rather than going along with it, treats an internal engineering-to-PM move as the normal path, and picks up the mobile-first/low-bandwidth African-market detail rather than giving a generic UX answer</div></div>
+              <div class="scope-item"><strong>G1 drafted</strong><div class="example">Written into <code>botema-generated-examples.ts</code>, <code>unreviewed</code></div></div>
             </div>
           </div>
           <div class="scope-card cant">
-            <div class="scope-head">Doesn't exist yet / open</div>
+            <div class="scope-head">Doesn't exist yet</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only</div></div>
-              <div class="scope-item"><strong>One residual opening-turn misclassification</strong><div class="example">"What does a career path in cybersecurity actually look like" — a field named outright — classified A once, with the model's own reasoning incorrectly saying no field was named. Not chased further given time; the tightened description already fixed the more common drift on later turns.</div></div>
+              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only, same gap as every area on this branch</div></div>
+              <div class="scope-item"><strong>A full dead-end sweep</strong><div class="example">Edges above are read off closing questions, not confirmed by a tester pass</div></div>
+              <div class="scope-item"><strong>A cross-cutting facet</strong><div class="example">None identified yet</div></div>
+              <div class="scope-item"><strong>Otema's review of G1</strong><div class="example">Required before it can be served</div></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">All Answers in Full</h2>
+        <p class="prompt-intro">The complete question and answer behind every facet above, in ID order. <span class="src real">OTEMA</span> answers are her real words from the questionnaire. <span class="src drafted">DRAFTED</span> answers are AI-written in her voice and <strong>unreviewed</strong> — not served to anyone until she has approved them.</p>
+        <div class="full-list">
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S1</span><h4>Software developer roadmap</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What does the roadmap look like to become a software developer?</p>
+            <p class="ff-a">Learn the fundamentals, get comfortable with Git, and build real projects — start with a simple CRUD app, then a full-stack one with auth and a database. Keep an active GitHub and apply to junior roles while you practice for interviews. What have you built so far?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S2</span><h4>Data science / ML, non-technical start</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I get into data science or machine learning with a non-technical background?</p>
+            <p class="ff-a">Start with spreadsheet-level analysis, then SQL, then Python with pandas, then stats and visualisation — most people land first as a data analyst before moving into data science or ML, so treat that as the realistic ladder. What field are you coming from?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S3</span><h4>UX/UI designer steps</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What are the steps to becoming a UX/UI designer?</p>
+            <p class="ff-a">Learn the design fundamentals and Figma, then build three or four real case studies — solving for mobile-first, low-bandwidth African contexts makes for a genuinely compelling portfolio. Have you started designing anything yet?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S4</span><h4>Cybersecurity roadmap</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What does a career path in cybersecurity look like and where do I start?</p>
+            <p class="ff-a">Start with IT and networking fundamentals, then Security+, and get hands-on with free platforms like TryHackMe. SOC analyst or IT security support is the realistic entry point — not "ethical hacker" straight away. Any IT background already?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S5</span><h4>Product management</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I get into product management in tech?</p>
+            <p class="ff-a">PM is rarely a first role — most people move in sideways from engineering, business analysis, or customer success. Learn enough to speak both the dev and design language, write a sample PRD, and prioritise informational interviews with working PMs. What's your current background?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S6</span><h4>Cloud / DevOps roadmap</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What is the roadmap for getting into cloud computing or DevOps?</p>
+            <p class="ff-a">Linux, scripting, and Git first, then pick one cloud platform — AWS has the widest adoption and a generous free tier. Add an entry certification like AWS Cloud Practitioner, then Docker and basic CI/CD. Any scripting experience yet?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S7</span><h4>Transition into tech project management</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I transition into tech project management?</p>
+            <p class="ff-a">Your existing coordination and stakeholder skills transfer directly — add an Agile or Scrum certification and target titles like Junior PM or Delivery Coordinator as your entry point. What's your current role?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S8</span><h4>Choosing between specialisations</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What are the different specialisations within software engineering and how do I choose?</p>
+            <p class="ff-a">Frontend, backend, full-stack, or mobile if you like building products; data or ML engineering if you like systems that learn; DevOps if you like infrastructure. Try small projects in a couple and notice which one excites you — mobile and fintech backend work are especially strong across African markets right now. What have you enjoyed building?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">G1</span><h4>No basis yet to compare fields</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">I don't really know enough about any of these fields to know which one I'd even be good at or enjoy.</p>
+            <p class="ff-a">You don't figure that out by reading about it, you figure it out by trying a small piece of each — a one-day tutorial building a webpage, a one-day tutorial cleaning a dataset, a one-day tutorial designing a screen in Figma. Whichever one you didn't want to stop is the one worth going deeper on first. What have you actually tried building or making so far, even something small?</p>
           </div>
         </div>
       </div>
@@ -2006,17 +2356,19 @@
       <div class="section">
         <div class="section-title">Area Flow · Area 4</div>
         <h2 class="section-heading">Inside Mentorship <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">Built fast under a deadline (2026-08-23), spec and implementation together. Otema's 6 real answers (Q24-29) split on whether she already has a mentor: finding and approaching one, versus making an existing relationship work.</p>
+        <p class="prompt-intro">One classification call per message places the user in one of two stages; the stage scopes which of Otema's 6 real answers the model is shown; the model writes the reply from that material. The 6 answers (Q24-29) split on whether she already has a mentor: finding and approaching one, versus making an existing relationship work. Runs end-to-end in the local harness; not yet wired into the live edge function.</p>
         <div class="banner spec">
           <strong>Two stages: finding a mentor, versus making it work.</strong> A is "no mentor yet"; B covers sessions, the mentor/sponsor distinction, maintaining it long-term, and using the BSC programme's structure once a relationship exists.
         </div>
         <div class="banner info">
-          <strong>A real, shared-code bug found and fixed here, benefiting every area:</strong> the stall detector's <code>newInformation</code> field only counted a fact, constraint, or answer as progress — a genuinely new QUESTION that added no new fact about her ("is that going to be a problem?", "what should I actually tell my mentor?") scored false. Two of those in a row closed the whole area after 3 of 5 turns, on someone who was actively engaging, not stuck. The field now explicitly counts a new question she hasn't asked before as forward motion; only an actual repeat, filler, or shrug is a stall. This lives in <code>coach-local.mjs</code>, so it was fixed once for every area, not just this one.
+          <strong>S2 is a correction, not just information, and the model must not soften it.</strong> Her real answer is explicit that cold-messaging a stranger on LinkedIn rarely works well, and recommends engaging with someone's public work first or asking for an introduction instead. A reply that tells her cold-messaging is fine contradicts the material it was given rather than drawing on it — worth an explicit check whenever this area is reviewed, since the failure is silent: nothing crashes, the answer just stops being hers.
         </div>
-        <div class="banner info">
-          <strong>Also observed, not a code bug:</strong> one live run had the coach say cold LinkedIn outreach is "not weird at all," directly contradicting the real answer it had just been given as material (Otema's actual S2: "cold-messaging a stranger on LinkedIn rarely works well"). A model-fidelity slip, not a mechanical one — worth an Otema-review pass before this area goes live, flagged rather than chased under this deadline.
-        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area</h2>
         <div class="key">
+          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's six real answers, numbered in question-bank order (S1–S6 = Q24–29). No standalone <span class="chip">G</span> gap facets — every drafted answer here is a response branch off an existing closer (S1a, S3a, S4a), shown as their own cards further down.</p>
           <div class="key-grid">
             <div><span class="chip">S1</span> How to find a mentor (Q24)</div>
             <div><span class="chip">S2</span> What to look for / how to approach (Q25)</div>
@@ -2026,21 +2378,145 @@
             <div><span class="chip">S6</span> Using the BSC programme with an unclear goal (Q29)</div>
           </div>
         </div>
-        <div class="flow-note">Stage A: S1, S2 · Stage B: S3, S4, S5, S6.</div>
+        <div class="flow-note">All 6 real facets belong to Otema; the 3 drafted ones are all response branches, not standalone gap topics. No standalone gap-filling topic (a "G" facet with no real-answer parent) identified yet. No cross-cutting facet identified yet.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 6 Facets and Where Each Leads</h2>
+        <p class="prompt-intro">Edges are read off the actual closing questions. All 6 are <span class="src real">OTEMA</span>'s real questionnaire answers.</p>
+
+        <div class="stage-band"><span class="sb-id">Stage A</span><h3>Finding a mentor</h3><span class="sb-note">no mentor yet</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S1</span><h4>How to find a mentor</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"Anyone already come to mind?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S2</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S2</span><h4>What to look for / how to approach</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What would you want help with first?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+
+        <div class="stage-band"><span class="sb-id">Stage B</span><h3>Making it work</h3><span class="sb-note">already has a mentor, or is inside the BSC programme</span></div>
+        <div class="facet-grid">
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S3</span><h4>Making the most of sessions</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What's on your mind for the next one?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S4</span><h4>Mentor vs sponsor</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"Does anyone actively advocate for you right now?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S5</span><h4>Maintaining it long-term</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"How long have you two been working together?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S4</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet real">
+            <div class="facet-top"><span class="facet-id">S6</span><h4>BSC programme, unclear goal</h4><span class="src real">OTEMA</span></div>
+            <p class="closer">"What are you focused on right now?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Response branches</div>
+        <h2 class="section-heading">What Happens After the Question <span class="st proposed">PROPOSED</span></h2>
+        <div class="banner info"><strong>Three dead ends found reading the closers above.</strong> S1's closer has no branch for someone who's already identified a candidate but is afraid of imposing on them, distinct from not having found anyone at all. S3's closer has no branch for wanting to leave or switch a mentor who isn't a fit. S4's closer — the facet that introduces the mentor/sponsor distinction the storyboard specifically calls out as needing care — has no branch for the obvious follow-up once she says no one advocates for her. All three are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here.</div>
+        <div class="facet-grid">
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S1a</span><h4>Afraid of imposing on someone identified</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span></span></div>
+            <p class="closer">"What's making this particular person feel like too big an ask?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S3a</span><h4>Wants to switch mentors</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S3</span></span></div>
+            <p class="closer">"What's not landing for you in this pairing?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S4a</span><h4>No sponsor, no strategy for getting one</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S4</span></span></div>
+            <p class="closer">"Who's already in a position to see your work up close right now?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Leaving</div><h2 class="section-heading">When to Suggest a Different Area</h2>
+        <p class="prompt-intro">The Flow C hand-off, triggered from inside the area rather than by the user asking.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>What's happening</th><th>What it actually means</th><th>Offer instead</th></tr></thead>
+            <tbody>
+              <tr><td>They start naming numbers, offers, or negotiating</td><td>The mentorship question has become a pricing question</td><td><strong>Area 9</strong> · Salary &amp; Negotiation</td></tr>
+              <tr><td>Self-doubt about deserving a mentor's time or attention becomes the main subject</td><td>A confidence problem wearing a mentorship question's clothes</td><td><strong>Area 6</strong> · Confidence &amp; Imposter Syndrome</td></tr>
+              <tr><td>With a mentor's help they start asking which field or role to actually pursue</td><td>The relationship is working; the live question is now the path itself</td><td><strong>Area 3</strong> · Career Paths &amp; Roadmaps</td></tr>
+              <tr><td>Two turns with no new information, or a facet revisited with nothing added</td><td>The area is done, whether or not every facet was covered</td><td>Sum up and offer the remaining areas</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · To build</div><h2 class="section-heading">What This Needs</h2>
         <div class="grid-2">
           <div class="scope-card can">
             <div class="scope-head">Already true</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>Runs end-to-end in the harness</strong><div class="example"><code>npm run coach -- --area=mentorship</code></div></div>
-              <div class="scope-item"><strong>The stall-detection bug fixed and verified</strong><div class="example">See banner above — a global fix, not area-specific. 5 of 5 scenarios pass clean after the fix.</div></div>
+              <div class="scope-item"><strong>Runs end-to-end in the local harness</strong><div class="example"><code>npm run coach -- --area=mentorship</code></div></div>
+              <div class="scope-item"><strong>5 scenarios written, sweep passes 5/5</strong><div class="example"><code>scripts/scenarios/mentorship.mjs</code></div></div>
             </div>
           </div>
           <div class="scope-card cant">
-            <div class="scope-head">Doesn't exist yet / open</div>
+            <div class="scope-head">Doesn't exist yet</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only</div></div>
-              <div class="scope-item"><strong>The cold-LinkedIn content contradiction</strong><div class="example">Flagged above — surfaced once, didn't recur in the re-run, but worth an Otema-review pass before this area goes live regardless</div></div>
+              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only, same gap as every area on this branch</div></div>
+              <div class="scope-item"><strong>A full dead-end sweep</strong><div class="example">Edges above are read off closing questions, not confirmed by a tester pass</div></div>
+              <div class="scope-item"><strong>An explicit check that S2's correction survives generation</strong><div class="example">Flagged above — no code guard for this yet, only the model's own fidelity to the material</div></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">All Answers in Full</h2>
+        <p class="prompt-intro">The complete question and answer behind every facet above, in ID order — all of them Otema's real words from the questionnaire.</p>
+        <div class="full-list">
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S1</span><h4>How to find a mentor</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I find a good mentor in tech?</p>
+            <p class="ff-a">Structured programs like BSC's mentorship cohort are the easiest way in. Don't overlook someone just a step or two ahead of you — they often have more time and give more relevant advice than someone much higher up. Anyone already come to mind?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S2</span><h4>What to look for / how to approach</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What should I look for in a mentor and how do I approach them?</p>
+            <p class="ff-a">Cold-messaging a stranger on LinkedIn rarely works well — follow their posts and engage genuinely first, or ask for an introduction through someone in their circle. A structured program like BSC's gives you a vetted mentor already committed to your growth. What would you want help with first?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S3</span><h4>Making the most of sessions</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I make the most of my mentorship sessions?</p>
+            <p class="ff-a">Show up consistently and don't make your mentor chase you for updates — appreciate their time and bring initiative, not just questions. What's on your mind for the next one?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S4</span><h4>Mentor vs sponsor</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">What is the difference between a mentor and a sponsor and do I need both?</p>
+            <p class="ff-a">A mentor gives you advice; a sponsor puts your name forward in rooms you're not in and vouches for your work to decision-makers — sometimes that's the same person wearing two hats. Does anyone actively advocate for you right now?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S5</span><h4>Maintaining it long-term</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How do I maintain a productive long-term mentorship relationship?</p>
+            <p class="ff-a">Keep them updated on your progress regularly without overwhelming them, and follow through on what they ask of you — that's what builds the trust that lets them genuinely vouch for you later. How long have you two been working together?</p>
+          </div>
+          <div class="full-facet real">
+            <div class="ff-top"><span class="facet-id">S6</span><h4>BSC programme, unclear goal</h4><span class="src real">OTEMA</span></div>
+            <p class="ff-q">How can the BSC programme help me with my specific career goals?</p>
+            <p class="ff-a">Coming in with a goal helps you get the most out of it — but if you're unsure, tell your mentor exactly that, and they'll help structure your thinking into a roadmap. What are you focused on right now?</p>
           </div>
         </div>
       </div>
@@ -2050,7 +2526,7 @@
       <div class="section">
         <div class="section-title">Area Flow · Area 6</div>
         <h2 class="section-heading">Inside Confidence &amp; Imposter Syndrome <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">Spec written before any code, per the target-spec order: this section is the design to build against, not a record of what exists. Nothing below is implemented yet — no area config, no scenarios, no drafted answers, no live testing. Otema's real material is 5 answers (Q36–40 in the training bank), all currently grouped under one function, <code>addressMindsetChallenge</code>, in <code>botema-examples.ts</code>.</p>
+        <p class="prompt-intro">One classification call per message places the user in one of two stages; the stage scopes which of Otema's 5 real answers, plus 4 drafted facets, the model is shown; the model writes the reply from that material. Not a router — the edges recorded below are a coverage map read off closing questions, never consulted to decide what to say. Runs end-to-end in the local harness; not yet wired into the live edge function.</p>
 
         <div class="banner spec">
           <strong>Two stages, not situational: what the self-doubt is doing, not what triggered it.</strong> <strong>A</strong> — an internal narrative being processed: comparing yourself to others, discounting your own wins, not feeling like you belong. <strong>B</strong> — self-doubt that has stalled a concrete action: not speaking up, not applying, not putting yourself forward. The distinguishing question is whether there's a decision sitting behind it. A is "I feel this way", B is "I'm not doing this because I feel this way" — and B is where the coach's job changes from processing a feeling to unsticking a choice.
@@ -2058,7 +2534,7 @@
       </div>
 
       <div class="section">
-        <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area <span class="st proposed">PROPOSED</span></h2>
+        <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area</h2>
         <div class="stage-map">
           <svg viewBox="0 0 900 180" role="img" aria-label="Two stages. Processing the narrative and A stalled action. An edge runs from the narrative stage to the stalled-action stage when the feeling is named as the reason for not doing something, and a return edge runs back when the block resolves and a new feeling surfaces.">
             <defs>
@@ -2069,11 +2545,11 @@
             <rect class="sm-box" x="60" y="35" width="230" height="90" rx="9" />
             <text class="sm-label" x="75" y="58">STAGE A</text>
             <text class="sm-title" x="75" y="80">Processing the narrative</text>
-            <text class="sm-sub" x="75" y="100">S1 · S2 · S5 · G1</text>
+            <text class="sm-sub" x="75" y="100">S1 · S2 · S5 · G1 · S1a</text>
             <rect class="sm-box" x="590" y="35" width="230" height="90" rx="9" />
             <text class="sm-label" x="605" y="58">STAGE B</text>
             <text class="sm-title" x="605" y="80">A stalled action</text>
-            <text class="sm-sub" x="605" y="100">S3 · S4 · G2</text>
+            <text class="sm-sub" x="605" y="100">S3 · S4 · G2 · S3a</text>
             <g style="color:var(--accent)">
               <line class="sm-edge" x1="292" y1="65" x2="588" y2="65" marker-end="url(#ah6)" />
               <line class="sm-edge" x1="588" y1="100" x2="292" y2="100" marker-end="url(#ah6)" />
@@ -2083,7 +2559,7 @@
           </svg>
         </div>
         <div class="key">
-          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's five real answers, numbered in question-bank order (S1–S5 = Q36–40). <span class="chip">G</span> is a proposed gap — named here, not yet drafted.</p>
+          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's five real answers, numbered in question-bank order (S1–S5 = Q36–40). <span class="chip">G</span> is a drafted gap-filling answer, the same shape as Salary's G1-G10. Response-branch facets (S1a, S3a, S1b, S5a, S3b, S3c, G3, G4) are their own cards further down.</p>
           <div class="key-grid">
             <div><span class="chip">S1</span> Don't feel like I belong (Q36)</div>
             <div><span class="chip">S2</span> Feel less competent than colleagues (Q37)</div>
@@ -2092,36 +2568,73 @@
             <div><span class="chip">S5</span> Can't internalise my own achievements (Q40)</div>
             <div><span class="chip">G1</span> Discounting other people's praise as politeness or luck</div>
             <div><span class="chip">G2</span> Declining a stretch opportunity — a project, a talk, a promotion — before it's even offered properly</div>
+            <div><span class="chip">G5</span> Perfectionism / fear of a visible mistake</div>
+            <div><span class="chip">G6</span> Comparison via curated online success (LinkedIn)</div>
+            <div><span class="chip">G7</span> No CS degree — self-taught as the legitimacy trigger</div>
+            <div><span class="chip">G8</span> Promoted, doubting fitness for the role</div>
+            <div><span class="chip">G9</span> Fear of being "found out" in a technical interview</div>
+            <div><span class="chip">G10</span> Seen as confident, doesn't feel it internally</div>
           </div>
         </div>
-        <div class="flow-note">No cross-cutting facet proposed yet. Worth watching for one once this is tested live — Salary's needed one ("will I seem difficult") and this area's subject matter makes a similar constant plausible.</div>
+        <div class="flow-note"><code>G10</code> is the closest thing to a cross-cutting facet here — the gap between being perceived as confident and not feeling it internally shows up as an undertone in several other facets' territory (S1, S5), not just its own card, the way Salary's "will I seem difficult" (G9) does.</div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 7 Facets and Where Each Might Lead <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">Edges here are a guess, not yet read off real closing questions the way Getting Started's were — Otema's five real answers all end on a question, so the closers exist, but nothing has been tested live to see what people actually say back. Treat the edges as provisional. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> marks a proposed gap with no text written yet.</p>
+        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 13 Facets and Where Each Leads</h2>
+        <p class="prompt-intro">Each card shows the question the answer ends on, and the facets that closer plausibly hands off to — read off the actual closing questions. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still <code>unreviewed</code>. Response-branch facets are shown separately below.</p>
+        <div class="banner spec"><strong>Eight standalone gap facets, the same shape as Salary's ten.</strong> <code>G1</code> and <code>G2</code> cover discounting other people's praise and declining a stretch opportunity before it's offered. <code>G5</code>-<code>G10</code> cover six more whole topics her 5 real answers never touch at all: perfectionism and fear of a visible mistake, comparison via curated online success, a non-traditional background as the specific legitimacy trigger, self-doubt after being promoted rather than before applying, fear of being "found out" in a technical interview, and the gap between being perceived as confident and not feeling it internally.</div>
 
         <div class="stage-band"><span class="sb-id">Stage A</span><h3>Processing the narrative</h3><span class="sb-note">a feeling being worked through, no action stalled on it yet</span></div>
         <div class="facet-grid">
           <div class="facet real">
             <div class="facet-top"><span class="facet-id">S1</span><h4>Don't feel like I belong in tech</h4><span class="src real">OTEMA</span></div>
             <p class="closer">"What's making you feel this way right now?"</p>
-            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S2</span><span class="chip">G1</span><span class="chip self">stays</span></div>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S2</span><span class="chip">G1</span><span class="chip">S1a</span><span class="chip self">stays</span></div>
           </div>
           <div class="facet real">
             <div class="facet-top"><span class="facet-id">S2</span><h4>Feel less competent than colleagues</h4><span class="src real">OTEMA</span></div>
             <p class="closer">"What's bringing this up right now?"</p>
-            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S1</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip">S5</span><span class="chip self">stays</span></div>
           </div>
           <div class="facet real">
             <div class="facet-top"><span class="facet-id">S5</span><h4>Can't internalise my own achievements</h4><span class="src real">OTEMA</span></div>
             <p class="closer">"What did you achieve recently that you shrugged off?"</p>
-            <div class="edges"><span class="elabel">might lead to</span><span class="chip">G1</span><span class="chip">S2</span><span class="chip self">stays</span></div>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">G1</span><span class="chip">S2</span><span class="chip self">stays</span></div>
           </div>
           <div class="facet drafted">
-            <div class="facet-top"><span class="facet-id">G1</span><h4>Discounting other people's praise</h4><span class="src drafted">PROPOSED</span></div>
-            <p class="closer">proposed: something like "what did they actually say, in their words?"</p>
-            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+            <div class="facet-top"><span class="facet-id">G1</span><h4>Discounting other people's praise</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What did they actually say, in their own words?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S5</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G5</span><h4>Perfectionism / fear of a visible mistake</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What's the worst version of 'getting it wrong' you're picturing, and has anything close to that actually happened before?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G6</span><h4>Comparison via curated online success</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What would you actually need to be true about your own progress to feel like you're not behind?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G7</span><h4>No CS degree — self-taught as the legitimacy trigger</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What's something you've already built or shipped that a computer science degree wouldn't have taught you how to do?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G8</span><h4>Promoted, doubting fitness for the role</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What decision is in front of you right now that you're sitting on?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S4</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G9</span><h4>Fear of being "found out" in a technical interview</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What's the specific part of the interview format that worries you most?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span><span class="chip">→ Area 8</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G10</span><h4>Seen as confident, doesn't feel it internally</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"Does the doubt ever actually stop you from doing something, or does it just come along while you do it anyway?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
           </div>
         </div>
 
@@ -2130,37 +2643,76 @@
           <div class="facet real">
             <div class="facet-top"><span class="facet-id">S3</span><h4>Confidence speaking up in meetings</h4><span class="src real">OTEMA</span></div>
             <p class="closer">"What's holding you back in the room?"</p>
-            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S4</span><span class="chip">G2</span><span class="chip self">stays</span></div>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S4</span><span class="chip">G2</span><span class="chip">S3a</span><span class="chip self">stays</span></div>
           </div>
           <div class="facet real">
             <div class="facet-top"><span class="facet-id">S4</span><h4>Holding back from applying, underqualified</h4><span class="src real">OTEMA</span></div>
             <p class="closer">"What roles have you been holding back from?"</p>
-            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S3</span><span class="chip">G2</span><span class="chip self">stays</span></div>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip">G2</span><span class="chip self">stays</span></div>
           </div>
           <div class="facet drafted">
-            <div class="facet-top"><span class="facet-id">G2</span><h4>Declining a stretch opportunity before it's properly offered</h4><span class="src drafted">PROPOSED</span></div>
-            <p class="closer">proposed: something like "what did you actually say when it came up?"</p>
-            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S3</span><span class="chip">S4</span><span class="chip self">stays</span></div>
+            <div class="facet-top"><span class="facet-id">G2</span><h4>Declining a stretch opportunity before it's properly offered</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What did you actually say when it came up?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip">S4</span><span class="chip self">stays</span></div>
           </div>
         </div>
       </div>
 
       <div class="section">
         <div class="section-title">Area Flow · Response branches</div>
-        <h2 class="section-heading">The One Branch Worth Naming Before Any Testing <span class="st proposed">PROPOSED</span></h2>
-        <div class="banner info"><strong>Not a dead end found by testing — a distinction worth building in from the start.</strong> S1's and S3's closers both invite an answer that isn't a confidence problem at all: "everyone in the room is a man and talks over me every time" or "I'm the only one who gets asked to justify my numbers." <code>BOTEMA_VALUES</code> already has a pattern for exactly this shape — <code>STAND_WITH_HER</code> validates a documented, common experience of discrimination with a fact before advising, rather than coaching a structural problem as if it were a personal one. This area needs the same move named as its own response branch, not left to the general instruction to carry alone — that instruction has already had to become code once elsewhere in this coach.</div>
+        <h2 class="section-heading">When the Cause Is Structural, Not Internal</h2>
+        <div class="banner info">S1's and S3's closers both invite an answer that isn't a confidence problem at all: being talked over or dismissed because of who she is, not how she feels about herself. <code>BOTEMA_VALUES</code> already has a pattern for exactly this shape — <code>STAND_WITH_HER</code> validates a documented, common experience of discrimination with a fact before advising, rather than coaching a structural problem as if it were a personal one. This area names that move as two response branches, one per parent facet, rather than leaving the general instruction to carry it alone.</div>
         <div class="facet-grid">
           <div class="facet drafted">
-            <div class="facet-top"><span class="facet-id">S1a</span><h4>The reason is structural, not internal</h4><span class="src drafted">PROPOSED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span><span class="chip">S3</span></span></div>
-            <p class="closer">proposed: validate first, then ask what she wants to do about the specific pattern rather than about how she feels</p>
-            <div class="edges"><span class="elabel">might lead to</span><span class="chip">S1</span><span class="chip">S3</span></div>
+            <div class="facet-top"><span class="facet-id">S1a</span><h4>The reason is structural, not internal</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span></span></div>
+            <p class="closer">"What do you want to happen the next time it comes up?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S1</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S3a</span><h4>The room has a problem, not her delivery</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S3</span></span></div>
+            <p class="closer">"What do you want to happen the next time it comes up?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span></div>
+          </div>
+        </div>
+
+        <div class="banner info" style="margin-top:18px;"><strong>Six more dead ends found reading the closers above.</strong> S1's closer has no branch for doubting the legitimacy of her own hire, distinct from discounting praise. S5's closer has no branch for not being able to name an achievement at all. S1a's and S3a's own closers — "what do you want to happen the next time it comes up" — share two gaps of their own: wanting to be heard rather than immediately planning an action (G3), and no path once the obvious move has already been tried and failed (G4). S3's closer has no branch for a specific past rejection after actually applying, or for acute physiological anxiety rather than a belief about her own competence.</div>
+        <div class="facet-grid">
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S1b</span><h4>Doubts the legitimacy of her own hire</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span></span></div>
+            <p class="closer">"What was it in the process itself that made you the one they picked?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S5a</span><h4>Can't name any achievement at all</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S5</span></span></div>
+            <p class="closer">"Did you finish something today that would have stumped you six months ago?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G3</span><h4>Wants to be heard, not steered into a plan</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1a</span></span></div>
+            <p class="closer">"What's on your mind about it right now?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G4</span><h4>Already tried the obvious move, failed</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S3a</span></span></div>
+            <p class="closer">"Who else here actually has the standing to make this land?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S3b</span><h4>Rejected after actually applying</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S3</span></span></div>
+            <p class="closer">"What reason, if any, did they actually give you?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S3c</span><h4>Physiological anxiety, not a belief</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S3</span></span></div>
+            <p class="closer">"Does this happen anywhere else, or is it just this kind of moment?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span><span class="chip">→ Area 5</span></div>
           </div>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area Flow · Leaving</div><h2 class="section-heading">When to Suggest a Different Area <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">Proposed, not yet tested. The Flow C hand-off, triggered from inside the area rather than by the user asking.</p>
+        <div class="section-title">Area Flow · Leaving</div><h2 class="section-heading">When to Suggest a Different Area</h2>
+        <p class="prompt-intro">The Flow C hand-off, triggered from inside the area rather than by the user asking.</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>What's happening</th><th>What it actually means</th><th>Offer instead</th></tr></thead>
@@ -2176,31 +2728,31 @@
       </div>
 
       <div class="section">
-        <div class="section-title">Area Flow · To build</div><h2 class="section-heading">What This Needs <span class="st proposed">PROPOSED</span></h2>
+        <div class="section-title">Area Flow · To build</div><h2 class="section-heading">What This Needs</h2>
         <div class="grid-2">
           <div class="scope-card can">
             <div class="scope-head">Already true</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>Otema's 5 real answers exist and are usable</strong><div class="example">Q36–40, currently all under one function key in <code>botema-examples.ts</code>; sorted into stages above</div></div>
-              <div class="scope-item"><strong>A stage split, reasoned through and confirmed</strong><div class="example">Two stages: an internal narrative being processed, versus self-doubt that has stalled a concrete action</div></div>
+              <div class="scope-item"><strong>Runs end-to-end in the local harness</strong><div class="example"><code>npm run coach -- --area=confidence</code> — stage classification, facet selection, and generation all tested live</div></div>
+              <div class="scope-item"><strong>5 scenarios written, sweep passes 4/5</strong><div class="example"><code>scripts/scenarios/confidence.mjs</code> — one built to probe the A/B boundary, two built to trigger S1a and S3a</div></div>
+              <div class="scope-item"><strong>G1, G2, S1a, S3a drafted</strong><div class="example">Written into <code>botema-generated-examples.ts</code>, <code>unreviewed</code> — same gate as every drafted answer in this coach</div></div>
             </div>
           </div>
           <div class="scope-card cant">
             <div class="scope-head">Doesn't exist yet</div>
             <div class="scope-body">
-              <div class="scope-item"><strong>An area config</strong><div class="example"><code>scripts/areas/confidence.mjs</code> — the coverage map above, written into code</div></div>
-              <div class="scope-item"><strong>G1 and G2 drafted</strong><div class="example">Named as concepts above, not yet written in Otema's voice into <code>botema-generated-examples.ts</code></div></div>
-              <div class="scope-item"><strong>S1a drafted</strong><div class="example">The structural-vs-internal response branch, named above but not written</div></div>
-              <div class="scope-item"><strong>Any live testing at all</strong><div class="example">Nothing here has talked to gpt-5-nano yet — the whole point of writing the spec first is to have something concrete to test against, not to have tested it</div></div>
-              <div class="scope-item"><strong>5 scenarios</strong><div class="example">Including one built specifically to probe the A/B boundary, and one built to trigger S1a</div></div>
+              <div class="scope-item"><strong>Wired into the live edge function</strong><div class="example">Harness only, same gap as every area on this branch</div></div>
+              <div class="scope-item"><strong>A full dead-end sweep</strong><div class="example">Edges above are read off closing questions, not confirmed by a tester pass</div></div>
+              <div class="scope-item"><strong>A cross-cutting facet</strong><div class="example">Flagged above — none identified yet</div></div>
+              <div class="scope-item"><strong>Otema's review of the drafted material</strong><div class="example">Required before any of G1, G2, S1a, or S3a can be served — the gate that <code>approvedGeneratedExamples()</code> enforces</div></div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">Otema's 5 Real Answers <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">Everything Otema actually said for this area, in question-bank order. No drafted answers exist yet — <span class="src drafted">PROPOSED</span> facets above are concepts, not text.</p>
+        <div class="section-title">Area Flow · Full text</div><h2 class="section-heading">All Answers in Full</h2>
+        <p class="prompt-intro">The complete question and answer behind every facet above, in ID order. <span class="src real">OTEMA</span> answers are her real words from the questionnaire. <span class="src drafted">DRAFTED</span> answers are AI-written in her voice and <strong>unreviewed</strong> — not served to anyone until she has approved them.</p>
         <div class="full-list">
           <div class="full-facet real">
             <div class="ff-top"><span class="facet-id">S1</span><h4>Don't feel like I belong in tech</h4><span class="src real">OTEMA</span></div>
@@ -2226,6 +2778,26 @@
             <div class="ff-top"><span class="facet-id">S5</span><h4>Can't internalise my own achievements</h4><span class="src real">OTEMA</span></div>
             <p class="ff-q">How do I actually internalise my achievements instead of brushing them off?</p>
             <p class="ff-a">Write your wins down as they happen, no matter how small, and refer back to them before interviews. When you catch yourself deflecting praise, try "thank you, that took real work" instead of brushing it off. What did you achieve recently that you shrugged off?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">G1</span><h4>Discounting other people's praise</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">Whenever someone compliments my work I assume they're just being nice, or that I got lucky.</p>
+            <p class="ff-a">Notice what you do with it instead of arguing over whether it's true — saying "thank you, that took real work" out loud is practice for believing it, even before you fully do. And if it keeps happening from the same person, that's not politeness anymore, that's a pattern; kind once is possible, three times is information. What did they actually say, in their own words?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">G2</span><h4>Declining a stretch opportunity before it's properly offered</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">I turned down a chance to lead a small project because I didn't feel ready, and now I think I made a mistake.</p>
+            <p class="ff-a">Notice that you decided you weren't ready before anyone actually tested that — "not ready" is a feeling, not a qualification someone checked you against. If it's still open, go back and ask whether the offer still stands; if it's gone, treat it as data for the next one rather than proof you were right to say no. What did you actually say when it came up?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">S1a</span><h4>The reason is structural, not internal</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">It's not really in my head — I'm the only woman on my team and I get interrupted or talked over almost every time I try to say something.</p>
+            <p class="ff-a">That's a documented pattern, not a confidence problem to work on in yourself — women get interrupted and talked over in mixed-gender meetings far more than men, and noticing it is accurate, not oversensitive. The move isn't to build your nerve, it's to decide what you want to happen about this specific pattern — naming it in the room in the moment, raising it with whoever runs the meeting, or something else. What do you want to happen the next time it comes up?</p>
+          </div>
+          <div class="full-facet drafted">
+            <div class="ff-top"><span class="facet-id">S3a</span><h4>The room has a problem, not her delivery</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="ff-q">I don't think it's nerves — every time I speak up in that meeting specifically, someone talks over me or repeats what I said back as their own idea.</p>
+            <p class="ff-a">Then the room has a problem, not you — being interrupted or having your point repeated back as someone else's idea is a well-documented pattern, and reading it correctly isn't a confidence issue. Practising delivery won't fix a room that isn't listening; naming it plainly in the moment ("I'd like to finish that point") or raising the pattern with whoever runs the meeting might. What do you want to happen the next time it comes up?</p>
           </div>
         </div>
       </div>

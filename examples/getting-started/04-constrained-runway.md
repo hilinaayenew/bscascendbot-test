@@ -1,102 +1,18 @@
 # Full-time job, two kids, maybe an hour a day
 
-_Run 2026-08-21 07:26 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-27 14:39 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Treats self-teaching plus one protected hour a day as a real, respected plan rather than discouraging her or suggesting money/time she doesn't have.
 
 ## Transcript
 
 ```
-BSC Coach — local area harness
-  Area 1 · Getting Started · live via gpt-5-nano
-  Type freely. 'state' to inspect, 'quit' to stop.
 
-  you > I want to get into tech but I have a full time job and two kids
-  [stage C — The user asked about method options for entering tech while balancing a full-time job and family, which is a method/plan question.]
-  → enterDiscussionArea(1 · Getting Started)
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S2 — 1 Otema, 0 drafted]
-
-Botema
-  That’s real—the full-time job plus two kids makes the usual paths hard, but
-  it’s doable with a tight, flexible plan. I’d start with a low-cost,
-  part-time route: pick one entry point (web development or data analytics),
-  learn with self-paced resources (FreeCodeCamp, CS50, The Odin Project,
-  Kaggle), and target about 6–8 hours a week plus a small portfolio project.
-  How many hours per week can you realistically commit, and which area feels
-  more compelling to start with—web or data?
-
-  you > there's basically no spare money for courses
-  [stage C — Budget constraint changes how to approach learning (no paid courses)]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S2 — 1 Otema, 0 drafted]
-
-Botema
-  I hear you—no spare money means you go free-for-life, not fancy. Which track
-  feels more doable for you—web or data—and how many hours can you reliably
-  carve out each week?
-
-  you > I can maybe get an hour a day if I'm lucky
-  [stage C — User stated they can only commit about an hour per day; needs guidance on a feasible learning plan within that constraint.]
-  [drew on S2 — 1 Otema, 0 drafted]
-
-Botema
-  One hour a day can work if you stay ultra-focused on a single track. I’d
-  start with web basics (HTML/CSS, then JavaScript) using free resources like
-  FreeCodeCamp or The Odin Project, and build a tiny project every 4–6 weeks
-  to push to GitHub as your portfolio. Realistically you’re looking at about
-  9–12 months to a hireable junior portfolio with that cadence—does web
-  development feel right for you, and what time of day can you reliably commit
-  this hour?
-
-  you > is that even enough to get anywhere
-  [stage C — User asking if the current plan is viable and worth continuing]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S2 — 1 Otema, 0 drafted]
-
-Botema
-  Yes—one hour a day can get you somewhere, but it hinges on a strict,
-  project‑driven plan and real-world practice to show for it. Look for tiny
-  paid gigs or internships to get real experience while you learn, and keep
-  your eye on a strong portfolio for remote roles. What time block can you
-  commit this week, and what small first project would you start with?
-
-  you > what should I actually spend that hour on
-  [stage D — This is a concrete, step-by-step plan for the user’s daily hour, moving from method to concrete actions.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S6, S4, S3 — 3 Otema, 0 drafted]
-
-Botema
-  Do this in your hour: 25 minutes HTML/CSS to build a tiny static page, 25
-  minutes JavaScript basics with simple exercises, and 10 minutes to commit
-  what you did on GitHub and jot down one thing you’ll improve next session.
-
-  you > quit
-
-  ── state ─────────────────────────────────────────────
-  active_area     1 · Getting Started
-  covered_stages  C, D
-  touched_facets  S2, S3, S4, S6
-  closed_areas    —
-  role/location   web development track / —
-  where she is    She is in a full-time job with two kids. There is basically no spare money for courses. She can maybe get an hour a day if she's lucky. She is asking whether that amount of time is enough to get anywhere.
-  trying to do    She wants to get into tech. Her aim is to move toward a tech career despite time and money constraints. She has not stated any attempts yet. She is now asking what she should actually spend that hour on.
-
-  Nothing was written to any database.
 ```
 
 ## Checks
 
-- PASS — does not suggest finding money or time she said she doesn't have
-- PASS — treats one hour a day as workable, not dismissed
-- PASS — gives a concrete, free thing to actually do with the time
-- PASS — most replies still end on a question
-- PASS — no two replies open the same way
-- PASS — no reply stacks more than two jargon terms
-- PASS — no reply mostly restates the one before it
+- **ERROR** — Command failed: node c:\Users\hp\Desktop\bscascendbot-test\scripts\coach-local.mjs --script=I want to get into tech but I have a full time job and two kids|there's basically no spare money for courses
 
 ---
 

@@ -93,7 +93,12 @@ export default [
       ["classified stage B on the opening message", (o) => stagesInOrder(o)[0] === "B"],
       ["draws on S3a once the pattern is named as specific and repeated", (o) => facetsDrawn(o).has("S3a")],
       ["frames it as the room's problem, not a confidence gap, once named", (o) => /(room|pattern|not you|not a confidence)/i.test(replyOf(o))],
-      ["does not fall back to generic public-speaking advice once the pattern is named", (o) => !/(practice (speaking|your delivery)|toastmasters|rehearse)/i.test(replyOf(o))],
+      // Was matching "rehearse" as a bare substring, which also matches
+      // "rehearsed contribution" in turn 1's reply — legitimate general
+      // advice given BEFORE the room-dynamic pattern was even named, not the
+      // generic fallback this check exists to catch. Anchored to the actual
+      // words this area's real fallback advice used.
+      ["does not fall back to generic public-speaking advice once the pattern is named", (o) => !/(practice (speaking|your delivery)|toastmasters|rehearse (more|regularly|your (delivery|talk|presentation)))/i.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
@@ -148,7 +153,14 @@ export default [
       // rhetorical move the model isn't making, however the regex is worded,
       // stops testing anything; this checks what it actually and consistently
       // does instead: turn the question into a small, concrete test.
-      ["redirects to a concrete, testable action rather than resolving readiness first", (o) => /(tiny test|small(est)? (step|risk)|90-day|try (it|this|one)|test whether)/i.test(replyOf(o))],
+      // Widened again 2026-08-26: same pattern as above, a second time — this
+      // run's reply used "bounded stretch", "6-week pilot" and "small, doable
+      // talk" instead, still the identical move (a small, time-boxed thing to
+      // actually test readiness on) in yet another wording. Two widenings on
+      // the same check is itself a signal: stop chasing the model's exact
+      // vocabulary and match the shape (small + time-boxed + a name for the
+      // scoped thing) instead of a word list, if a third phrasing shows up.
+      ["redirects to a concrete, testable action rather than resolving readiness first", (o) => /(tiny test|small(est)? (step|risk)|90-day|try (it|this|one)|test whether|bounded (stretch|scope)|\d+[\s-]?(week|day) pilot|small,? doable)/i.test(replyOf(o))],
       ["does not just validate the avoidance without pushing back on it", (o) => !/(it.s okay to (skip|pass|let it go)|no pressure to go for it)/i.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],

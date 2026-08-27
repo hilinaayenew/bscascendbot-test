@@ -1,6 +1,6 @@
 # Wants a cybersecurity path with zero IT background, and thinks 'ethical hacker' is the entry job
 
-_Run 2026-08-23 19:23 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-27 13:40 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stays in stage B throughout — the field is named from turn one — and corrects the 'ethical hacker as day-one job' assumption rather than going along with it.
 
@@ -12,91 +12,90 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > what does a career path in cybersecurity actually look like
-  [stage A — User asked for a general cybersecurity career path without naming a field yet]
+  [stage B — User named cybersecurity and asked for a general career path]
   → enterDiscussionArea(3 · Career Paths & Roadmaps)
-  [no close example — voice only, advice from knowledge]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S8, G1 — 1 Otema, 1 drafted]
+  [drew on S4, S1, S4a — 2 Otema, 1 drafted]
+  [voice only: S3, S2, S5, S6]
 
 Botema
-  Here’s the straight path I’ve seen work: you start by cementing IT
-  fundamentals—networks, Linux, scripting—and you build hands-on practice.
-  Then you land a junior security role (often as a security or SOC analyst),
-  and 2–4 years later you specialise into incident response, threat hunting,
-  security engineering, cloud security, or governance, risk and compliance.
-  What area in cybersecurity feels most compelling to you, and where are you
-  starting from (your current skills, resources, and location)?
+  In my experience, a cybersecurity career starts with solid IT fundamentals
+  (networks, operating systems, basic security) and then you land a junior
+  security role—often as a SOC analyst or IT security support—before
+  specialising in incident response, security engineering, pentesting, cloud
+  security, or governance/risk. The practical path is: build hands-on labs,
+  get a foundation cert (Security+, Network+), pick a track, and pursue a
+  focused certification while you gain real work; what track are you drawn to,
+  and what’s your current background?
 
   you > I have zero IT background at all
-  [stage B — User named cybersecurity earlier and now states zero IT background; this moves the conversation into a getting-started path within cybersecurity.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S4, S1, S2 — 3 Otema, 0 drafted]
-  [voice only: S5, S3, S7, S6]
+  [stage B — User has zero IT background and asked for path; needs beginner-friendly roadmap and entry roles]
+  [drew on S4, S2, S5 — 3 Otema, 0 drafted]
+  [voice only: S1, S4a, S6, S3]
 
 Botema
-  That’s real and common—and completely doable with the right stepping stones.
-  Start with IT fundamentals (basic networking, Linux CLI, Windows basics)
-  using low-cost or free options like Google’s IT Support Certificate or
-  ITF+/Linux journey. What resources can you commit to right now (time,
-  internet access, device), and where are you located so I can tailor the
-  starting points?
+  That’s real—and starting from zero is doable with a clear ladder. Begin with
+  IT fundamentals (networks, OS, hardware) and a beginner cert like ITF+ or
+  the Google Cybersecurity Certificate, then aim for an IT support role to get
+  hands-on while you start a cybersecurity track and labs (TryHackMe/Hack The
+  Box) toward Security+ as you gain experience. Where are you located, and
+  what training options are realistically accessible there so I can tailor the
+  first 6–8 weeks for you?
 
   you > is 'ethical hacker' a realistic first job for me
-  [stage B — The user now asks about realism of an 'ethical hacker' as a first role in cybersecurity, fitting stage B.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S4, S5, S6 — 3 Otema, 0 drafted]
-  [voice only: S1, S2, S7, S3]
-
-Botema
-  Not realistic as a first job from zero IT background. Most people start in
-  IT support or a junior security analyst role and move toward penetration
-  testing later, after some hands-on fundamentals. What country are you in and
-  what devices or internet access do you have so I can tailor the first steps
-  for you?
-
-  you > what should I actually start with this month
-  [stage B — User has zero IT background and is asking for concrete starting steps for this month within cybersecurity roadmap.]
+  [stage B — The user asked if 'ethical hacker' is a realistic first job for someone with zero IT background, which is new information that affects the roadmap within cybersecurity.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S4, S3, S1 — 3 Otema, 0 drafted]
-  [voice only: S6, S7, S5, S2]
+  [drew on S4, S5a, S6 — 2 Otema, 1 drafted]
+  [voice only: S2, S5, S4a, S7]
 
 Botema
-  Here’s a tight start for this month: complete a free IT fundamentals path
-  focused on Linux command line and basic networking, and pair it with 2–3
-  beginner cybersecurity labs on TryHackMe or OverTheWire to apply what you
-  learn, while you document progress in a simple GitHub repo.
+  Not realistic as a first job. Start with IT support or a SOC analyst role,
+  then build a security certs and lab portfolio (Security+, PenTest+ later)
+  before aiming for entry‑level pentest roles.
+
+  you > what should I actually start with this month
+  [stage B — The user has named cybersecurity and asks for actionable steps for this month, which should stay in the B stage.]
+  [drew on S4, S3, S1 — 3 Otema, 0 drafted]
+  [voice only: S6, S4a, S2, S5a]
+
+Botema
+  Start this month with two concrete moves: pick a beginner IT foundation you
+  can access now (Google IT Support Certificate or ITF+/Net+), and set up a
+  minimal home lab (a Linux VM and basic Windows practice) to learn by doing.
+  Pair that with 2–3 TryHackMe starter rooms per week and start applying for
+  IT support or SOC roles in parallel. Given your constraints, which
+  path—Google IT Support or ITF+—is more doable for you this month, and where
+  will you practise (home, library, etc.) so I can tailor the 6‑week plan?
 
   you > how long before I could get an entry-level security job
-  [stage B — User asked for realistic timeframe to land an entry-level cybersecurity job]
-  [sentence cap fired — the model wrote a rundown]
+  [stage B — Cybersecurity is the chosen field; user asks for realistic timeframe to land an entry-level role.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S4, S2, S7 — 3 Otema, 0 drafted]
-  [voice only: S5, S3, S1, S6]
+  [voice only: S1, S3, S5, S4a]
 
 Botema
-  Realistically, 9–18 months from zero IT to an entry-level security role in
-  Africa, if you follow a tight plan and do real hands-on work. If you can
-  commit near-full-time (20+ hours/week) and pair IT fundamentals with labs
-  plus a starter cert, you might push toward 6–12 months; otherwise 12–18
-  months is more likely. What country are you in, and how many hours per week
-  can you dedicate to learning and hands-on practice?
+  Realistically, from zero IT background to an entry-level security job takes
+  about 6–12 months with consistent, focused work. Does that timeline fit what
+  you can access locally, and where are you located so I can tailor a concrete
+  6‑week plan for you this month?
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     3 · Career Paths & Roadmaps
-  covered_stages  A, B
-  touched_facets  S8, G1, S1, S2, S3, S4, S5, S6, S7
+  covered_stages  B
+  touched_facets  S1, S2, S3, S4, S4a, S5, S5a, S6, S7
   closed_areas    —
-  role/location   entry-level security analyst / junior cybersecurity analyst / —
-  trying to do    She is trying to gauge how long it would take to land an entry-level security job. The target is an entry-level role in cybersecurity, but the main barrier remains zero IT background. She has not indicated any steps taken yet toward that path and is seeking a realistic timeline.
+  role/location   entry-level cybersecurity role (e.g., SOC Analyst / IT Security Support) / —
+  trying to do    She wants to know how long before she could get an entry-level security job. She has zero IT background. She has already asked whether an ethical hacker role is a realistic first job, and she is seeking a concrete starting plan this month to build foundational IT skills and pursue a security track.
 
   Nothing was written to any database.
 ```
 
 ## Checks
 
-- **FAIL** — classified stage B throughout
+- PASS — classified stage B throughout
 - PASS — draws on S4 (cybersecurity roadmap)
 - PASS — corrects the ethical-hacker-as-first-job assumption
 - PASS — gives a concrete starting point despite no IT background

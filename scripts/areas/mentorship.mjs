@@ -30,13 +30,13 @@ export default {
       label: "Finding a mentor",
       describes:
         "No mentor yet — the live question is where to find one, what to look for, or how to approach them. Giveaway words: \"find a mentor\", \"how do I approach\", \"don't have a mentor\".",
-      facets: ["S1", "S2"],
+      facets: ["S1", "S1a", "S2"],
     },
     B: {
       label: "Making it work",
       describes:
         "Already has a mentor, or is inside the BSC programme — the live question is how to use the relationship well: sessions, the mentor/sponsor distinction, maintaining it long-term, or structuring goals with a mentor's help. Giveaway words: \"my mentor\", \"our sessions\", \"sponsor\", naming an existing relationship.",
-      facets: ["S3", "S4", "S5", "S6"],
+      facets: ["S3", "S3a", "S4", "S4a", "S5", "S6"],
     },
   },
 };

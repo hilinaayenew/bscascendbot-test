@@ -30,20 +30,20 @@ export default {
     A: {
       label: "Deciding whether it's worth it",
       describes:
-        "No programme chosen yet — the live question is whether a master's (or further study at all) is actually necessary, or whether a cheaper/faster alternative like a certification would serve just as well. Giveaway words: \"do I need\", \"is it worth it\", \"instead of a master's\", \"certification vs degree\".",
-      facets: ["S1", "S5"],
+        "A certification is ACTIVELY being weighed as an alternative to a master's SOMEWHERE in this conversation, or the message questions whether further study is worth it at all in the abstract — not just whether a master's specifically is a good idea. Cost, speed-to-hire, or timing raised AS PART OF a certification-vs-master's comparison stays here (\"money is a constraint\" while certs are on the table, \"I want something faster\" comparing the two paths). Giveaway words: \"do I need\", \"is it worth it\", \"instead of a master's\", \"certification vs degree\", or any mention of a certification at all this conversation. If a certification has never come up at all, this is NOT the default — go to B or C on their own merits instead.",
+      facets: ["S1", "S1a", "S5", "S5a"],
     },
     B: {
       label: "Choosing a programme",
       describes:
-        "Further study is the decided direction — the live question is WHICH programme, which field benefits most, what to look for, or when (before or after work experience). Giveaway words: \"which programme\", \"what should I look for\", \"before or after\", naming a specific field.",
-      facets: ["S2", "S3", "S4"],
+        "The live question is specifically about A MASTER'S — which programme, which field benefits most, what to look for, or before/after-experience timing — and no certification is being weighed as an alternative anywhere in this conversation. This is the default for a master's-specific question that never mentioned certifications at all, including the very first message of a conversation that opens directly on a master's timing or programme question.",
+      facets: ["S2", "S3", "S4", "S4a"],
     },
     C: {
       label: "Funding and balancing it",
       describes:
-        "A programme is chosen or close to it — the live question is logistics: paying for it, scholarships, or balancing it with a full-time job. Giveaway words: \"fund\", \"scholarship\", \"afford\", \"balance\", \"while working\".",
-      facets: ["S6", "S7"],
+        "A specific programme is chosen — the live question is logistics: paying for it, scholarships, or balancing it with a full-time job. If NO certification has been mentioned anywhere in this conversation, a bare mention of money, savings or time (\"I don't have strong savings\", \"I also work full time\") stays in C — it does NOT move to stage A by itself, since there is no certification for it to be weighed against. Only move to stage A when a certification is genuinely still being weighed as an alternative somewhere in this conversation; otherwise, a funding or scheduling question about a master's already under discussion belongs here.",
+      facets: ["S6", "S6a", "S6b", "S7", "S7a"],
     },
   },
 };

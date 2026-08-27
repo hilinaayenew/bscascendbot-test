@@ -140,6 +140,117 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
       reviewStatus: "unreviewed", drafted: "2026-08-17",
     },
 
+    // ── Area 1 · Response branches ──────────────────────────────────────
+    // Five more dead ends found running the area's first dead-end discovery
+    // sweep, 2026-08-27 — the same treatment Salary got at launch.
+
+    {
+      question: "Honestly, standups and deadlines and code review every day sounds exhausting — is this actually worth it?",
+      answer:
+        "It's real work, and some days it will wear on you — I won't pretend otherwise. But most people who stick with it aren't there for the day-to-day itself, they're there because whatever they're building or solving still pulls at them once the hard parts are done. If nothing about it excites you even on paper, that's worth listening to now rather than after months of learning. What part of a day like that, if any, actually sounds interesting to you?",
+      topic: "getting_started", area: 1, facet: "S8a", respondsTo: "S8",
+      userSaid: "Honestly, standups and deadlines and code review every day sounds exhausting — is this actually worth it?",
+      gap: "Doubt that the day-to-day itself is worth pursuing, not which role or field to pick",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "None — I haven't built anything, I don't even know what a small project would look like.",
+      answer:
+        "Keep it small enough to finish in a weekend — that's the whole point. For development, something like a simple to-do list or budget tracker. For data, pull a small public dataset and answer one question about it. For UX, redesign one screen of an app you already use and say why. It doesn't need to be good, it needs to be finished. Which of those sounds least intimidating to actually start?",
+      topic: "getting_started", area: 1, facet: "G3a", respondsTo: "G3",
+      userSaid: "None — I haven't built anything, I don't even know what a small project would look like",
+      gap: "No concrete starting point once torn between fields and told to 'try building something'",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "This one's actually free upfront — they take a cut of my salary once I'm hired instead. Is that a red flag?",
+      answer:
+        "That's an income-share agreement, and it's not automatically a red flag — but read exactly what percentage, for how long, and what happens if you don't find a job in the field at all. Some are fair, some quietly lock you into paying far more than the course was worth. Ask them to show you that math in writing, not just tell you. What percentage and time period are they asking for?",
+      topic: "getting_started", area: 1, facet: "G1a", respondsTo: "G1",
+      userSaid: "This one's actually free upfront — they take a cut of my salary once I'm hired instead",
+      gap: "Income-share agreement bootcamps — a financing structure, not an outcomes claim",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "I don't have a year or two — I need to be job-ready in about three months, I don't have a choice.",
+      answer:
+        "I'd rather tell you the truth than something easier to hear: three months won't make you job-ready as a developer or data scientist from zero, and anyone promising that is selling you something. What it can do is get you into an entry point that doesn't need the full skill set yet — QA, technical support, or a junior role tied to a bootcamp's own placement pipeline — while you keep building toward the fuller role. What's driving the three months?",
+      topic: "getting_started", area: 1, facet: "S4a", respondsTo: "S4",
+      userSaid: "I don't have a year or two — I need to be job-ready in about three months, I don't have a choice",
+      gap: "A timeline shorter than what's realistic — S4's own 'realistically a year or two' framing has nothing behind a harder deadline",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "None of those really work for me — my connection is too slow and data is expensive, I can't stream video courses.",
+      answer:
+        "That's real, and it's exactly the kind of barrier I don't want to wave past — data costs and unreliable connections shut a lot of people out of the usual advice. Look for text-first resources over video where you can: GeeksforGeeks and documentation read fine on almost any connection, and freeCodeCamp's written curriculum doesn't need constant streaming the way a video course does. Download what you can when you do have a good connection, and work offline the rest of the time. What does your connection actually allow you to do reliably?",
+      topic: "getting_started", area: 1, facet: "S6a", respondsTo: "S6",
+      userSaid: "None of those really work for me — my connection is too slow and data is expensive",
+      gap: "Free/self-teach resources assume reliable connectivity many don't have — the exact access gap BOTEMA_VALUES names directly",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+
+    // ── Area 2 · Further Education — Response branches ────────────────────
+    // Six dead ends found running the area's first dead-end discovery sweep,
+    // 2026-08-27 — the same treatment Salary got at launch, applied here for
+    // the first time. All 7 of this area's real facets had no drafted
+    // material at all before this.
+
+    {
+      question: "It's mainly for a visa — my family is trying to move abroad and I heard it helps.",
+      answer:
+        "It can genuinely help with some skilled-migration routes, but it depends heavily on the destination country's specific points system and which field you study — it's not a blanket guarantee. Which country are you and your family looking at, and do you know if tech is on their skilled list?",
+      topic: "further_education", area: 2, facet: "S1a", respondsTo: "S1",
+      userSaid: "It's mainly for a visa — my family is trying to move abroad and I heard it helps",
+      gap: "Immigration-motivated further study — S1 only frames value around leadership/decision-making leverage",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "My company said they'd help fund it if I start within the year.",
+      answer:
+        "Free or subsidised funding is a real reason to reconsider the general timing advice — but check what strings are attached first: do you forfeit it if you leave the company within some period, and is it tied to a specific review cycle? What does the offer actually require of you?",
+      topic: "further_education", area: 2, facet: "S4a", respondsTo: "S4",
+      userSaid: "My company said they'd help fund it if I start within the year",
+      gap: "A live, time-boxed employer funding offer in tension with the general 'wait, gain experience first' advice",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "Honestly none of those — I'm looking at mobile or web development.",
+      answer:
+        "For straightforward software, mobile, or web development roles, a portfolio of shipped work usually carries more day-to-day weight than either a certification or a masters. What's actually pulling you toward further study for this field specifically?",
+      topic: "further_education", area: 2, facet: "S5a", respondsTo: "S5",
+      userSaid: "Honestly none of those — I'm looking at mobile or web development",
+      gap: "Unlisted field — neither S5's cert-competitive list nor S2's postgrad-expected list names mobile/web development",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "There aren't really scholarships for men though, right? What are my other options?",
+      answer:
+        "Scholarships for women are real, but they're not the only route — employer tuition assistance, education loans, and part-time work-study arrangements are worth checking too, especially if your grades or portfolio aren't the strongest angle to lead with. Has your employer ever mentioned a training or education budget?",
+      topic: "further_education", area: 2, facet: "S6a", respondsTo: "S6",
+      userSaid: "There aren't really scholarships for men though, right? What are my other options?",
+      gap: "General, non-gender-specific funding routes — S6's funding answer is scoped entirely to scholarships for women",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "Actually I want to fund an AWS certification, not a masters.",
+      answer:
+        "Certifications are usually far cheaper than a scholarship-funded programme, and a lot of employers will cover the exam fee outright if you ask — it's a much smaller ask than tuition. Has your employer got a training budget you could put this toward?",
+      topic: "further_education", area: 2, facet: "S6b", respondsTo: "S6",
+      userSaid: "Actually I want to fund an AWS certification, not a masters",
+      gap: "Certification-specific funding logistics — S6's funding answer is scoped to a scholarship-funded masters programme",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "I'm not employed, but I'm caring for my kids and family full-time, so I don't really have free time either.",
+      answer:
+        "Caregiving is real workload too, even without a paycheck attached to it — the difference is it's usually less predictable than a job's hours, so a self-paced or asynchronous programme may fit better than one with fixed evening classes. What kind of support do you have around you day to day?",
+      topic: "further_education", area: 2, facet: "S7a", respondsTo: "S7",
+      userSaid: "I'm not employed, but I'm caring for my kids and family full-time, so I don't really have free time either",
+      gap: "Caregiving/unpaid family responsibility — S7 frames the whole tradeoff around paid employment vs. pausing to study",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+
     // ── Area 3 · Career Paths & Roadmaps ──────────────────────────────────
     // One gap, 2026-08-23: her 8 real answers are all "roadmap for field X"
     // once a field is named — nothing covers not having tried any of them
@@ -155,6 +266,81 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
       gap: "No real basis yet to compare specialisations — hasn't tried any of them hands-on",
       reviewStatus: "unreviewed",
       drafted: "2026-08-23",
+    },
+
+    // ── Area 3 · Response branches ──────────────────────────────────────
+    // Four dead ends found running the area's first dead-end discovery
+    // sweep, 2026-08-27.
+
+    {
+      question: "I'm torn between cybersecurity and product management, not sure which fits me.",
+      answer:
+        "The same approach works outside just engineering — try a small taste of each before reasoning it out in the abstract. A free platform like TryHackMe gives you a real feel for security work in an afternoon; sketching a one-page sample PRD or talking to a working PM about their day-to-day gives you the same for product. Notice which one you keep wanting to go back to. Have you tried either one hands-on yet?",
+      topic: "career_paths", area: 3, facet: "S8a", respondsTo: "S8",
+      userSaid: "I'm torn between cybersecurity and product management, not sure which fits me",
+      gap: "S8 only compares sub-specialisations of software engineering — never names cybersecurity, UX/UI, PM, or TPM at all",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "I'm already working as a SOC analyst, what's the next step from here?",
+      answer:
+        "From SOC analyst, the usual next moves branch into either the defensive side — incident response, threat intel — or offensive work like penetration testing, and which one to chase mostly comes down to which part of the SOC seat you found yourself drawn to. Security+ got you in the door; the next certification is worth picking to match that direction rather than collecting more general ones. What part of the work has felt most like you so far?",
+      topic: "career_paths", area: 3, facet: "S4a", respondsTo: "S4",
+      userSaid: "I'm already working as a SOC analyst, what's the next step from here?",
+      gap: "Roadmap stops at the entry point (SOC analyst) with nothing for someone already past it",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "I don't have any work experience yet — I'm straight out of school.",
+      answer:
+        "Being upfront with you — PM and project coordination almost never are someone's very first job, so the honest move isn't to aim straight for the title. Build something to move sideways from first: a junior role in engineering, business analysis, or support, or even volunteer coordination on a real event or project, then use that as your case for moving across. What's realistic for you to start with right now?",
+      topic: "career_paths", area: 3, facet: "S5a", respondsTo: "S5",
+      userSaid: "I don't have a background — I'm straight out of school, never worked",
+      gap: "PM/TPM roadmap assumes an existing job to move sideways from — nothing for zero work history",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "I don't have time to try things, I need to just pick now.",
+      answer:
+        "If trying a bit of everything isn't something you have time for, decide on demand instead of trial and error — mobile and fintech backend work are especially strong across African markets right now, and software development skills transfer the most broadly if you want room to pivot later. Pick the field with the most openings where you are and commit to it for a fixed stretch before reassessing. What does the job market look like near you?",
+      topic: "career_paths", area: 3, facet: "G1a", respondsTo: "G1",
+      userSaid: "I don't have time to try things, I need to just pick now",
+      gap: "No decision method offered when there's no time to experiment hands-on",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+
+    // ── Area 4 · Mentorship — Response branches ───────────────────────────
+    // Three dead ends found running the area's first dead-end discovery
+    // sweep, 2026-08-27 — the same treatment Salary got at launch, applied
+    // here for the first time. Each responds to a specific reply to one of
+    // Otema's real closing questions.
+
+    {
+      question: "Yeah, but I don't think they'd want to help someone like me.",
+      answer:
+        "Most people who're a step or two ahead of you are flattered to be asked, not bothered by it — the ones worth having as a mentor usually remember exactly where they were standing when they were where you are now. If it still feels like too big an ask, a structured route like BSC's own mentorship programme takes that pressure off entirely, since the introduction is already made for you. What's making this particular person feel like too big an ask?",
+      topic: "mentorship", area: 4, facet: "S1a", respondsTo: "S1",
+      userSaid: "Yeah, but I don't think they'd want to help someone like me",
+      gap: "Hesitant to approach a specific person already identified, out of fear of imposing — not a search problem",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "Honestly, I'm thinking about finding a different mentor — this one doesn't feel like a fit.",
+      answer:
+        "Not every pairing works, and it's fine to admit that to yourself before it curdles into something worse. Before switching, get specific about what's actually missing — direction, time, or just chemistry — because a direct, honest conversation with your current mentor sometimes fixes exactly that. If it genuinely isn't working, BSC's programme can help you look at other options rather than starting the search from zero. What's not landing for you in this pairing?",
+      topic: "mentorship", area: 4, facet: "S3a", respondsTo: "S3",
+      userSaid: "Honestly, I'm thinking about finding a different mentor — this one doesn't feel like a fit",
+      gap: "Wanting to leave or switch an existing mentor relationship — no facet addresses ending one",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "No, not really — nobody actively advocates for me right now.",
+      answer:
+        "A sponsor tends to be someone senior who's already seen your work hold up, so it's less about a cold ask and more about earning the visibility first — deliver on something they can actually see, and let your mentor make the introduction once there's a track record to point to. Who's already in a position to see your work up close right now?",
+      topic: "mentorship", area: 4, facet: "S4a", respondsTo: "S4",
+      userSaid: "No, not really",
+      gap: "No active sponsor and no strategy for getting one, right after the mentor/sponsor distinction is introduced",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
     },
 
     // ── Area 9 · Salary & Negotiation ─────────────────────────────────────
@@ -498,6 +684,143 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
       userSaid: "same structural pattern, tied specifically to the meeting where she's trying to speak up",
       gap: "S3's real closer assumes the barrier is nerve; sometimes the room itself is the barrier",
       reviewStatus: "unreviewed", drafted: "2026-08-21",
+    },
+
+    // ── Area 6 · Response branches, round 2 ───────────────────────────────
+    // Six more dead ends found running the area's first dead-end discovery
+    // sweep, 2026-08-27. Two of them (G3, G4) are triggered by either S1a's
+    // or S3a's closing question — both ask "what do you want to happen the
+    // next time it comes up?" and share the same underlying gap, so one
+    // drafted answer covers both rather than writing near-duplicates.
+
+    {
+      question: "Honestly? I think I only got this job because of a diversity hiring push, not because I was actually the best candidate.",
+      answer:
+        "The process that hired you had its own bar, and you cleared it — a program existing alongside your hire doesn't erase the interview and offer you'd still have needed to get through regardless of it. If you keep scoring yourself against a version of hiring that ignores how selection actually works everywhere, you'll always come up short. What was it in the process itself that made you the one they picked?",
+      topic: "mindset", area: 6, facet: "S1b", respondsTo: "S1",
+      userSaid: "Honestly? I think I only got this job because of a diversity hiring push, not because I was actually the best candidate",
+      gap: "Doubting the legitimacy of her own hire, not just discounting praise for work already done",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "Honestly I can't think of anything, I don't feel like I've achieved much lately.",
+      answer:
+        "That's often the tell, not the truth — when nothing comes to mind, it's usually because you're only counting the big, obvious wins and skipping past the small ones that got you through an ordinary week. Did you finish something today that would have stumped you six months ago?",
+      topic: "mindset", area: 6, facet: "S5a", respondsTo: "S5",
+      userSaid: "Honestly I can't think of anything, I don't feel like I've achieved much lately",
+      gap: "Can't name any achievement at all, not dismissing a known one",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "Honestly I don't want to make it a whole thing, I just needed to vent for a second.",
+      answer:
+        "That's fair — you don't owe this an action plan tonight. Naming it out loud, even just to me, is still taking it seriously instead of swallowing it. When you're ready to think about what to do about it, I'm here for that too — what's on your mind about it right now?",
+      topic: "mindset", area: 6, facet: "G3", respondsTo: "S1a",
+      userSaid: "Honestly I don't want to make it a whole thing, I just needed to vent for a second",
+      gap: "Wants to be heard, not immediately steered into an action plan — shared gap behind S1a's and S3a's closing question",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "I already said something like that last time and they just talked over me again.",
+      answer:
+        "Raising it once and having nothing change is its own information — it tells you this isn't going to fix itself through good faith alone. That's usually the point to start writing it down as it happens, factually, and decide whether to go over that person's head or bring in someone with more standing, like HR or a mentor. Who else here actually has the standing to make this land?",
+      topic: "mindset", area: 6, facet: "G4", respondsTo: "S3a",
+      userSaid: "I already said something like that last time and they just talked over me again",
+      gap: "No path once the obvious script has already been tried and failed — shared gap behind S1a's and S3a's closing question",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "I actually did apply for the promotion I wanted but got turned down, and now I don't want to say anything in case I look stupid.",
+      answer:
+        "One rejection isn't a verdict on whether you belong in the room — turned-down promotions are common and rarely explained well, and treating it as proof you shouldn't speak up conflates two separate things: being right for that specific role, and having something worth saying in a meeting. What reason, if any, did they actually give you?",
+      topic: "mindset", area: 6, facet: "S3b", respondsTo: "S3",
+      userSaid: "I actually did apply for the promotion I wanted but got turned down, and now I don't want to say anything in case I look stupid",
+      gap: "Confidence undermined by a specific past rejection after actually applying, not untested nerves",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+    {
+      question: "Honestly it's not really about knowledge, I just get so anxious my heart races and I go blank.",
+      answer:
+        "That's a physical response, not a sign you don't know your material — and technique advice won't touch it on its own. Some of that eases with practice in lower-stakes settings first, but if it's this intense, it's worth naming to someone who can help with the anxiety itself, not just the meeting skill. Does this happen anywhere else, or is it just this kind of moment?",
+      topic: "mindset", area: 6, facet: "S3c", respondsTo: "S3",
+      userSaid: "Honestly it's not really about knowledge, I just get so anxious my heart races and I go blank",
+      gap: "Physiological, acute anxiety as the actual blocker, not a knowledge or self-doubt belief",
+      reviewStatus: "unreviewed", drafted: "2026-08-27",
+    },
+
+    // ── Area 6 · Gap facets — matching Salary's G1-G10 treatment ──────────
+    // Salary's richness isn't just closed dead ends — it's 10 standalone gap
+    // facets covering whole topics its 5 real answers never touch at all.
+    // Confidence had only 2 (G1, G2). These six are entirely new topics in
+    // the confidence/imposter-syndrome domain, found the same way Salary's
+    // were: real, common, currently-homeless questions, not variations on
+    // what S1-S5 already cover. 2026-08-27.
+
+    {
+      question: "I'm terrified of getting something wrong in front of everyone — one mistake and I feel like I've proven I don't belong here.",
+      answer:
+        "That fear is common, and it's worth naming what it actually is: perfectionism dressed up as a standard, not a realistic one. Everyone around you has gotten something visibly wrong at some point — you just haven't seen most of theirs. One mistake proves you're doing real work, not that you don't belong. What's the worst version of 'getting it wrong' you're picturing, and has anything close to that actually happened to you before?",
+      topic: "mindset",
+      area: 6,
+      facet: "G5",
+      gap: "Perfectionism / fear of a visible mistake — distinct from S5's not-internalising-wins, this is fear of a specific future failure, not discounting a past success",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-27",
+    },
+    {
+      question: "I keep scrolling LinkedIn seeing people my age already leading teams or speaking at conferences, and it makes me feel like I'm behind.",
+      answer:
+        "What you're scrolling past is the highlight reel, not the whole story — nobody posts the year it took to get there, or the roles that didn't work out first. Comparing your unfiltered day-to-day to someone else's edited best moments will always come out unfair to you. What would you actually need to be true about your own progress to feel like you're not behind?",
+      topic: "mindset",
+      area: 6,
+      facet: "G6",
+      gap: "Comparison via curated online success (LinkedIn/social media) — distinct from S2's colleague-at-work comparison, an increasingly common specific trigger",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-27",
+    },
+    {
+      question: "Everyone else here has a computer science degree and I'm self-taught. I feel like a fraud every time it comes up.",
+      answer:
+        "A degree tells people how you learned; it says nothing about whether you can do the job, and plenty of self-taught engineers outperform people with the pedigree you're comparing yourself to. If your work has held up so far, that's the actual evidence — not a credential you didn't need to produce it. What's something you've already built or shipped that a computer science degree wouldn't have taught you how to do?",
+      topic: "mindset",
+      area: 6,
+      facet: "G7",
+      gap: "Non-traditional background (self-taught/bootcamp, no CS degree) as the specific legitimacy trigger — a very common flavor of belonging-doubt in tech, distinct from S1's general framing",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-27",
+    },
+    {
+      question: "I got promoted to lead my team but I don't actually feel ready, and now I'm second-guessing every decision I make.",
+      answer:
+        "Distinguish the feeling from the evidence: they promoted you because of decisions you'd already made well, not because they were hoping you'd become someone else once the title changed. Second-guessing every decision is exhausting, and it isn't the same as being wrong — pick one decision this week you'd normally agonise over, make the call, and notice whether the outcome actually justified the doubt. What decision is in front of you right now that you're sitting on?",
+      topic: "mindset",
+      area: 6,
+      facet: "G8",
+      gap: "Already promoted into a leadership role and doubting fitness for it — distinct from S4's holding-back-from-applying, this is post-decision self-doubt once already in the role",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-27",
+    },
+    {
+      question: "I have a technical interview coming up and I'm convinced they're going to realise I don't actually know what I'm doing.",
+      answer:
+        "That fear peaks right before a technical interview for almost everyone, credentialed or not — it's not a signal you're under-prepared, it's just what nerves feel like before something that matters. Prepare on what you can control: practice explaining your reasoning out loud, not just getting to the right answer, since most interviewers are grading how you think as much as what you know. What's the specific part of the interview format that worries you most?",
+      topic: "mindset",
+      area: 6,
+      facet: "G9",
+      gap: "Fear of being 'found out' tied specifically to a technical interview or live assessment — a performance-anxiety flavor distinct from S3's meeting-speaking-up context",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-27",
+    },
+    {
+      question: "People keep telling me I seem so confident, but I don't feel it at all inside — it feels like I'm fooling everyone.",
+      answer:
+        "That gap is normal, not a sign you're deceiving anyone — confidence is judged from the outside by what you do, not what you feel while doing it, and most people you'd call confident are running the same internal commentary you are. What people are responding to is your actual work and how you show up, which is real regardless of how loud the doubt is in your head. Does the doubt ever actually stop you from doing something, or does it just come along while you do it anyway?",
+      topic: "mindset",
+      area: 6,
+      facet: "G10",
+      gap: "Perceived as confident from outside while not feeling it internally — the specific 'fooling everyone' framing, distinct from S1's general belonging doubt",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-27",
     },
 
   ],

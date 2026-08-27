@@ -1,6 +1,6 @@
 # A fresh graduate with zero work experience asks whether to do a master's now or later
 
-_Run 2026-08-23 19:10 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-27 08:03 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Draws on S4 (before-or-after timing) and recommends work experience first, per Otema's own stated experience, rather than defaulting to 'go straight into it'.
 
@@ -12,77 +12,79 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > is it better to do a master's before or after gaining work experience
-  [stage B — The user is asking about whether to pursue a master’s before or after gaining work experience, which concerns planning and timing of a programme rather than logistics.]
+  [stage A — User asked about whether to pursue a master's before or after gaining work experience.]
   → enterDiscussionArea(2 · Further Education)
+  [no close example — voice only, advice from knowledge]
   [sentence cap fired — the model wrote a rundown]
-  [drew on S4, S2, S3 — 3 Otema, 0 drafted]
+  [drew on S1, S5 — 2 Otema, 0 drafted]
 
 Botema
-  In my experience, do it after about 1–3 years of work experience. That gives
-  you clarity on what you actually want to specialise in and often your
-  employer will help fund it. What field or roles are you considering, and do
-  you see yourself chasing doors that typically require a master, or do you
-  want to deepen through experience first?
+  Usually in our market you’re better off getting 1–3 years of work experience
+  before a master's. It helps you choose a real specialization and, often,
+  your employer will sponsor part of the degree. What’s your target role and
+  timeline, and what constraints (time, money) are you working with?
 
   you > I have zero work experience right now, I just finished undergrad
-  [stage A — User has no work experience yet; asks about timing of master's vs work experience; fits stage A (no programme chosen).]
-  [no close example — voice only, advice from knowledge]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S1, S5 — 2 Otema, 0 drafted]
+  [stage B — User has zero work experience and is asking about timing for a master's.]
+  [drew on S4, S2, S3 — 3 Otema, 0 drafted]
 
 Botema
-  That’s real, and with zero work experience, a master right now is a big bet.
-  My move would be to gain exposure first—secure a paid internship or a short
-  fellowship (or a focused certificate) that lets you build a portfolio and
-  network. What field are you aiming for, and what internship or fellowship
-  could you realistically apply for in the next few months?
+  That’s real. With zero work experience, you can go for a master’s now if you
+  have a clear specialization and can fund it or win a scholarship; if you’re
+  unsure, a 6–12 month paid internship or entry role can give you direction
+  and real context for your study later. What field are you targeting (data
+  science, ML, software, cybersecurity) and which regions or programs are you
+  considering?
 
   you > would waiting hurt my chances later
-  [stage A — User asked about waiting and now reveals zero work experience; classify under A (no programme chosen)]
-  [no close example — voice only, advice from knowledge]
-  [repeated-opener guard fired — a reused opening clause was dropped]
+  [stage B — User asked if waiting will hurt chances later; this is a master's timing question and fits Stage B (master's timing)]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S1, S5 — 2 Otema, 0 drafted]
+  [drew on S4, S2, S3 — 3 Otema, 0 drafted]
 
 Botema
-  With zero experience, I’d aim for hands-on exposure now—paid internships,
-  fellowships, or a focused short certificate with a project you can point to.
+  Yes, waiting can hurt in some cases. Admissions often favour recent grads
+  who show fresh momentum, and a gap without a clear plan can raise questions
+  about fit unless you fill it with purposeful work. If you do wait, make the
+  time count with a real internship or a solid project in your target field
+  and line up your program intakes and funding now.
 
   you > how long should I realistically wait
-  [stage B — User asked for a realistic waiting period before gaining exposure; affects plan in stage B.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage B — user asked how long to realistically wait before pursuing master's or gaining experience]
   [drew on S4, S2, S3 — 3 Otema, 0 drafted]
 
 Botema
-  aim for a paid internship, a short fellowship, or a project-based
-  certificate so you have something tangible and a network to lean on when you
-  apply for master’s later.
+  Realistically, 6–12 months of focused activity (a paid internship or a solid
+  project in your target field) is a sensible waiting window; it gives you
+  real context, a portfolio, and a better shot at funding. If you can’t land
+  that in time, applying to programs that accept fresh grads with a clear plan
+  and potential funding is reasonable, while you build skills in the interim.
+  What field and region are you targeting, and do you have any funding options
+  in mind?
 
   you > what should I do in the meantime
-  [stage B — User is deciding which programme (stage B) and asked for concrete actions to take while waiting for a master decision.]
+  [stage B — User asked for actionable steps to take while deciding about master's vs experience; this is new guidance.]
   [repeated advice removed]
   [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on S4, S2, S3 — 3 Otema, 0 drafted]
 
 Botema
-  Build 2 small projects you can show on GitHub (a data-cleaning workflow and
-  a simple dashboard or app) and start networking with mentors and
-  women-in-tech groups (like our BSC network) to get referrals. What field do
-  you want to test first, and is there a local or remote program you could
-  target in the coming month?
+  Do one solid project in your target field and publish a clean case study on
+  GitHub to demonstrate end-to-end capability. Also pursue a paid internship
+  or entry-level role (remote or local) to gain real context while you plan,
+  and start researching master’s programs now to map modules and funding
+  options so you can move quickly if momentum arrives.
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     2 · Further Education
-  covered_stages  B, A
-  touched_facets  S2, S3, S4, S1, S5
+  covered_stages  A, B
+  touched_facets  S1, S5, S2, S3, S4
   closed_areas    —
-  role/location   — / —
-  where she is    She is a recent undergraduate graduate with zero work experience. She has just finished her degree and is weighing next steps, including whether to pursue a master's degree.
-  trying to do    She wants to know what she should do in the meantime as she weighs master’s versus work experience. She has previously asked how long she should wait and whether waiting would hurt her chances later; now she asks for concrete steps she could take in the near term.
+  role/location   master's timing / —
+  where she is    She is a recent undergraduate who has completed her degree and has zero work experience. She is not currently employed. She is seeking guidance on the timing of a master’s degree.
+  trying to do    She wants to decide whether to pursue a master’s before or after gaining work experience. The main constraint is zero work experience since finishing undergrad. In her latest message, she asked what she should do in the meantime. What she has already tried: NONE.
 
   Nothing was written to any database.
 ```

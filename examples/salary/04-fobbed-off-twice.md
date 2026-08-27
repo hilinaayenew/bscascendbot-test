@@ -1,6 +1,6 @@
 # Told to wait for the review cycle, for the second year running
 
-_Run 2026-08-16 06:42 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-24 13:10 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stage C. Recognises a pattern rather than repeating last year's advice.
 
@@ -12,52 +12,55 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > my manager told me to wait for the review cycle
-  [stage C — User is in an ongoing job and the manager asked to wait for the annual review cycle, which constrains when compensation discussions can occur.]
+  [stage C — User states manager asked them to wait for the review cycle; this is a current employee negotiation scenario where the raise discussion should be initiated by the employee but is paused until review.]
   → enterDiscussionArea(9 · Salary & Negotiation)
   [sentence cap fired — the model wrote a rundown]
   [drew on G4c, S4c, G1 — 0 Otema, 3 drafted]
   [voice only: S4, G1b, G4b, S4a]
 
 Botema
-  That’s real and you should not let it stay vague. Turn “wait for the review”
-  into a concrete plan: decide two measurable outcomes you’ll deliver by the
-  end of the cycle, and get a written commitment to revisit compensation at
-  that time. What two outcomes would you commit to achieving by the cycle?
+  That happens a lot. “Wait for the review cycle” is a pause, not a decision.
+  Would you like me to tailor this to your exact role and the outcomes you can
+  realistically deliver?
 
   you > she said exactly the same thing last year
-  [stage C — User is in a ongoing negotiation with their employer; this is Stage C and the message indicates a recurring blocking behavior; we should respond with tactics to secure a written commitment and concrete milestones.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [stage C — The user reports the manager delaying raises again and this is an active internal negotiation stage.]
   [drew on G4c, G9a, G1a — 0 Otema, 3 drafted]
   [voice only: S4c, G8, G4a, S4]
 
 Botema
-  What would be a realistic deadline for you, and what two outcomes could you
-  commit to?
+  That pattern is real for many of us, and it’s a stall unless you pin it
+  down. I’d push for a concrete plan: agree on two measurable deliverables
+  you’ll complete by a fixed date, and a firm date to revisit compensation
+  with a market-based rationale, all in writing. What two deliverables could
+  you commit to that would demonstrate real impact before the next review, and
+  by when could you realistically finish them?
 
   you > I did everything on the list she gave me
-  [stage C — User completed the tasks manager gave; now needs guidance on next compensation discussion steps.]
+  [stage C — User is already employed and reports completing prior deliverables; core issue is moving pay conversation forward with manager.]
   [drew on G4c, G4a, G4b — 0 Otema, 3 drafted]
   [voice only: G8, G1, G1b, G1a]
 
 Botema
-  That’s real, and you’ve done everything on the list—don’t let vague promises
-  stand. Push for a written compensation review at the cycle’s end: specify
-  the end date, the exact metrics you’ve met, and a firm decision date on pay
-  with the market rationale. What is the official cycle end date, and what two
-  measurable outcomes did you deliver?
+  That’s real, and it’s not acceptable to stall after you’ve done the work. If
+  you’ve completed everything, push for a concrete outcome: a 30-minute review
+  to close the cycle, with (1) a firm date to revisit compensation and (2) a
+  written, market-based rationale or plan plus clear next steps or promotion
+  criteria. What was her response when you told her you finished the list, and
+  when can you push for that meeting?
 
   you > I don't want to be the person who complains
-  [stage C — User expresses concern about being seen as complainant, wants to pursue compensation while maintaining professional framing.]
+  [stage C — The user is worried about perception of complaining, which is new constraint affecting negotiation approach; needs tactics to frame concerns constructively.]
+  [repeated advice removed]
+  [implausible figure removed — outlier, mixed currency, or wrong period]
   [drew on G4c, G9a, S4b — 0 Otema, 3 drafted]
   [voice only: G1a, G1b, G9, G1]
 
 Botema
-  That worry isn’t just in your head—it's real and well documented that women
-  get labeled as complainers for asking about pay. Reset the frame to business
-  value: “I’ve completed the cycle and delivered on the agreed metrics; I’d
-  like a compensation review at the end with market justification and a firm
-  decision date.” How does that feel, and what’s the cycle end date?
+  That concern is real, but you’re not asking for a favour—you’re asking for
+  value to be recognised. How would you phrase it so it sounds businesslike in
+  your manager’s style, and what hints has she given before about timing when
+  you’ve pressed this?
 
   you > am I being naive staying here
   [azure error: Azure 400: {"error":{"message":"The response was filtered due to the prompt triggering Azure OpenAI's content management]
@@ -73,9 +76,8 @@ Botema
   covered_stages  C
   touched_facets  S4, S4a, S4b, S4c, G1, G1a, G1b, G4, G4a, G4b, G4c, G4d, G8, G9, G9a
   closed_areas    —
-  role/location   mid-level developer / —
-  where she is    She is waiting for the review cycle; her manager told her to wait. She said the same thing last year. She has completed everything on the list her manager gave her.
-  trying to do    She does not want to be the person who complains.
+  role/location   employee negotiating with current employer / —
+  trying to do    She is waiting for the review cycle, as instructed by her manager. She has completed everything on the list her manager gave her. She doesn't want to be the person who complains.
 
   Nothing was written to any database.
 ```
@@ -87,9 +89,9 @@ Botema
 - PASS — does not treat raising it as complaining
 - PASS — most replies still end on a question
 - PASS — never asks her to disclose her own pay
-- **FAIL** — no two replies open the same way
+- PASS — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms
-- **FAIL** — no reply mostly restates the one before it
+- PASS — no reply mostly restates the one before it
 
 ---
 

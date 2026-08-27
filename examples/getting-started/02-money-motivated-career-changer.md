@@ -1,103 +1,18 @@
 # A teacher switching in purely for stability, not passion
 
-_Run 2026-08-21 07:26 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-27 14:39 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Deliberately probes the A/B boundary: a named prior career (teacher) should place her in stage B even while she's also unsure what to pick — the prior career is what distinguishes B, not field-certainty. Doesn't moralise about a purely financial motivation, values her teaching background, and reaches stage D once she asks a concrete timeline question.
 
 ## Transcript
 
 ```
-BSC Coach — local area harness
-  Area 1 · Getting Started · live via gpt-5-nano
-  Type freely. 'state' to inspect, 'quit' to stop.
 
-  you > I'm a teacher and I want to switch into tech
-  [stage B — undefined]
-  → enterDiscussionArea(1 · Getting Started)
-  [drew on S5 — 1 Otema, 0 drafted]
-
-Botema
-  Teaching has given you strong problem-structuring, communication, and
-  stakeholder handling—perfect foundations for tech. For a fast entry, I’d
-  focus on data analytics (Python, SQL) or frontend basics, using free
-  resources, and build 2–3 education-focused projects to show recruiters.
-  Which area resonates most with you, and what resources and time can you
-  commit this month to start the learning sprint?
-
-  you > honestly it's not really passion, I just want more stable pay
-  [stage B — User reveals primary motivation is financial stability rather than passion; this could shift priorities toward more stable, in-demand paths and practical considerations.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S5 — 1 Otema, 0 drafted]
-
-Botema
-  If stability is the driver, I’d aim for data analytics or QA/testing—these
-  have clear entry paths and steady demand here. What constraints do you have
-  right now (time, internet, budget), and which path feels most doable to
-  start this month?
-
-  you > is that a bad reason to do this
-  [stage C — User asked whether prioritizing stability/salary in a career change is a valid reason; this conveys new motivational constraint and a method question.]
-  [no close example — voice only, advice from knowledge]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S2 — 1 Otema, 0 drafted]
-
-Botema
-  Not at all—that’s a real and sensible reason. If stability is the aim, pick
-  a path with clear local demand (data analytics or QA) and run a 6–12 week
-  sprint: free resources, 2 projects, and start applying to entry roles or
-  internships.
-
-  you > what should I actually pick, given that
-  [stage C — User asked which path to pick; this is a method decision (C) about choosing learning path.]
-  [no close example — voice only, advice from knowledge]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S2 — 1 Otema, 0 drafted]
-
-Botema
-  I’d pick data analytics as your starting path. It has solid local demand and
-  lets you prove value with small, education-focused projects. How many hours
-  can you commit each week, and do you have reliable internet and a computer
-  to start this month?
-
-  you > how long is this going to realistically take me
-  [stage D — User asked for a concrete timeline for a data analytics learning sprint and applying to entry roles.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S4, S6, S3 — 3 Otema, 0 drafted]
-
-Botema
-  For data analytics, realistic time to be job-ready with steady part-time
-  effort is about 6–12 months; 6–9 months if you can do 15–20 hours/week, 9–12
-  months at 10–14 hours/week, and 12–18 months if you’re under 8 hours/week.
-
-  you > quit
-
-  ── state ─────────────────────────────────────────────
-  active_area     1 · Getting Started
-  covered_stages  B, C, D
-  touched_facets  S5, S2, S3, S4, S6
-  closed_areas    —
-  role/location   — / —
-  where she is    She is a teacher seeking more stable pay.
-  trying to do    She wants to switch into tech and is weighing data analytics versus QA/testing as the most viable path. The stability goal is prioritized over passion, and she is asking for guidance on which route to pick given that constraint.
-
-  Nothing was written to any database.
 ```
 
 ## Checks
 
-- PASS — classified stage B on the opening message (named prior career)
-- PASS — does not moralise about a money-driven motivation
-- PASS — values her teaching background as an asset
-- PASS — reaches stage D by the final, concrete timeline question
-- PASS — reaches a realistic timeframe by the end
-- PASS — most replies still end on a question
-- PASS — never asks her to disclose personal financial details
-- PASS — no two replies open the same way
-- PASS — no reply stacks more than two jargon terms
-- PASS — no reply mostly restates the one before it
+- **ERROR** — Command failed: node c:\Users\hp\Desktop\bscascendbot-test\scripts\coach-local.mjs --script=I'm a teacher and I want to switch into tech|honestly it's not really passion, I just want more stable pay|i
 
 ---
 

@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coach": "node scripts/coach-local.mjs",
-    "coach:scenarios": "node scripts/coach-scenarios.mjs"
+    "coach:scenarios": "node scripts/coach-scenarios.mjs",
+    "coach:coverage": "node scripts/area-coverage.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

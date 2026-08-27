@@ -1,6 +1,6 @@
 # In the BSC mentorship programme but doesn't have a clear career goal yet
 
-_Run 2026-08-23 19:46 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-27 13:15 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Draws on S6 and reassures that being unsure is workable — tell the mentor directly — rather than treating the lack of a goal as a problem to fix before starting.
 
@@ -12,81 +12,77 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I'm in the BSC mentorship programme but I don't really have a clear career goal yet
-  [stage B — User is already in the BSC mentorship programme and states they don't have a clear career goal yet; this is about how to use the existing mentor relationship to gain clarity, not leaving the area.]
+  [stage B — User is in BSC mentorship programme but lacks clear career goals; needs guidance on goal discovery and leveraging mentor sessions.]
   → enterDiscussionArea(4 · Mentorship)
   [sentence cap fired — the model wrote a rundown]
-  [drew on S6, S3, S5 — 3 Otema, 0 drafted]
-  [voice only: S4]
+  [drew on S6, S3, S3a — 2 Otema, 1 drafted]
+  [voice only: S5, S4a, S4]
 
 Botema
-  You’re not alone in this, and a clear goal often emerges when you work it
-  with your mentor. I’d suggest using your next sessions to co-create a
-  3-track career map and test one of them. What two or three areas have you
-  enjoyed most recently, or what kind of problem would you love to own in your
-  next role?
+  That’s a very common moment in the journey. Clarity usually comes from a
+  small, structured exploration, not a leap into one fixed title. What two
+  tracks feel most relevant to you, and what constraints should we keep in
+  mind (time, resources, remote work realities)?
 
   you > is that going to be a problem
-  [stage B — User asked if the proposed 3-track career map approach could be a problem, moving the mentorship discussion forward.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S6, S4, S3 — 3 Otema, 0 drafted]
-  [voice only: S5]
+  [stage B — User asked if not having a clear goal is a problem in the B stage; this is a new concern moving the conversation forward.]
+  [drew on S4a, S5, S6 — 2 Otema, 1 drafted]
+  [voice only: S3, S3a, S4]
 
 Botema
-  Not at all—that’s exactly what the mentorship is for. It’s normal not to
-  have one fixed goal yet, and we’ll crystallise it together. Does that sit
-  well with you?
+  Not having one fixed goal isn’t a problem; it’s common and workable if you
+  plan a short, two-track exploration. What two tracks feel most relevant to
+  you right now, and what small test could you run this month to help you
+  decide (keeping time and connectivity in mind)?
 
   you > what should I actually tell my mentor
-  [stage B — User asks how to tell mentor; stays in B stage and moves conversation forward]
+  [stage B — User is asking what to tell mentor within ongoing mentorship to move planning forward]
   [sentence cap fired — the model wrote a rundown]
-  [drew on S6, S3, S5 — 3 Otema, 0 drafted]
-  [voice only: S4]
+  [drew on S6, S4, S3a — 2 Otema, 1 drafted]
+  [voice only: S4a, S5, S3]
 
 Botema
-  Tell your mentor you’re still exploring your direction and would value
-  co-creating a 3-track career map and testing one track first. In your note,
-  name two or three areas you’ve enjoyed recently, describe the kind of
-  problem you want to own, and ask for feedback on which tracks fit your
-  strengths, the milestones to set, and any introductions to people or
-  projects in those areas. Want me to tailor this into a ready-to-send message
-  with your actual areas?
+  Here’s a tight script you can use in your next session: I’m in a phase of
+  exploration and don’t have a single fixed career goal yet. I’d like to run a
+  two-track test—Track A deepens data science/ML skills with a practical
+  project, Track B builds cross-functional analytics impact—each with a
+  four-week deliverable. Does that feel workable for your guidance?
 
   you > how do most people figure out their focus through this
-  [stage B — User is in B-stage mentorship; asking about how others figure out focus within the process.]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on S6, S3, S5 — 3 Otema, 0 drafted]
-  [voice only: S4]
+  [stage B — User asks how others figure out their focus within the ongoing B stage mentorship; this is a guidance/content question, not leaving Mentorship.]
+  [drew on S6, S3, S3a — 2 Otema, 1 drafted]
+  [voice only: S5, S4a, S4]
 
 Botema
-  Most people land on focus by turning the 3-track map into real experiments:
-  pick 2–3 areas you enjoy and run a 6–8 week test for each with a concrete
-  deliverable, then review the results with your mentor to choose one track to
-  own; the others stay as learning lanes.
+  That’s real and common. Most people figure it out by running a two-track,
+  short-cycle exploration (four weeks per track) and then reviewing which
+  track consistently sparks momentum and delivers tangible impact with their
+  mentor; the winning track is the one you can keep showing progress in and
+  that aligns with market needs. What two tracks would you test first, and
+  what would you aim to deliver in the first four weeks?
 
   you > what's my first move with them
-  [stage B — User is in BSC programme and asks for first move; it's a new concrete step]
-  [repeated advice removed]
-  [reply was entirely repetition — treating as a stall]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [nothing survived the guards — using the area's question]
-  [drew on S6, S3, S5 — 3 Otema, 0 drafted]
-  [voice only: S4]
+  [stage B — User asked for concrete first move with mentor within BSC program; this moves conversation to practical next steps.]
+  [drew on S6, S4a, S3 — 2 Otema, 1 drafted]
+  [voice only: S5, S3a, S4]
 
 Botema
-  Where are you at with mentorship right now?
+  Your first move is to enter the session with a concrete two-track plan and
+  four-week milestones, and ask for feedback on feasibility and the resources
+  you’ll need to kick off each track. This sets a clear path and gives your
+  mentor a stake in your progress. When is your next session and what outcome
+  do you want from that first talk?
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     4 · Mentorship
   covered_stages  B
-  touched_facets  S3, S4, S5, S6
+  touched_facets  S3, S3a, S4, S4a, S5, S6
   closed_areas    —
-  role/location   — / —
-  where she is    — She is in the BSC mentorship programme and does not yet have a clear career goal. She has asked what her first move with the mentor should be.
-  trying to do    — She is still exploring her direction and would value guidance on how to articulate it to her mentor. She wants to co-create a 3-track career map and test one track first, and she has asked how most people figure out their focus through this mentorship.
+  role/location   mentee planning / —
+  where she is    She is in the BSC mentorship programme. She is asking what her first move with her mentor should be.
+  trying to do    She is trying to develop a clearer career goal; she wants to know what to tell her mentor and how most people figure out their focus through the mentorship process. She is asking for guidance on what the first concrete step should be.
 
   Nothing was written to any database.
 ```
@@ -94,7 +90,7 @@ Botema
 ## Checks
 
 - PASS — draws on S6 (BSC programme, career goals)
-- PASS — treats being unsure as workable, not a blocker
+- **FAIL** — treats being unsure as workable, not a blocker
 - PASS — most replies still end on a question
 - PASS — no two replies open the same way
 - PASS — no reply mostly restates the one before it

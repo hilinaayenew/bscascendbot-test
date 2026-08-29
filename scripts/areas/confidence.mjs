@@ -38,9 +38,19 @@ export default {
   stageSummary: {
     A: "working through how you feel about yourself",
     B: "a decision stalled by that feeling",
+    C: "pulling together what you're going to do",
   },
 
   fallbackQuestion: "What feels true for you right now?",
+
+  // Stage C is the wrap-up. Named here rather than inferred from the letter so
+  // the harness can find it without every area having to have one — see the
+  // wrap-up handling in coach-local.mjs. Two things key off this: the
+  // classifier can route to it directly when she signals the advice has
+  // landed, and the stall rule diverts into it once before closing, so a
+  // conversation that finished and a conversation that ran dry stop sounding
+  // identical from the inside.
+  wrapUp: "C",
 
   // No supersedes yet — nothing measured, and there's no live testing at all
   // to have measured it against.
@@ -58,6 +68,19 @@ export default {
       describes:
         "Self-doubt is the stated reason something concrete isn't happening: not speaking up in a meeting, not applying to a role, not accepting or asking for an opportunity. The distinguishing fact is a decision sitting behind the feeling, not just the feeling on its own. Giveaway words: \"holding myself back\", \"scared to apply\", \"won't speak up\", \"turned it down\", \"didn't put myself forward\".",
       facets: ["S3", "S3b", "S3c", "S4", "G2", "G4", "S3a"],
+    },
+    C: {
+      label: "Wrapping up",
+      describes:
+        "The advice has landed and she is settling rather than asking. She agrees with it, thanks you for it, says she will try it, says it makes sense, or answers a closing check with a yes. Giveaway words: \"that makes sense\", \"okay, I'll try that\", \"thank you\", \"that helps\", \"yeah, I think so\", \"no, that's it\". Do NOT choose this because a message is short or vague — only because she is agreeing or closing. If she raises anything new, however small, or asks another question, she is back in A or B and this is not the stage.",
+      // Everything in the area, and deliberately so: C is shown the whole
+      // range for voice and told to answer from none of it. Giving it a
+      // narrower set would only make it likelier to reach for one and start
+      // advising again, which is the exact thing this stage exists to stop.
+      facets: [
+        "S1", "S1b", "S2", "S5", "S5a", "G1", "G3", "G5", "G6", "G7", "G8", "G9", "G10", "S1a",
+        "S3", "S3b", "S3c", "S4", "G2", "G4", "S3a",
+      ],
     },
   },
 };

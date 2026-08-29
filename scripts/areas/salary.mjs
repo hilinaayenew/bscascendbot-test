@@ -34,6 +34,16 @@ export default {
   // The topic key in KNOWLEDGE_BASE and on the examples.
   topic: "salary",
 
+  // The only area where a live web search can fire, and therefore the only one
+  // whose classifier needs to return a role, a location and a needsMarketData
+  // flag. Every other area was being asked for all four on every single turn,
+  // which is four extra fields of tool schema and four extra fields to emit
+  // before the model can get to `stage` — and gpt-5-nano truncating the tool
+  // arguments before it finishes is a real, observed failure, not a
+  // theoretical one. Areas that leave this out are asked for stage, leaveTo,
+  // newInformation and why, and nothing else.
+  marketData: true,
+
   // Noun phrases for a closing summary. The labels below are clause-shaped and
   // read as nonsense in a list ("we covered an offer is on the table").
   stageSummary: {

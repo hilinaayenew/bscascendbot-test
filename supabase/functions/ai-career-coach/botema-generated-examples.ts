@@ -632,6 +632,21 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
   addressMindsetChallenge: [
 
     // ── Area 6 · Confidence & Imposter Syndrome ───────────────────────────
+    // OPENING PASS, 2026-08-29. G5, G9 and G10 opened by telling her a
+    // feeling was real or normal. Three of twenty-one is not the reason the
+    // coach does it — none of Otema's five open that way, and the rules were
+    // the actual driver — but examples that model the habit make the rule
+    // harder to hold, so they now open on the mechanism instead. G3 keeps its
+    // acknowledgement: she explicitly asked to vent rather than be helped,
+    // which is the one case where hearing her IS the answer.
+    // REFLECTION PASS, 2026-08-28. Six of these answers (G1, G2, G7, S1a, S1b,
+    // S5a) now open by saying her own words back to her before advising —
+    // "Every time it comes up", "You said 'only'", "Nothing comes to mind".
+    // The instruction alone (REFLECT_BACK in converser.ts) is not what the
+    // model imitates; the examples are, and none of them did it. S1b is the
+    // deliberate exception to the shape: it reflects the WORD she used and not
+    // the claim she made, because NEVER_DISCOUNT_HER_PLACE forbids repeating
+    // "hired to fill a quota" back at her even in order to disagree with it.
     // Two gaps identified 2026-08-21 building the storyboard spec, plus two
     // response branches for the one distinction worth building in before any
     // testing: S1's and S3's real closers both invite an answer that isn't a
@@ -645,7 +660,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "Whenever someone compliments my work I assume they're just being nice, or that I got lucky.",
       answer:
-        "Notice what you do with it instead of arguing over whether it's true — saying \"thank you, that took real work\" out loud is practice for believing it, even before you fully do. And if it keeps happening from the same person, that's not politeness anymore, that's a pattern; kind once is possible, three times is information. What did they actually say, in their own words?",
+        "Just being nice, or lucky — those are the only two explanations you're allowing, and neither of them has you in it. Notice what you do with the compliment instead of arguing over whether it's true: saying \"thank you, that took real work\" out loud is practice for believing it, even before you fully do. And if it keeps coming from the same person, kind once is possible, three times is information. What did they actually say, in their own words?",
       topic: "mindset",
       area: 6,
       facet: "G1",
@@ -657,7 +672,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "I turned down a chance to lead a small project because I didn't feel ready, and now I think I made a mistake.",
       answer:
-        "Notice that you decided you weren't ready before anyone actually tested that — \"not ready\" is a feeling, not a qualification someone checked you against. If it's still open, go back and ask whether the offer still stands; if it's gone, treat it as data for the next one rather than proof you were right to say no. What did you actually say when it came up?",
+        "You didn't feel ready — and you decided that before anyone actually tested it. \"Not ready\" is a feeling, not a qualification someone checked you against. If it's still open, go back and ask whether the offer still stands; if it's gone, treat it as data for the next one rather than proof you were right to say no. What did you actually say when it came up?",
       topic: "mindset",
       area: 6,
       facet: "G2",
@@ -669,7 +684,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "It's not really in my head — I'm the only woman on my team and I get interrupted or talked over almost every time I try to say something.",
       answer:
-        "That's a documented pattern, not a confidence problem to work on in yourself — women get interrupted and talked over in mixed-gender meetings far more than men, and noticing it is accurate, not oversensitive. The move isn't to build your nerve, it's to decide what you want to happen about this specific pattern — naming it in the room in the moment, raising it with whoever runs the meeting, or something else. What do you want to happen the next time it comes up?",
+        "The only woman on the team, talked over almost every time you try to speak — you have already named the pattern, you just haven't been believed about it. It is documented, not a confidence problem to work on in yourself: women get interrupted and talked over in mixed-gender meetings far more than men, and noticing it is accurate, not oversensitive. The move isn't to build your nerve, it's to decide what you want to happen about this specific pattern — naming it in the room in the moment, raising it with whoever runs the meeting, or something else. What do you want to happen the next time it comes up?",
       topic: "mindset", area: 6, facet: "S1a", respondsTo: "S1",
       userSaid: "the reason is structural — being talked over or dismissed because of who she is, not a feeling about herself",
       gap: "S1's real closer assumes the belonging feeling is internal; it isn't always",
@@ -696,7 +711,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "Honestly? I think I only got this job because of a diversity hiring push, not because I was actually the best candidate.",
       answer:
-        "The process that hired you had its own bar, and you cleared it — a program existing alongside your hire doesn't erase the interview and offer you'd still have needed to get through regardless of it. If you keep scoring yourself against a version of hiring that ignores how selection actually works everywhere, you'll always come up short. What was it in the process itself that made you the one they picked?",
+        "You said \"only\" — that one word is doing an enormous amount of work, and it is the part I would push back on. You sat the interviews. You got the offer. Nobody hires someone they expect to fail, no initiative sits an interview on your behalf, and the bar you cleared was the same bar. If you keep scoring yourself against a version of hiring that ignores how selection actually works everywhere, you will always come up short. What was it in the process itself that made you the one they picked?",
       topic: "mindset", area: 6, facet: "S1b", respondsTo: "S1",
       userSaid: "Honestly? I think I only got this job because of a diversity hiring push, not because I was actually the best candidate",
       gap: "Doubting the legitimacy of her own hire, not just discounting praise for work already done",
@@ -705,7 +720,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "Honestly I can't think of anything, I don't feel like I've achieved much lately.",
       answer:
-        "That's often the tell, not the truth — when nothing comes to mind, it's usually because you're only counting the big, obvious wins and skipping past the small ones that got you through an ordinary week. Did you finish something today that would have stumped you six months ago?",
+        "Nothing comes to mind — that is usually the tell rather than the truth. It is what happens when you are only counting the big, obvious wins and skipping past the small ones that got you through an ordinary week. Did you finish something today that would have stumped you six months ago?",
       topic: "mindset", area: 6, facet: "S5a", respondsTo: "S5",
       userSaid: "Honestly I can't think of anything, I don't feel like I've achieved much lately",
       gap: "Can't name any achievement at all, not dismissing a known one",
@@ -759,7 +774,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "I'm terrified of getting something wrong in front of everyone — one mistake and I feel like I've proven I don't belong here.",
       answer:
-        "That fear is common, and it's worth naming what it actually is: perfectionism dressed up as a standard, not a realistic one. Everyone around you has gotten something visibly wrong at some point — you just haven't seen most of theirs. One mistake proves you're doing real work, not that you don't belong. What's the worst version of 'getting it wrong' you're picturing, and has anything close to that actually happened to you before?",
+        "What you're holding yourself to isn't a standard, it's perfectionism wearing a standard's clothes — a real one has room in it for getting something wrong. Everyone around you has, visibly, at some point; you just haven't seen most of theirs. One mistake is evidence you are doing real work, not evidence you don't belong. What's the worst version of 'getting it wrong' you're actually picturing?",
       topic: "mindset",
       area: 6,
       facet: "G5",
@@ -781,7 +796,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "Everyone else here has a computer science degree and I'm self-taught. I feel like a fraud every time it comes up.",
       answer:
-        "A degree tells people how you learned; it says nothing about whether you can do the job, and plenty of self-taught engineers outperform people with the pedigree you're comparing yourself to. If your work has held up so far, that's the actual evidence — not a credential you didn't need to produce it. What's something you've already built or shipped that a computer science degree wouldn't have taught you how to do?",
+        "Every time it comes up — so it is not the work that sets this off, it is the moment someone mentions where they studied. A degree tells people how you learned; it says nothing about whether you can do the job, and plenty of self-taught engineers outperform the pedigree you are measuring yourself against. If your work has held up so far, that is the actual evidence — not a credential you did not need in order to produce it. What's something you've already built or shipped that a computer science degree wouldn't have taught you how to do?",
       topic: "mindset",
       area: 6,
       facet: "G7",
@@ -803,7 +818,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "I have a technical interview coming up and I'm convinced they're going to realise I don't actually know what I'm doing.",
       answer:
-        "That fear peaks right before a technical interview for almost everyone, credentialed or not — it's not a signal you're under-prepared, it's just what nerves feel like before something that matters. Prepare on what you can control: practice explaining your reasoning out loud, not just getting to the right answer, since most interviewers are grading how you think as much as what you know. What's the specific part of the interview format that worries you most?",
+        "Nerves before a technical interview are not a readout of how prepared you are — they peak for almost everyone, credentialed or not, and they arrive whether or not you know the material. Prepare on what you can control: practise explaining your reasoning out loud rather than only getting to the right answer, because most interviewers are grading how you think as much as what you know. What's the specific part of the format that worries you most?",
       topic: "mindset",
       area: 6,
       facet: "G9",
@@ -814,7 +829,7 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
     {
       question: "People keep telling me I seem so confident, but I don't feel it at all inside — it feels like I'm fooling everyone.",
       answer:
-        "That gap is normal, not a sign you're deceiving anyone — confidence is judged from the outside by what you do, not what you feel while doing it, and most people you'd call confident are running the same internal commentary you are. What people are responding to is your actual work and how you show up, which is real regardless of how loud the doubt is in your head. Does the doubt ever actually stop you from doing something, or does it just come along while you do it anyway?",
+        "Confidence is judged from the outside by what you do, not by what you feel while you do it — which is exactly why the gap you're describing is invisible to everyone but you. Most of the people you would call confident are running the same commentary in their heads. What they are responding to in you is the work and how you show up, and that stays true however loud the doubt gets. Does the doubt ever actually stop you doing something, or does it just come along while you do it anyway?",
       topic: "mindset",
       area: 6,
       facet: "G10",

@@ -40,9 +40,12 @@ const OUT = join(ROOT, "examples", AREA_SLUG);
 
 let SCENARIOS;
 let AREA_NAME = AREA_SLUG;
+let AREA_STAGES = [];
 try {
   SCENARIOS = (await import(`./scenarios/${AREA_SLUG}.mjs`)).default;
-  AREA_NAME = (await import(`./areas/${AREA_SLUG}.mjs`)).default.name;
+  const cfg = (await import(`./areas/${AREA_SLUG}.mjs`)).default;
+  AREA_NAME = cfg.name;
+  AREA_STAGES = Object.keys(cfg.stages);
 } catch {
   console.error(`\n  No scenarios for "${AREA_SLUG}" — expected scripts/scenarios/${AREA_SLUG}.mjs\n`);
   process.exit(1);
@@ -119,7 +122,7 @@ const passed = results.filter((r) => r.ok).length;
 const index = [
   "# Coach scenario sweep",
   "",
-  `Five conversations run through \`scripts/coach-local.mjs\` against live Azure (\`gpt-5-nano\`), five turns each.`,
+  `${SCENARIOS.length} conversations run through \`scripts/coach-local.mjs\` against live Azure (\`gpt-5-nano\`), five turns each.`,
   `Each exists to test one claim the storyboard makes about the area model.`,
   "",
   `_${AREA_NAME} · last run **${STAMP}** — regenerate with \`npm run coach:scenarios -- --area=${AREA_SLUG}\`._`,
@@ -136,12 +139,18 @@ const index = [
   "",
   "## What this does and does not cover",
   "",
-  "Covered: stage classification across A, B and C; all three leaving layers; the",
-  "invented-figure behaviour; and that answers end on a question.",
+  // Was hardcoded, and said "stage classification across A, B and C; all three
+  // leaving layers; the invented-figure behaviour" for every area — including
+  // ones with two stages and no figures anywhere in them. A coverage claim
+  // that is not read off the area it describes is worse than none: it reads as
+  // reassurance and it was wrong in three particulars for Confidence.
+  `Covered: stage classification across ${AREA_STAGES.join(", ")}; the leaving`,
+  "layers; how replies open and end; and that the coach does not repeat itself.",
   "",
   "Not covered: whether the *advice* is good. These check shape and routing, not",
   "quality — that judgment belongs to Otema, and the drafted answers behind many of",
-  "these replies are still unreviewed.",
+  "these replies are still unreviewed. A scenario passing does not mean the",
+  "conversation went well — read the transcript.",
   "",
   "Nothing here writes to a database. State is in memory and discarded per run.",
   "",

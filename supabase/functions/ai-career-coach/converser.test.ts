@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods, dropRepeatedSentences, stripAdsOversell } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods, dropRepeatedSentences, stripAdsOversell, stripQuotaConcession } from "./converser.ts";
 
 describe("pickRandom", () => {
   it("returns exactly n items when the pool is larger than n", () => {
@@ -588,5 +588,47 @@ describe("dropRepeatedSentences — quoted scripts", () => {
   it("keeps a quoted script the first time it appears", () => {
     const raw = 'Try saying: "Based on my research I am looking at X to Y." What range do you have?';
     expect(dropRepeatedSentences(raw, ["Something entirely unrelated about mentors and networks."])).toBe(raw);
+  });
+});
+
+describe("stripQuotaConcession", () => {
+  // Both of these are real replies from live runs of the Confidence area.
+  it("removes an outright agreement that diversity hiring explains her job", () => {
+    const raw = "That concern is real and not in your head—diversity hiring does happen, and it can feel personal when you're the one on the receiving end. What have you shipped that you are proud of?";
+    const { text, stripped } = stripQuotaConcession(raw);
+    expect(stripped).toBe(true);
+    expect(text).not.toMatch(/diversity/i);
+    expect(text).toContain("What have you shipped");
+  });
+
+  it("removes the restatement even though the reply was about to disagree", () => {
+    const raw = "You're worried you were hired to hit a diversity number rather than because you were the best. That pattern is real, and you're not alone. What is one project you can point to now that proves your impact?";
+    const { text, stripped } = stripQuotaConcession(raw);
+    expect(stripped).toBe(true);
+    expect(text).not.toMatch(/diversity number/i);
+    expect(text).toContain("What is one project");
+  });
+
+  it("removes it whether she is described as hired, picked or promoted for it", () => {
+    for (const s of [
+      "Maybe they picked you to fill a quota, but that is not the whole story.",
+      "Some places do promote women to hit a diversity target.",
+      "You were not just a box-tick when they offered you the role.",
+    ]) {
+      expect(stripQuotaConcession(s).stripped).toBe(true);
+    }
+  });
+
+  it("leaves the answer this rule exists to make room for", () => {
+    // S1b's drafted answer. It says the true thing without naming the claim.
+    const raw = "You sat the interviews. You got the offer. Nobody hires someone they expect to fail, and no initiative sits an interview on your behalf. What was it in the process itself that made you the one they picked?";
+    const { text, stripped } = stripQuotaConcession(raw);
+    expect(stripped).toBe(false);
+    expect(text).toBe(raw);
+  });
+
+  it("does not fire on ordinary talk about a diversity programme she might join", () => {
+    const raw = "BSC runs a mentorship programme worth looking at. Would that help?";
+    expect(stripQuotaConcession(raw).stripped).toBe(false);
   });
 });

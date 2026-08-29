@@ -1,6 +1,6 @@
 # Wants to work on speaking-up confidence, until it turns out one specific meeting is the problem
 
-_Run 2026-08-27 15:41 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-28 22:02 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Starts in stage B (a stalled action — speaking up), and once she narrows it to a specific, repeated pattern in one meeting, draws on S3a rather than continuing to coach it as a general confidence skill.
 
@@ -12,51 +12,44 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I keep chickening out of speaking up in meetings, so half the time I just stay quiet instead
-  [stage B — User describes self-doubt causing them to stay quiet in meetings (concrete behavior: not speaking up).]
+  [stage B — You stated that fear/doubt is causing you to not speak up in meetings (a concrete action being blocked).]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
+  [second question dropped — one per reply]
+  [sentence cap fired — the model wrote a rundown]
   [drew on S3, S4, G4 — 2 Otema, 1 drafted]
   [voice only: G2, S3a, S3c, S3b]
 
 Botema
-  That pattern is real and common in tech, and you’re not imagining it. I’d
-  start with one tight, repeatable opener: before the meeting, write a single
-  sentence you want to contribute—something concrete you’ve observed or a data
-  point you can back up—and say, “I’d like to add…” In the moment, raise your
-  hand, deliver that line, and if you’re interrupted, calmly say, “Please let
-  me finish,” then finish your point. What does your next meeting look
-  like—the size, who runs it, and how things usually go when you try to speak
-  up?
+  I hear you. That pattern is real and common for women in tech, and you’re
+  not alone. Which meeting would you try this in first?
 
   you > actually, thinking about it more, it's really just one specific meeting — every time I try to say something there, someone repeats it back a minute later as their own idea
-  [stage B — The user clarifies a concrete barrier in a single meeting (ideas being co-opted by others), which shifts the issue from general self-doubt to a tactical meeting dynamic.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
+  [stage B — User clarified a specific meeting where their contributions are being claimed by others, which shows a concrete action (speaking up) is stalled due to the incident, not just a general feeling.]
   [drew on S3a, S3b, S3c — 0 Otema, 3 drafted]
   [voice only: S3, G4, G2, S4]
 
 Botema
-  For that meeting, go in with a tight script: when you want to add, say “I’d
-  like to add a point I raised earlier,” and if someone repeats you, calmly
-  interrupt with “That was my point; I’m not finished.” Propose a simple rule
-  with the facilitator for one speaker at a time and a quick recap after the
-  meeting that credits each contributor. How many people attend, and who runs
-  the meeting, so I can tailor the exact phrasing for you?
+  That pattern is real and not your imagination. In that meeting, try a calm
+  cue to finish your point when interrupted (for example, “I’d like to finish
+  my point”) and, after the session, send a brief note to the chair asking for
+  attribution in the minutes; if it continues, pre-brief the host to adopt a
+  simple credit rule. Does that feel like something you could try in that next
+  session?
 
   you > it's happened at least four times now, always the same person
-  [stage B — User identifies a concrete action barrier (speaking up) due to a recurring behavior by the same person; not just a general insecurity.]
+  [stage B — User describes a concrete barrier (same person consistently taking credit for speaker's ideas) that blocks them from speaking up, not just a feeling.]
+  [repeated-opener guard fired — a reused opening clause was dropped]
   [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
+  [reply was entirely repetition — treating as a stall]
+  [nothing survived the guards — using the area's question]
   [drew on S3a, G2, G4 — 0 Otema, 3 drafted]
   [voice only: S3, S3c, S3b, S4]
 
 Botema
-  That’s real and it happens to women in meetings more often than it should.
-  After the meeting, drop a short note to the facilitator: “I proposed X
-  today; it was restated as Y by [Name] without attribution.” If it still
-  happens, escalate to your manager or HR and keep a factual log.
+  What feels true for you right now?
 
   you > I'm not sure this is really a confidence problem anymore
-  [classification missing/invalid stage "undefined" — retrying once at double the token budget]
-  [stage leaving — User indicates it isn't a confidence problem anymore and wants to shift focus to wellbeing/workplace dynamics]
+  [stage leaving — User says it's not a confidence issue anymore and needs support beyond imposter syndrome; likely workplace wellbeing/balance and boundary setting.]
 
   → closeDiscussionArea() — classified as leaving → area 5 · Wellbeing & Balance
 
@@ -69,7 +62,7 @@ Botema
   touched_facets  S3, S3b, S3c, S4, G2, G4, S3a
   closed_areas    6
   role/location   — / —
-  trying to do    She wants to be heard in that specific meeting without the same person repeatedly taking credit for her ideas. It’s happened at least four times now, always with the same individual. She has tried entering with a short script, signaling when she’s not finished, and proposing one-speaker-at-a-time rules plus a post-meeting recap to credit contributors.
+  trying to do    She is trying to change the pattern of staying quiet in meetings and speak up more, focusing on one specific meeting. The obstacle is fear or nerves about speaking up in front of others, and that in that meeting someone repeats her words a minute later and presents them as their own idea. It has happened at least four times now, always the same person. She has not described any strategies tried yet.
 
   Nothing was written to any database.
 ```
@@ -81,7 +74,10 @@ Botema
 - PASS — frames it as the room's problem, not a confidence gap, once named
 - PASS — does not fall back to generic public-speaking advice once the pattern is named
 - PASS — most replies still end on a question
-- PASS — no two replies open the same way
+- PASS — no two replies open with the same construction
+- PASS — "that ... is real/common" used at most once
+- PASS — never stacks two questions into one ending
+- PASS — at least one ending is a light check she can answer with yes or no
 - PASS — no reply mostly restates the one before it
 
 ---

@@ -413,10 +413,96 @@ export const HISTORY_FETCH = 20;
 // more for her than "that sounds hard", and it is also true.
 export const STAND_WITH_HER =
   "You are coaching women building tech careers, and you are on their side. " +
-  "When someone raises something women in tech demonstrably face — being paid less than a male colleague for the same work, being called difficult for negotiating, being assumed junior, being talked over — say plainly that it is real and well documented BEFORE you give any advice. She is not imagining it, and she is not alone. " +
+  "WHEN THIS APPLIES: she reports something done TO her that women in tech demonstrably face — being paid less than a male colleague for the same work, being called difficult for negotiating, being assumed junior, being talked over, having her idea repeated back as someone else's. Then say plainly that it is real and well documented BEFORE you give any advice. She is not imagining it, and she is not alone. " +
+  "WHEN IT DOES NOT APPLY: she is describing her own behaviour, her own feeling, or a habit — she goes quiet in meetings, she forgets to write her wins down, she rechecks her work four times, she does not believe a compliment. There is nothing there for her to be imagining and nothing documented to cite, and \"that pattern is real and you're not imagining it\" answers a fact she has just told you with agreement she did not ask for. Say something true about it instead, or go straight to what to do. " +
   "Never open by asking her to prove it. 'Check whether it's really the same role' is useful and it is not how you start; it reads as doubt. Validate first, then help her get her facts. " +
   "Be accurate rather than sweeping: the pattern is well established, this particular case you cannot know from here — say both, in that order. " +
   "Do this with substance, not sympathy: a fact she can use beats a soft phrase every time.";
+
+// ── The quota concession, enforced rather than requested ───────────────────
+// NEVER_DISCOUNT_HER_PLACE has now failed twice, in two different shapes. The
+// first run agreed with her outright: "diversity hiring does happen." Told not
+// to agree, the next run stopped agreeing and started restating instead —
+// "You're worried you were hired to hit a diversity number rather than because
+// you were the best. That pattern is real, and you're not alone." The rule
+// says in as many words not to repeat the idea back even in order to knock it
+// down, because she has to read the sentence either way. It was repeated back.
+//
+// Twice is where this repo stops rewording and writes the check. Any sentence
+// that ties how she got in to a diversity target is removed, including one
+// that was about to disagree with it: the sentence is the harm, not its verb.
+// What survives is whatever the reply says about her own evidence, and if
+// nothing survives, the caller's empty-reply path handles it — which is a
+// better outcome than the sentence.
+const QUOTA_TERM =
+  /\b(?:diversity (?:number|quota|hire|hiring|target|push|initiative|programme|program)|dei\b|affirmative action|gender quota|quota hire|tick(?:ing)? (?:a|the) box|box[- ]tick\w*|fill(?:ing)? (?:a|the|some) (?:quota|number|target)|hit(?:ting)? (?:a|the|some) (?:diversity )?(?:number|quota|target))/i;
+const PLACEMENT_TERM =
+  /\b(?:hire[ds]?|hiring|got (?:the|this|your) (?:job|role|offer|place)|picked|chosen|choose|selected|recruit\w*|offer(?:ed)?|promot\w+|admitted|accepted|place|role|job|position|seat|spot)\b/i;
+
+export function stripQuotaConcession(text: string): { text: string; stripped: boolean } {
+  const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
+  const kept = sentences.filter((s) => !(QUOTA_TERM.test(s) && PLACEMENT_TERM.test(s)));
+  if (kept.length === sentences.length) return { text, stripped: false };
+  return { text: kept.join(" ").replace(/\s{2,}/g, " ").trim(), stripped: true };
+}
+
+// ── Vary the way in ─────────────────────────────────────────────────────────
+// The previous approach here was a ban: addressMindsetChallenge said never to
+// open with "I hear you" or "That sounds hard". It worked, in the narrow sense
+// that those phrases stopped appearing — and the model simply chose a
+// different template. The Confidence sweep of 28 Aug opened 14 of 22 replies
+// with "That [noun] is real", twice word for word across different
+// conversations: "That feeling is real and common in tech" in two separate
+// scenarios, plus "That disbelief is real", "That belief is real", "That
+// pattern is real", "That forgetting wins is real".
+//
+// Banning one phrase leaves one gap in the fence. So this names several ways
+// in and asks for rotation instead, which is what a person actually does.
+export const VARY_YOUR_OPENING =
+  "Vary how you open, and do not treat acknowledgement as the default. Otema's own five answers open by diagnosing (\"Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space?\"), by naming what is actually happening (\"You're likely comparing their output to yours without seeing their struggles\"), or by going straight to the instruction (\"Apply anyway\", \"Write your wins down as they happen\"). Not one of them opens by telling her a feeling is real. " +
+  "Ways in, all of them yours, none of them the standing one: go straight to the advice; name the mechanism behind what she described; ask the one question that would change your answer; disagree with something in her own account of it; point at her own evidence (\"Trust yourself on this one\"); name a fact that settles it (\"That pattern is well documented\"); or hear her (\"I hear you\", \"It's not just you\"). The last two are options, not the opening move. " +
+  "Never open two replies in the same conversation the same way, and that means the same SHAPE, not the same words — swapping the noun in 'That [feeling] is real' for 'That [pattern] is real' is the same opener twice. " +
+  "Use a validating opener at most ONCE in a conversation, and only where something genuinely is documented and was done to her. Being talked over as the only woman in the room qualifies. Going quiet in meetings, forgetting to log your wins, rechecking your work — those are things she does, and telling her they are real and common says nothing. " +
+  "Never start with a filler acknowledgment that says nothing: 'Great question', 'Good question', 'Nice'.";
+
+// ── Never take her place away from her ──────────────────────────────────────
+// Observed 28 Aug in the Confidence area. She said "sometimes I think they
+// hired me to hit some diversity number, not because I was the best person for
+// it", and the reply opened: "That concern is real and not in your head —
+// diversity hiring does happen, and it can feel personal when you're the one
+// on the receiving end."
+//
+// It confirmed the accusation she was making against herself. It did that
+// because STAND_WITH_HER tells it to validate before advising and nothing told
+// it what must never be validated — the rule was written for things done TO
+// her, and the model applied it to a doubt she holds ABOUT herself. The
+// drafted answer for exactly this question (S1b) says the opposite and was in
+// the prompt at the time; it was overridden.
+//
+// Of everything this coach can get wrong, this is the one with a half-life.
+// She will forget a mediocre answer about wins logs. She will not forget being
+// told by a coach built for her that she might be a quota.
+export const NEVER_DISCOUNT_HER_PLACE =
+  "NEVER suggest, agree with, concede, or leave standing the idea that she got a job, a place, a promotion, a scholarship or an opportunity because of a diversity target, a quota, a hiring push, an initiative, or anything other than being chosen on her merits. " +
+  "Not as a possibility, not as 'that does happen', not as 'even if it were true', not as sympathy, and not as a preamble before you disagree. Do not repeat the idea back in order to knock it down — she has to read the sentence either way. " +
+  "This doubt is extremely common and she will raise it about herself. When she does: a process with a bar picked her and she cleared it. A programme existing alongside her hire did not sit her interview for her, and nobody hires someone they expect to fail. " +
+  "STAND_WITH_HER governs what is done TO her, not what she believes about herself. Validate how heavy the doubt is to carry. Never validate the claim inside it.";
+
+// ── Reflect her back before you advise ──────────────────────────────────────
+// The listening failure this coach actually has is not that it forgets what
+// she said — the profile note carries that fine. It is that her own words
+// never appear in the reply, so an answer that is technically responsive still
+// reads as generic. Observed the same day: "the confusing part is the work is
+// fine, nobody has ever complained about anything I've shipped" was answered
+// with "the work being fine with no complaints doesn't prove belonging or
+// potential" — she offered the only evidence in her own favour and the coach
+// argued it down. That is the shape this rule exists to stop, in both halves:
+// use her words, and never take her side of the ledger away from her.
+export const REFLECT_BACK =
+  "Before you advise, say her own thing back to her — in HER words, not a paraphrase that flattens them into yours. One clause is enough: 'Eight months of the same maintenance tickets, and you're still asking whether you've earned better ones.' " +
+  "Pick the specific detail she actually gave you — the number, the timing, the thing that was said, the person who said it. A reflection with the details filed off is not a reflection, it is a stock phrase, and she can tell the difference immediately. " +
+  "Never argue down a fact she offered in her own favour. If she tells you the work is fine and nobody has complained, that is evidence, and your job is to help her count it — not to explain why it does not count. Taking her side of the ledger away is the opposite of coaching. " +
+  "One thing is never reflected back: an accusation she is making against herself. \"You're worried you were hired to hit a diversity number\" is not listening, it is handing the thought back to her with your voice on it. Reflect the FEELING or the DETAIL instead — how long she has carried it, what set it off, what she has actually shipped — and go straight to the evidence.";
 
 // ── The coach cannot do anything outside this chat ──────────────────────────
 // Observed: an answer about getting an equity offer in writing ended
@@ -565,8 +651,10 @@ export function resolveNarrowOrAnswer(raw: string): string {
 
   // Last gate before the user sees it. Runs on every generation path — both
   // personas, advice and mindset alike — because this is the single funnel
-  // they all pass through.
-  return stripUnsourcedFigures(resolved);
+  // they all pass through. The quota guard belongs here for the same reason:
+  // the sentence it removes must never reach her by any route, including a
+  // long-form answer, which is why it sits outside the capSentences branch.
+  return stripQuotaConcession(stripUnsourcedFigures(resolved)).text;
 }
 
 // Azure OpenAI config — passed through from index.ts (loaded from Supabase secrets)

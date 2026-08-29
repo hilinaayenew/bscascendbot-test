@@ -1,15 +1,16 @@
 // ============================================================================
 // Area 6 · Confidence & Imposter Syndrome — test conversations
 //
-// Same shape as scripts/scenarios/getting-started.mjs. Nothing here has run
-// yet — this is the first pass, written straight from the storyboard spec
-// before any live testing, so treat all five as provisional until a sweep
-// has actually been run and read.
+// Same shape as scripts/scenarios/getting-started.mjs. Ten conversations, not
+// five: 01-04 are the fixed, diffable set; 05 rotates each tester pass; 06
+// exercises stage C, which nothing else reaches because none of the others
+// ever agrees with the coach and stops; 07-10 cover four drafted facets that
+// had never been in front of the model at all (G5, G8, G9, and G3/S3c).
 //
 // Every conversation runs FIVE user turns.
 // ============================================================================
 
-import { replyOf, everyReplyAsks, noRepeatedOpeners, jargonPerReply, maxRepeatOverlap } from "../checks.mjs";
+import { replyOf, everyReplyAsks, jargonPerReply, maxRepeatOverlap, noRepeatedOpenerShape, validatingOpeners, maxQuestionsPerReply, lightChecks, lastReply, wordCount } from "../checks.mjs";
 
 const stagesInOrder = (o) => [...o.matchAll(/\[stage ([A-Z]+)/g)].map((m) => m[1]);
 
@@ -37,7 +38,14 @@ export default [
       ["does not dismiss or minimise the feeling", (o) => !/(just get over it|stop feeling|silly to feel|shouldn.t feel)/i.test(replyOf(o))],
       ["names the decision as separate from the feeling by the end", (o) => /(ready|qualif|decid|apply|forward)/i.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
+      // noRepeatedOpeners compared the first four words, which every reply in
+      // the 28 Aug sweep passed while plainly reusing one opener — "That
+      // disbelief is real", "That belief is real", "That pattern is real".
+      // The shape check wildcards the swapped noun and catches it.
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
     ],
@@ -69,7 +77,14 @@ export default [
       // however the regex is worded.
       ["gives a concrete next move rather than only sitting with the feeling", (o) => /(name it|say[:,]|calmly|log|track|ally|mentor|sponsor|facilitator|round-robin|escalate)/i.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
+      // noRepeatedOpeners compared the first four words, which every reply in
+      // the 28 Aug sweep passed while plainly reusing one opener — "That
+      // disbelief is real", "That belief is real", "That pattern is real".
+      // The shape check wildcards the swapped noun and catches it.
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
     ],
   },
@@ -100,7 +115,14 @@ export default [
       // words this area's real fallback advice used.
       ["does not fall back to generic public-speaking advice once the pattern is named", (o) => !/(practice (speaking|your delivery)|toastmasters|rehearse (more|regularly|your (delivery|talk|presentation)))/i.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
+      // noRepeatedOpeners compared the first four words, which every reply in
+      // the 28 Aug sweep passed while plainly reusing one opener — "That
+      // disbelief is real", "That belief is real", "That pattern is real".
+      // The shape check wildcards the swapped noun and catches it.
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
     ],
   },
@@ -127,43 +149,205 @@ export default [
       ["gives a concrete practice, not just reassurance", (o) => /(write|track|note|jot|say it out loud|thank you)/i.test(replyOf(o))],
       ["does not just tell her she's good enough without anything concrete to do", (o) => !/^\W*you('re| are) good enough\.?\s*$/im.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
+      // noRepeatedOpeners compared the first four words, which every reply in
+      // the 28 Aug sweep passed while plainly reusing one opener — "That
+      // disbelief is real", "That belief is real", "That pattern is real".
+      // The shape check wildcards the swapped noun and catches it.
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
     ],
   },
   {
-    id: "05-turned-down-the-last-one-too",
-    title: "A lead role just opened up, and she's already decided not to put her name forward",
-    claim: "Classifies as stage B — a decision, not just a feeling — and redirects from the feeling to a concrete, testable action rather than either pushing her to apply outright or simply validating the avoidance.",
+    // NEW this run — the four fixed slots all sit in territory Otema's own five
+    // answers cover directly (belonging, being talked over, speaking up,
+    // praise). None of them touch the drafted standalone facets added in the
+    // dead-end sweep, and none of them put the coach anywhere near the Access
+    // or Intersectional Advocacy values. This one does both: a self-taught
+    // hire whose doubt is attached to a specific, nameable thing about how she
+    // got in (G7, S1b) and who half-suspects she was a diversity number.
+    id: "05-bootcamp-hire-who-suspects-she-was-a-quota",
+    title: "Self-taught among CS graduates, quietly convinced she was hired to make a number",
+    claim: "Stays in stage A throughout — nothing is stalled, only a belief being carried — and answers the legitimacy-of-the-hire doubt with what she has actually built rather than with a credential to go and get, or with a flat reassurance that the worry is imaginary.",
     turns: [
-      "there's a lead role opening up on my team, but I don't think I'm ready for it",
-      "honestly I'll probably just let it go",
-      "I did the same thing last year too — turned down a chance to present at a conference",
-      "I regretted that one afterwards, if I'm honest",
-      "should I actually go for this one or not",
+      "everyone else on my team has a computer science degree and I came through a six-month bootcamp",
+      "sometimes I think they hired me to hit some diversity number, not because I was the best person for it",
+      "I don't have any proof of that, it's just a thing that sits there",
+      "the confusing part is the work is fine, nobody has ever complained about anything I've shipped",
+      "how do I get this out of my head",
     ],
     checks: [
-      ["classified stage B", (o) => stagesInOrder(o).includes("B")],
-      ["draws on G2", (o) => facetsDrawn(o).has("G2")],
-      // Retired the literal "reframes as a feeling, not a qualification"
-      // check after three straight live runs did the substance (redirect to
-      // a concrete test rather than resolving readiness first) without ever
-      // using that specific framing in the model's own words, even with G2 —
-      // which does use it — drawn as material every time. Chasing an exact
-      // rhetorical move the model isn't making, however the regex is worded,
-      // stops testing anything; this checks what it actually and consistently
-      // does instead: turn the question into a small, concrete test.
-      // Widened again 2026-08-26: same pattern as above, a second time — this
-      // run's reply used "bounded stretch", "6-week pilot" and "small, doable
-      // talk" instead, still the identical move (a small, time-boxed thing to
-      // actually test readiness on) in yet another wording. Two widenings on
-      // the same check is itself a signal: stop chasing the model's exact
-      // vocabulary and match the shape (small + time-boxed + a name for the
-      // scoped thing) instead of a word list, if a third phrasing shows up.
-      ["redirects to a concrete, testable action rather than resolving readiness first", (o) => /(tiny test|small(est)? (step|risk)|90-day|try (it|this|one)|test whether|bounded (stretch|scope)|\d+[\s-]?(week|day) pilot|small,? doable)/i.test(replyOf(o))],
-      ["does not just validate the avoidance without pushing back on it", (o) => !/(it.s okay to (skip|pass|let it go)|no pressure to go for it)/i.test(replyOf(o))],
+      ["stays in stage A the whole way — nothing is named as stalled", (o) => stagesInOrder(o).length > 0 && stagesInOrder(o).every((s) => s === "A")],
+      ["draws on G7 or S1b — the legitimacy-of-the-hire facets", (o) => { const f = facetsDrawn(o); return f.has("G7") || f.has("S1b"); }],
+      ["points at what she has already built rather than at a credential", (o) => /(built|shipped|delivered|solved|already done|track record)/i.test(replyOf(o))],
+      ["does not send her after a degree or formal credential (Access)", (o) => !/(get a (computer science |CS )?degree|go back to (university|school|college)|enroll?(ing)? in a degree|pursue a degree|do a master)/i.test(replyOf(o))],
+      ["does not dismiss the diversity-hire worry as pure imagination", (o) => !/(that.s just imposter syndrome|you.re overthinking|don.t be silly|it.s all in your head)/i.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
-      ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
+      // noRepeatedOpeners compared the first four words, which every reply in
+      // the 28 Aug sweep passed while plainly reusing one opener — "That
+      // disbelief is real", "That belief is real", "That pattern is real".
+      // The shape check wildcards the swapped noun and catches it.
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
+      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
+      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
+    ],
+  },
+  {
+    // Stage C's own scenario. Every other conversation here ends on a question,
+    // so the only route into the wrap-up was the stall divert — which is the
+    // failure path, not the one worth checking. This one lands the advice and
+    // then does what a person actually does: agrees, commits to a thing, and
+    // says that's everything.
+    id: "06-lands-the-plan-and-stops",
+    title: "Talks herself into asking for different work, then agrees and closes the conversation",
+    claim: "Reaches stage C once she is agreeing rather than asking, and the wrap-up reply says the plan back and checks it rather than adding a further step — short, one light check, nothing new introduced on the last turn.",
+    turns: [
+      "I keep putting off asking my manager for more interesting work because I don't feel like I've earned it yet",
+      "it's been about eight months of the same maintenance tickets, honestly",
+      "okay, that actually makes sense when you put it like that",
+      "yeah I think I can do that — I'll bring it up in our next one-to-one",
+      "no I think that's everything, thank you",
+    ],
+    checks: [
+      ["classified stage B on the opening message — a stalled ask", (o) => stagesInOrder(o)[0] === "B"],
+      ["reaches stage C once she is agreeing rather than asking", (o) => stagesInOrder(o).slice(2).includes("C")],
+      ["the wrap-up reply is short — three sentences at the outside", (o) => wordCount(lastReply(o)) <= 60],
+      ["the wrap-up adds nothing new", (o) => !/(one more thing|another thing|you should also|also,|start by|first,|next,|step 1|in addition)/i.test(lastReply(o))],
+      ["the wrap-up ends on a check, not a demand for more information", (o) => lightChecks(o) >= 1 && !/\b(what|which|how) (are|is|would|do|did) you\b[^?]*\?\s*$/i.test(lastReply(o))],
+      ["most replies still end on a question", (o) => everyReplyAsks(o)],
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
+      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
+    ],
+  },
+  {
+    // G5 has never been in front of the model. Perfectionism is the one flavour
+    // of this area where reassurance is actively wrong — "you won't get it
+    // wrong" is a promise the coach cannot keep, and BOTEMA_VALUES bans
+    // promising outcomes outright.
+    id: "07-terrified-of-getting-it-wrong-in-public",
+    title: "One visible mistake would prove she doesn't belong",
+    claim: "Stays in stage A and draws on G5, treating the fear as perfectionism rather than a realistic forecast — without promising her she won't get anything wrong, and without a list of preparation rituals.",
+    turns: [
+      "I'm terrified of getting something wrong in front of the whole team",
+      "it feels like one mistake would just prove what I already suspect about myself",
+      "I check everything about four times before I push anything, it takes me ages",
+      "nothing bad has actually happened yet, I know that sounds silly",
+      "how do I stop doing this to myself",
+    ],
+    checks: [
+      // Checked over the first two turns, not four. "I check everything about
+      // four times before I push anything" was read as stage B on a live run,
+      // and that is a defensible call under stage B's own definition — the
+      // checking is delaying a concrete thing. Asserting A across a turn that
+      // is genuinely ambiguous tests the coin flip, not the claim.
+      ["opens in stage A — a feeling, with nothing named as stalled", (o) => stagesInOrder(o).slice(0, 2).every((st) => st === "A")],
+      ["draws on G5", (o) => facetsDrawn(o).has("G5")],
+      ["does not promise her she won't make mistakes", (o) => !/(you won'?t (get it wrong|make (a )?mistakes?)|nothing will go wrong|you'?ll be fine)/i.test(replyOf(o))],
+      // Was a word list that missed the phrasing the model actually used
+      // ("Nothing bad happening", "four checks"). Matching the idea rather
+      // than one spelling of it.
+      ["picks up that nothing bad has actually happened, rather than talking past it", (o) => /(nothing bad|hasn'?t happened|nothing has|never actually|no evidence|not happened|four (times|checks)|check(ing)? (it )?(four|so many))/i.test(replyOf(o))],
+      ["most replies still end on a question", (o) => everyReplyAsks(o)],
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
+      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
+      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
+    ],
+  },
+  {
+    // G8 — post-decision doubt. The whole area is built around doubt BEFORE a
+    // decision; this is the same feeling on the other side of one, and S4's
+    // "apply anyway" is exactly the wrong advice for it.
+    id: "08-promoted-and-second-guessing-everything",
+    title: "Already promoted to lead, now doubting every call she makes",
+    claim: "Draws on G8 rather than S4, and treats the doubt as post-decision second-guessing — advice about a decision she is sitting on now, not about whether to put herself forward.",
+    turns: [
+      "I got promoted to lead my team about two months ago",
+      "I don't actually feel ready and now I second-guess every single decision",
+      "there's one I've been sitting on for over a week because I can't decide",
+      "I keep thinking they'll work out they picked the wrong person",
+      "what do I do about the decision I'm stuck on",
+    ],
+    checks: [
+      ["draws on G8", (o) => facetsDrawn(o).has("G8")],
+      ["does not advise her to apply for things — she already has the role", (o) => !/(apply anyway|start applying|roles slightly below|job descriptions? (are|is) rarely)/i.test(replyOf(o))],
+      ["takes up the specific decision she is sitting on", (o) => /(decision|the call|that call|sitting on|make it|week)/i.test(replyOf(o))],
+      ["does not just reassure her that she deserved the promotion", (o) => /(decid|call|choose|try|test|this week|next)/i.test(replyOf(o))],
+      ["most replies still end on a question", (o) => everyReplyAsks(o)],
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
+      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
+      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
+    ],
+  },
+  {
+    // G9 plus the leaving rule the storyboard sets for it: "stays → Area 8".
+    // Once she is asking about the interview format itself rather than the
+    // fear, this stops being a confidence conversation.
+    id: "09-technical-interview-found-out",
+    title: "Convinced a technical interview will expose her, then starts asking about the format",
+    claim: "Draws on G9 while the subject is the fear, and once she turns to how the interview itself is run, either hands off to Interview Preparation or answers without pretending the fear is still the question.",
+    turns: [
+      "I've got a technical interview next week and I'm convinced they'll realise I don't know what I'm doing",
+      "I've been doing this job for three years, so I know that isn't rational",
+      "it's the live coding part specifically, having someone watch me think",
+      "what actually happens in one of those, how are they marking it",
+      "so what should I be practising",
+    ],
+    checks: [
+      ["draws on G9", (o) => facetsDrawn(o).has("G9")],
+      ["names the fear as normal before the interview, not as evidence she is underprepared", (o) => /(nerves|normal|almost everyone|before something that matters|not a signal)/i.test(replyOf(o))],
+      ["engages with how the interview is actually run once she asks", (o) => /(reasoning|out loud|how you think|think aloud|trade-?offs?|walk (them )?through)/i.test(replyOf(o))],
+      ["uses her three years rather than treating her as a beginner", (o) => !/(you'?re just starting|as a beginner|new to (the industry|tech))/i.test(replyOf(o))],
+      ["most replies still end on a question", (o) => everyReplyAsks(o)],
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
+      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
+      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
+    ],
+  },
+  {
+    // G3 and S3c together — the two branches that exist because not every
+    // reply wants a plan. This is the scenario for David's calmer-questions
+    // change: a coach that answers "I just needed to vent" with an action list
+    // has misread the room, and one that answers acute physical anxiety with
+    // delivery technique has misread the problem.
+    id: "10-just-needed-to-vent-then-its-physical",
+    title: "Does not want a plan, and it turns out the block is her body, not her belief",
+    claim: "Reads the request to be heard rather than steered (G3) without immediately proposing an action, and once she describes a physical response, draws on S3c rather than offering more speaking technique.",
+    turns: [
+      "I froze completely in a meeting today and I've felt awful about it since",
+      "honestly I don't really want to make it a whole thing, I just needed to say it out loud",
+      "it's not that I don't know the material, I know it better than most of them",
+      "my heart just goes and my mind goes totally blank, it's a physical thing",
+      "does that ever actually get better",
+    ],
+    checks: [
+      ["draws on G3 or S3c", (o) => { const f = facetsDrawn(o); return f.has("G3") || f.has("S3c"); }],
+      ["does not hand her a plan on the turn she says she does not want one", (o) => !/(here'?s (a|the) plan|step 1|first,? (ask|book|write)|three things|two things you can)/i.test(replyOf(o).split("\n\n")[1] || "")],
+      ["treats the physical response as physical, not as a knowledge or nerve gap", (o) => /(physical|body|breath|adrenaline|anxiety itself|not a sign you don'?t know)/i.test(replyOf(o))],
+      ["does not answer it with more speaking or delivery technique", (o) => !/(practice (speaking|your delivery)|toastmasters|rehearse (more|regularly|your (delivery|talk|presentation))|prepare (your )?talking points)/i.test(replyOf(o))],
+      ["does not promise it goes away", (o) => !/(it (will|does) go away|you'?ll grow out of it|that stops eventually)/i.test(replyOf(o))],
+      ["most replies still end on a question", (o) => everyReplyAsks(o)],
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
+      ["\"that ... is real/common\" used at most once", (o) => validatingOpeners(o) <= 1],
+      ["never stacks two questions into one ending", (o) => maxQuestionsPerReply(o) <= 1],
+      ["at least one ending is a light check she can answer with yes or no", (o) => lightChecks(o) >= 1],
+      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
     ],
   },

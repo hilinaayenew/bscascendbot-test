@@ -113,6 +113,210 @@ a day's work otherwise. Everything here is on top of that.
 
 ---
 
+## 2026-08-28 — Confidence tested properly, and the four things it turned up
+
+Ran the Confidence & Imposter Syndrome area through five real conversations, read the transcripts
+against the storyboard and against Otema's own answers, then acted on what David picked out of the
+report. The set is now ten conversations rather than five, and there is a second sweep of all ten
+sitting in `examples/confidence/`.
+
+### The one that matters
+
+She said: *"sometimes I think they hired me to hit some diversity number, not because I was the
+best person for it."*
+
+The coach said: *"That concern is real and not in your head — diversity hiring does happen, and it
+can feel personal when you're the one on the receiving end."*
+
+It agreed with her. A coach built by an organisation whose entire purpose is getting African women
+into tech told one of them she might be a quota. Everything else in the report is fixable in the
+ordinary way; this one has a half-life, because she will remember it.
+
+It is worth being precise about how it happened, because the mechanism is more interesting than the
+mistake. `STAND_WITH_HER` is a rule we are proud of — it says that when a woman describes something
+women in tech demonstrably face, say plainly that it is real and documented **before** giving any
+advice, because asking her to prove it first is the experience she is already having at work. It
+was written for pay gaps and being talked over. Nothing in it said what must never be validated,
+so the model applied the validate-first shape to a doubt she holds *about herself*. The correct
+answer was in the prompt at the time — the drafted S1b facet says a process with a bar picked her
+and she cleared it — and it lost to the more general rule.
+
+So there is now `NEVER_DISCOUNT_HER_PLACE` in `converser.ts`, sitting immediately after
+`STAND_WITH_HER` because it is the boundary on it and has to be read in the same breath. Never
+suggest, concede, or leave standing that she got a job, place, promotion or scholarship because of
+a target, a quota or an initiative — not as a possibility, not as sympathy, and not repeated back
+in order to be knocked down, because she has to read the sentence either way. It is in Botema's
+live prompts as well as the area harness.
+
+**The general lesson:** a rule that tells the model to validate needs a companion telling it what
+is not eligible for validation. We have one such pair now. There are probably others.
+
+### Listening is done by the examples, not by the instruction
+
+Second finding: she offered the only evidence in her own favour — *"the work is fine, nobody has
+ever complained about anything I've shipped"* — and got back *"the work being fine with no
+complaints doesn't prove belonging or potential."* Her own evidence, argued down.
+
+David's call on the fix was the right one and worth recording: don't write another instruction,
+**put it in the few-shot examples**, because reflecting back is a feature of the pattern rather
+than a rule about it. Six of this area's drafted answers now open by saying her own words back to
+her — *"Every time it comes up"*, *"You said only"*, *"Nothing comes to mind"* — and the model
+imitates material far more reliably than it follows prose. `REFLECT_BACK` exists too, and carries
+the half that examples cannot: never argue down a fact she offered in her own favour.
+
+S1b is the deliberate exception to the shape. It reflects the *word* she used and not the claim she
+made, because of the rule above.
+
+### Areas had no way to finish
+
+Every area could only end two ways: the stall counter (same stage twice, nothing new) or a leave
+classification. Both are failure exits. A conversation that went **well** had no ending at all, so
+the coach kept going — which is why the fifth reply in one transcript hands her a two-week wins log,
+a fixed owning line, a weekly fifteen-minute review and a monthly mentor check-in. It had nothing
+else to do with the turn.
+
+Confidence now has a **stage C, Wrapping up**. It is the first stage in any area that exists to
+stop the coach reaching for material rather than to choose which material it gets: it holds the
+whole area for voice and is forbidden from answering out of it. It says the plan back in her words
+and checks whether that is actually it — *"I think we've got a plan, haven't we?"*, *"Have we
+covered that one?"* — and the stall counter now diverts into it once before closing, so running dry
+and finishing stop looking identical from the inside.
+
+If this holds up, every area wants one. Storyboard has it as Confidence's stage C for now.
+
+### Banning a phrase just moves it
+
+Fourteen of twenty-two replies in the sweep opened with the same construction — *"That feeling is
+real"*, *"That disbelief is real"*, *"That pattern is real"*, *"That forgetting wins is real"* —
+twice word for word across different conversations.
+
+The instructive part: we had already banned the previous version of this. `addressMindsetChallenge`
+says never open with *"I hear you"* or *"That sounds hard"*. That ban worked exactly as written,
+and the model picked a different template. Banning one phrase leaves one gap in the fence.
+
+`VARY_YOUR_OPENING` replaces the ban with a rotation — five named ways in, none of them the
+default, and "That X is real" allowed once per conversation and only where something genuinely is
+documented. David's suggestion, and it also unbans *"I hear you"*, which was never the problem;
+saying it every time was.
+
+The check matters as much as the rule. `noRepeatedOpeners()` compared the first four words and
+passed every one of those replies. `noRepeatedOpenerShape()` wildcards the swapped noun and
+collapses all four to `that * is real and`, which is what they are.
+
+### Questions had become an interview
+
+Every reply ended by asking her for more information, several with two questions welded into one
+sentence, and one re-asked something she had already declined to answer. The prompt was the cause:
+it made a forward-driving follow-on the default and a light check the fallback. That is now
+inverted — *"Does that make sense?"*, *"Does that feel like something you could actually do?"* is
+the ordinary ending, a follow-on has to earn its place, and a second question is cut in code rather
+than requested against.
+
+### The Prompts tab was showing the wrong prompt
+
+Worth flagging on its own, because it affected anyone reading the storyboard to understand the bot.
+The tab is headed *What's Actually Sent to the Model* and shows `adviseOnCareerTopic` and
+`addressMindsetChallenge`. **No area conversation uses either of them.** `wordalise()` in
+`scripts/coach-local.mjs` assembles its own system message per turn — the stage's `describes` line,
+seven scoped examples, and about twenty reply rules that appeared nowhere on that tab. Every
+transcript in `examples/` came from that prompt.
+
+There is now a **Prompts · Area generation** section that writes it out, with the assembly order and
+why the order is load-bearing (recency: anything constraining the shape of the reply has to go
+last, under a heading that says it overrides everything above).
+
+Related, and an answer to a question David raised: `NO_INVENTED_FIGURES` says "no web access", and
+that is still literally true of the deployed edge function — there is no search anywhere in
+`supabase/functions/`. Search exists only in the area harness, and there the constant is dropped
+from the prompt entirely and replaced by the grounded-mode block. The code was right; the
+storyboard was showing one of two modes and implying it was the only one. Both are on the tab now.
+
+### Four bugs, none of them in the model
+
+- **A truncated tool call was being treated as a successful one.** When `gpt-5-nano` runs out of
+  budget mid-arguments the JSON fails to parse; the code returned `{}`, the caller saw a
+  classification with no stage, retried once, and gave up — while the no-tool-call path next to it
+  climbs 2000 → 4000 → 8000 → 12000. That is what killed scenario 02 turn 4, on the message where
+  she asked whether to say something or let it go. She got *"that one did not come through
+  properly."* Same ladder now, and the `finish_reason` is logged.
+- **Every area was being asked for salary fields on every turn.** `needsMarketData`, `role`,
+  `refinement` and `location` are only meaningful in Salary, which is the only area that can
+  search, and they are four more fields to emit before the model reaches `stage` — see the
+  truncation above. Gated on a `marketData` flag now, set in `scripts/areas/salary.mjs` only.
+- **A false diagnostic in every transcript, in every area.** `[implausible figure removed]` fired
+  on any turn where repeated advice had been stripped, because it compared against the wrong
+  baseline. Every one of the eight in the Confidence sweep was this; there is no money anywhere in
+  that area. One-line fix, but the transcripts are the artefact we judge these by.
+- **"No that's everything, thank you" was read as changing the subject.** The classifier returned
+  *leaving*, with a destination, and the coach said *"Of course — let's get into career paths &
+  roadmaps"* to someone who had just said she was done. There is now a done-phrase layer that runs
+  before any model call, like the leave-phrase check, and closes the area rather than following her
+  somewhere she never asked to go.
+
+### The uncomfortable one: the checks were passing conversations with no reply in them
+
+Scenario 02 produced no answer at all on two of its five turns — one bare fallback question, one
+*"that one did not come through properly"* — and reported every check PASS, including *"gives a
+concrete next move"* and *"most replies still end on a question"*. The second passed because the
+harness's own error message ends in a question mark and was being counted as a reply. Scenario 03
+ended a turn early and reported 7/7.
+
+The storyboard cited that pass rate under **Already true** as evidence the area worked. It now says
+to read the transcripts rather than the pass rate, and the auto-generated README no longer claims
+coverage it does not have — it was hardcoded to say "stage classification across A, B and C; all
+three leaving layers; the invented-figure behaviour" for every area, including two-stage areas with
+no figures in them.
+
+**The habit worth taking:** a pass rate is only worth what its checks can detect. Ours could not
+detect the coach failing to speak. If you build a check suite, put a failing conversation through
+it deliberately and confirm it fails.
+
+### Where it actually landed, and the thing to know about the number
+
+Three full ten-conversation sweeps overnight. The last two ran **identical code** and scored
+**10/10** and **6/10**, with different scenarios failing each time. Nothing regressed between them;
+the model simply varies, and the checks are now sharp enough to see it.
+
+That is worth holding on to. The pass rate used to be stable at 5/5 because the checks could not
+detect anything — including two turns where the coach said nothing at all. It is now unstable
+because they can. **A wobbling number from sensitive checks is more useful than a clean one from
+blind checks**, and the transcripts are the deliverable, not the score.
+
+What is solid across all three runs:
+
+- The diversity-hire answer never came back. Where the old run said "diversity hiring does happen",
+  it now goes to merit and evidence.
+- The opener tic is gone. `[repeated-opener guard fired]` does the work the instruction could not.
+- Light checks appear — *"Does that feel doable this week?"*, *"Does that feel like the right next
+  step?"* — and *"I hear you"* is back in circulation, varied rather than constant.
+- Stage C works. It classifies on agreement, the done-phrase layer closes cleanly on "no I think
+  that's everything, thank you", and the coach stops adding.
+
+What is not solid, and is the honest list for the morning:
+
+- **The light-check ending holds about two conversations in three.** Every remaining failure in the
+  last run is that check. One prompt inversion so far; by this repo's own rule it gets one more
+  attempt before it becomes a code guard.
+- **Thin replies when the repeat guard fires.** When `dropRepeatedSentences()` removes everything
+  she has already heard, what is left is sometimes a single sentence — one turn was just *"You're
+  going to bring it up in your next one-to-one."* Not wrong, and not enough. An earlier version of
+  the same turn came back as her own message read back word for word, which is now caught in code;
+  the paraphrased version still gets through.
+- **Otema's own answers still rarely reach the close-three.** Her voice arrives through the random
+  four almost every turn, which is what the design says should happen, but the advice is coming
+  from drafted material far more often than from hers.
+
+---
+
+### Also, while in there
+
+The storyboard's *All Answers in Full* for Confidence listed 9 of 21 facets. The twelve added in
+the dead-end sweep had been written, drafted, wired into the harness and never shown — in the one
+section Otema would read to approve them. All 21 are there now, generated from the source file so
+they cannot drift again.
+
+---
+
 ## 2026-08-15 (overnight) — Tester findings worked through; prose profile added
 
 David set the area-tester agent running on salary, then left it with me. Everything below is on

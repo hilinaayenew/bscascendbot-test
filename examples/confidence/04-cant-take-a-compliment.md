@@ -1,6 +1,6 @@
 # Doesn't believe positive feedback and never counts her own wins either
 
-_Run 2026-08-27 15:41 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-08-28 22:02 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stays in stage A while nothing is named as stalled, and gives a concrete practice (writing wins down, naming what was actually said) rather than just reassurance that she's good enough.
 
@@ -12,68 +12,67 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I got really positive feedback on a project recently but I don't actually believe it
-  [stage A — The user expresses disbelief about positive feedback, indicating an imposter-syndrome feeling being worked through rather than a concrete action obstacle.]
+  [stage A — User expresses discounting positive feedback as if it's not deserved, which is a feeling being worked through rather than a concrete action.]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
-  [drew on S5, S1, S1b — 2 Otema, 1 drafted]
-  [voice only: G5, S1a, G7, G1]
+  [numbered rundown flattened — it was a list]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S5, S1a, S1 — 2 Otema, 1 drafted]
+  [voice only: G1, G10, G7, S1b]
 
 Botema
-  That disbelief is real, but the feedback isn’t random — it’s pointing to
-  real impact. I’d recommend you write down the exact praise and the concrete
-  outcomes, then revisit it when the doubt shows up. What was the specific
-  feedback you got, and what concrete result did it relate to, so we can
-  anchor your belief to something tangible?
+  That kind of positive feedback can feel inauthentic when you’re not used to
+  hearing it about your own work, but it’s real and common for women in tech.
+  I’d keep it simple and concrete. Would you be willing to try those three
+  steps this week?
 
   you > I just assume they're being nice, or that it went well by luck
-  [stage A — The user is expressing internal self-doubt about positive feedback, which is a feeling-focused unicorn in Confidence & Imposter Syndrome, not a concrete action blockage.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
-  [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G1, G8, G5 — 0 Otema, 3 drafted]
-  [voice only: S5a, S1, S2, S1a]
+  [stage A — The user expresses doubt about feedback and discounts praise, which is a feeling being worked through without concrete action.]
+  [drew on G1, G8, S1b — 0 Otema, 3 drafted]
+  [voice only: S5a, S1, S2, G10]
 
 Botema
-  What did they actually say, and what measurable result did your work
-  produce?
+  That doubt is real and common for women in tech—feedback often lands as luck
+  or niceness when you’re already doubting yourself. Try this: when someone
+  praises you, thank them and name the concrete work you did, then ask for one
+  specific example of what stood out so you can anchor it to your effort.
+  Would you try that with the next piece of feedback you get and tell me what
+  you hear?
 
   you > honestly this happens pretty much every time someone compliments my work
-  [stage A — User reports a persistent pattern of discounting praise, indicating an ongoing confidence/imposter issue at stage A.]
-  [drew on G1, S1a, G6 — 0 Otema, 3 drafted]
-  [voice only: G8, S5, G7, G5]
+  [stage A — User repeats discounting positive feedback; ongoing pattern of imposter feelings without concrete action.]
+  [repeated-opener guard fired — a reused opening clause was dropped]
+  [drew on G1, G7, G5 — 0 Otema, 3 drafted]
+  [voice only: S1b, G3, G6, S5]
 
 Botema
-  That pattern is real and common for women in tech. To shift it, anchor
-  praise to specifics: after the next compliment, say, “Thank you — that took
-  real work on [X], and it led to [Y].” Then log the exact praise and the
-  concrete outcome in a wins journal you can revisit. What’s the next
-  compliment you’re likely to receive, and what specific outcome can you
-  attach to it?
+  A practical anchor is: “Thank you — I put real work into X, like Y.” Would
+  you try that the next time you’re praised and tell me what concrete detail
+  you anchored to?
 
   you > and I don't really keep track of my own wins either, I just forget about them
-  [stage A — User states they forget to track wins, indicating a behavioral barrier within confidence area.]
-  [drew on G1, G10, G7 — 0 Otema, 3 drafted]
-  [voice only: G6, G3, S5a, S5]
+  [stage A — User states she doesn’t keep track of her wins, which is a new self-management behavior related to confidence; fits stage A (feeling/problem without a concrete action being stalled).]
+  [drew on G1, G6, G10 — 0 Otema, 3 drafted]
+  [voice only: S5, G3, G8, G9]
 
 Botema
-  That's real—forgetting wins is common, but you need a tiny habit to anchor
-  belief. Do a one-line wins log after each milestone: what happened, what you
-  did, the impact, and the feedback. Where will you keep it, and what will you
-  capture first this week?
+  You're not alone—forgetting our wins is common, especially when you're in
+  the thick of things. I’d start with a tiny habit: a five-minute weekly recap
+  where you jot one concrete outcome you delivered, the skill that carried
+  you, and one lesson learned, all in a single line or quick note. Does that
+  feel doable for you this week?
 
   you > how do I actually get better at this
-  [classification missing/invalid stage "undefined" — retrying once at double the token budget]
-  [stage A — User asked for practical steps to improve belief anchoring and overcome self-doubt; it's within Confidence & Imposter Syndrome, stage A, seeking actionable strategies.]
+  [stage A — User asked for concrete steps to improve handling feedback and recognizing wins, which is a progression in the Confidence & Imposter Syndrome area and indicates they are seeking actionable strategies.]
+  [repeated-opener guard fired — a reused opening clause was dropped]
   [repeated advice removed]
-  [implausible figure removed — outlier, mixed currency, or wrong period]
-  [drew on G1, S1b, G8 — 0 Otema, 3 drafted]
-  [voice only: G6, S5, S1, G10]
+  [drew on G1, S1b, S5a — 0 Otema, 3 drafted]
+  [voice only: S5, G9, G3, G6]
 
 Botema
-  I would start with a tiny habit: after every milestone or compliment, write
-  a single wins line that states what happened, what you did, the impact, and
-  the exact praise, all in one place you actually use. Then review those lines
-  weekly to spot patterns and turn one insight into a concrete action for your
-  next project, and share a win with a mentor to anchor belief.
+  Try a tiny habit: each week write one line with the outcome, the skill you
+  used, and the result; when praised, respond with “thank you — I put real
+  work into X, which led to Y,” then keep a one-minute impact summary you can
+  pull out in conversations.
 
   you > quit
 
@@ -83,7 +82,7 @@ Botema
   touched_facets  S1, S1b, S2, S5, S5a, G1, G3, G5, G6, G7, G8, G9, G10, S1a
   closed_areas    —
   role/location   — / —
-  trying to do    She wants to believe positive feedback is genuine and anchor praise to specific outcomes. Her obstacle is disbelief, and she tends to attribute praise to others being nice or to luck. She forgets her own wins and doesn’t keep track of them. She wants a simple, repeatable way to capture and revisit wins, and she asks how to actually get better at this.
+  trying to do    She wants to get better at turning feedback into real evidence of her contributions, so she can believe the positive things she hears. She is hindered by believing praise is niceness or luck and by forgetting her own wins. She has not described any concrete steps she tried yet. She asked how to actually get better at this.
 
   Nothing was written to any database.
 ```
@@ -95,7 +94,10 @@ Botema
 - PASS — gives a concrete practice, not just reassurance
 - PASS — does not just tell her she's good enough without anything concrete to do
 - PASS — most replies still end on a question
-- PASS — no two replies open the same way
+- PASS — no two replies open with the same construction
+- PASS — "that ... is real/common" used at most once
+- PASS — never stacks two questions into one ending
+- PASS — at least one ending is a light check she can answer with yes or no
 - PASS — no reply stacks more than two jargon terms
 
 ---

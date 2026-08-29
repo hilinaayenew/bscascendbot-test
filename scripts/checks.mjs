@@ -86,6 +86,111 @@ export function everyReplyAsks(out) {
   return asking / replies.length >= 0.5;
 }
 
+// Opener SHAPE, not opener words.
+//
+// noRepeatedOpeners() compares the first four words and passes anything that
+// swaps one of them. The confidence sweep of 28 Aug walked straight through
+// it: "That disbelief is real and", "That belief is real and", "That pattern
+// is real and", "That feeling is real and" — four different four-word openers
+// and plainly one opener, used 14 times across 22 replies and twice word for
+// word in different conversations.
+//
+// So: replace the swappable word with a wildcard and compare what is left.
+// Everything that carries the construction stays — pronouns, auxiliaries, and
+// the validating adjectives the tic is built from — and the noun in the middle
+// becomes "*". All four of the above collapse to "that * is real and".
+const OPENER_FRAME = new Set([
+  "a", "an", "the", "and", "but", "so", "not", "no", "it", "its", "this", "that", "these", "those",
+  "i", "you", "your", "we", "our", "she", "her", "they", "them",
+  "is", "are", "was", "were", "be", "been", "do", "does", "did", "have", "has", "had",
+  "would", "will", "can", "could", "should", "in", "of", "to", "for", "on", "at", "with",
+  "real", "common", "normal", "fair", "valid", "true", "right", "hard", "tough", "understandable",
+]);
+
+export function openerShape(reply) {
+  return reply.trim().toLowerCase()
+    .replace(/[^a-z0-9' ]/g, " ")
+    .split(/\s+/).filter(Boolean).slice(0, 5)
+    .map((w) => (OPENER_FRAME.has(w) ? w : "*"))
+    .join(" ");
+}
+
+export function noRepeatedOpenerShape(out) {
+  const shapes = replyOf(out).split("\n\n").filter(Boolean).filter((r) => !FALLBACK_LINE.test(r))
+    .map(openerShape).filter((sh) => sh.replace(/[* ]/g, "").length > 0);
+  return new Set(shapes).size === shapes.length;
+}
+
+// "That [noun] is real" is one legitimate way in, not the coach's only one.
+// The area generation prompt allows it once per conversation; this counts it.
+const VALIDATING_OPENER = /^\s*(?:that|this|it)\b[^.!?]{0,40}?\b(?:is|are|'s|s)\s+(?:a\s+)?(?:real|very real|completely normal|normal|common|understandable|valid)\b/i;
+
+// Exported as a predicate too, so coach-local.mjs's opener guard can strip a
+// second one at generation time using the identical definition the check uses
+// to fail the run. Shape-matching alone does not catch the whole family:
+// "That not-ready voice is real, but" has a different shape from "That feeling
+// is real and" and is plainly the same move.
+export function isValidatingOpener(sentence) {
+  return VALIDATING_OPENER.test(sentence || "");
+}
+
+export function validatingOpeners(out) {
+  return replyOf(out).split("\n\n").filter(Boolean).filter((r) => VALIDATING_OPENER.test(r)).length;
+}
+
+// How many questions the coach stacks into one reply.
+//
+// Counting question marks is not enough, and the confidence sweep is why: the
+// pushiest endings in it are a single "?" with two questions welded together —
+// "When is the deadline, and what are the two strongest achievements you'd
+// anchor your case on?", "Which project would you highlight first in an impact
+// note, and how would you frame it to show both capability and growth?". One
+// question mark, two things she has to go away and produce. So count the
+// interrogative clauses, not the punctuation: each "?" is one, and each
+// "and/or <wh-word or auxiliary>" joined inside a question sentence is another.
+const SECOND_CLAUSE = /,?\s+(?:and|or)\s+(?:what|how|which|who|when|where|why|whose|would|will|do|does|did|can|could|is|are|have|has|should)\b/gi;
+
+// Quoted material is stripped first. A script the coach hands her to use —
+// 'say "Could we agree an intervention if it happens again?"' — carries a
+// question mark that is not the coach asking her anything, and counting it
+// failed a reply that then went on to end with a single light check, which is
+// exactly the shape we are asking for.
+const QUOTED = /[\u201c"][^\u201d"]{0,300}[\u201d"]/g;
+
+export function maxQuestionsPerReply(out) {
+  const replies = replyOf(out).split("\n\n").filter(Boolean).filter((r) => !FALLBACK_LINE.test(r));
+  if (!replies.length) return 0;
+  const count = (r) => (r.replace(QUOTED, " ").match(/[^.!?]*\?/g) || [])
+    .reduce((n, q) => n + 1 + (q.match(SECOND_CLAUSE) || []).length, 0);
+  return Math.max(...replies.map(count));
+}
+
+// Endings she can answer with a yes or a no, rather than ones that requisition
+// more information from her. The area generation prompt makes these the
+// ordinary ending; this is the check that they actually appear.
+const LIGHT_CHECK =
+  /\b(?:does|do|is|are|would|will|can|could|has|have|did|shall|should|any)\b[^.!?]{0,70}\?\s*$/i;
+const LIGHT_CHECK_WORDS =
+  /\b(?:make sense|makes sense|sound(?:s)? (?:right|good|ok|okay)|sit with you|feel like something|feel right|feel doable|work for you|what do you think|the bit you'?re stuck on|anything else|got a plan|covered that|helpful)\b/i;
+
+export function lightChecks(out) {
+  return replyOf(out).split("\n\n").filter(Boolean)
+    .filter((r) => !FALLBACK_LINE.test(r))
+    .filter((r) => LIGHT_CHECK.test(r) && LIGHT_CHECK_WORDS.test(r)).length;
+}
+
+// The final reply on its own. Wrap-up assertions are about the LAST thing the
+// coach says, and replyOf() joins every reply into one string, so a check
+// written against it passes on evidence from turn 1.
+export function lastReply(out) {
+  const replies = replyOf(out).split("\n\n").filter(Boolean);
+  return replies.length ? replies[replies.length - 1] : "";
+}
+
+export function wordCount(text) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
 // The coach's replies only. Extracted by block — everything between a "Botema"
 // line and the next user prompt — rather than by filtering line prefixes, which
 // silently ate wrapped reply lines that happened to begin with "you".

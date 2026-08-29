@@ -1,0 +1,102 @@
+# Does not want a plan, and it turns out the block is her body, not her belief
+
+_Run 2026-08-28 22:02 UTC · 5 turns · gpt-5-nano via Azure_
+
+**What this tests.** Reads the request to be heard rather than steered (G3) without immediately proposing an action, and once she describes a physical response, draws on S3c rather than offering more speaking technique.
+
+## Transcript
+
+```
+BSC Coach — local area harness
+  Area 6 · Confidence & Imposter Syndrome · live via gpt-5-nano
+  Type freely. 'state' to inspect, 'quit' to stop.
+
+  you > I froze completely in a meeting today and I've felt awful about it since
+  [stage B — User describes freezing in a meeting (not taking action to speak up) due to self-doubt; that aligns with B where self-doubt blocks a concrete action.]
+  → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
+  [no close example — voice only, advice from knowledge]
+  [drew on S3, S3b, S3c — 1 Otema, 2 drafted]
+  [voice only: S3a, G2, S4, G4]
+
+Botema
+  That happened, and it’s real—women in tech often freeze in meetings, but it
+  doesn’t define your worth. I’d recommend one concrete next step: go into the
+  next meeting with one crisp sentence that states your point, backed by one
+  data point, and say it early to own the floor. Is that something you can try
+  next time?
+
+  you > honestly I don't really want to make it a whole thing, I just needed to say it out loud
+  [stage A — User expressed a desire to not pursue action right now and just vented; no new concrete step or decision to act was made.]
+  [repeated advice removed]
+  [drew on G3, S1a, S5a — 0 Otema, 3 drafted]
+  [voice only: G6, G7, G9, G5]
+
+Botema
+  That moment was real, and naming it out loud helps. Do you want that?
+
+  you > it's not that I don't know the material, I know it better than most of them
+  [stage A — User is shifting from a focus on the imposter feeling to asserting their competence, which could move toward actionable steps but hasn’t yet stated one.]
+  [repeated advice removed]
+  [drew on G9, G3, G10 — 0 Otema, 3 drafted]
+  [voice only: G7, G5, S1, G8]
+
+Botema
+  That you know it better is exactly why the moment hurts—it's the room, not
+  you, that trips you up. Does that feel doable for your next meeting?
+
+  you > my heart just goes and my mind goes totally blank, it's a physical thing
+  [stage A — New information: user describes a physiological anxiety response (heart racing, mind going blank) in meetings, adding a bodily dimension to imposter syndrome.]
+  [repeated-opener guard fired — a reused opening clause was dropped]
+  [drew on G3, G9, S1a — 0 Otema, 3 drafted]
+  [voice only: G8, G6, S5, G5]
+
+Botema
+  In the moment, name the pause and breathe: “Give me a moment to collect my
+  thoughts,” then take 4 slow breaths to reset. Have a short opener and 1–2
+  data points ready to glance at so you can anchor yourself quickly. Would you
+  be willing to try a 30-second pause and a prepared line in your next
+  meeting?
+
+  you > does that ever actually get better
+  [stage A — User asked if improvement is possible; this moves from problem acknowledgment to reassurance + plan.]
+  [drew on G3, G9, G5 — 0 Otema, 3 drafted]
+  [voice only: S2, S5, S5a, G10]
+
+Botema
+  Yes, it does get better with deliberate practice and the right in-the-moment
+  tools; most people see the intensity and frequency of freezes reduce over
+  weeks to months. A tiny starting plan: rehearse a 1-minute version of your
+  point with a trusted friend this week and use a 4-breath reset before you
+  respond—does that feel like something you could try this week?
+
+  you > quit
+
+  ── state ─────────────────────────────────────────────
+  active_area     6 · Confidence & Imposter Syndrome
+  covered_stages  B, A
+  touched_facets  S3, S3b, S3c, S4, G2, G4, S3a, S1, S1b, S2, S5, S5a, G1, G3, G5, G6, G7, G8, G9, G10, S1a
+  closed_areas    —
+  role/location   — / —
+  trying to do    Her barrier is a physical reaction in which her heart races and her mind goes blank. She wants to avoid turning the moment into a whole thing and to say it out loud when needed. She has already tried saying it out loud to name the moment, and she knows the material well. She asks whether that ever actually gets better.
+
+  Nothing was written to any database.
+```
+
+## Checks
+
+- PASS — draws on G3 or S3c
+- PASS — does not hand her a plan on the turn she says she does not want one
+- PASS — treats the physical response as physical, not as a knowledge or nerve gap
+- PASS — does not answer it with more speaking or delivery technique
+- PASS — does not promise it goes away
+- PASS — most replies still end on a question
+- PASS — no two replies open with the same construction
+- PASS — "that ... is real/common" used at most once
+- PASS — never stacks two questions into one ending
+- PASS — at least one ending is a light check she can answer with yes or no
+- PASS — no reply stacks more than two jargon terms
+- PASS — no reply mostly restates the one before it
+
+---
+
+_Generated by `npm run coach:scenarios` against live Azure. Regenerate after changing prompts or content._

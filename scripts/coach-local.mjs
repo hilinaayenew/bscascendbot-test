@@ -27,10 +27,12 @@
 // drift from what the deployed coach would say. Nothing is written anywhere.
 // ============================================================================
 
-import { readFileSync } from "node:fs";
+import { readFileSync, appendFileSync } from "node:fs";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+
+import { openerShape, isValidatingOpener } from "./checks.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const FN = join(ROOT, "supabase/functions/ai-career-coach");
@@ -57,6 +59,28 @@ const AZURE = {
 };
 
 const DRY = process.argv.includes("--dry") || !AZURE.endpoint || !AZURE.apiKey;
+
+// --dump=<path> writes every request this harness sends to Azure, as JSONL,
+// with the messages array verbatim. Added because "what is actually in the
+// prompt" is otherwise only answerable by reading wordalise() and simulating
+// it in your head, and the prompt is assembled from eight sources that each
+// look reasonable alone. Off unless asked for; costs nothing when off.
+const dumpArg = process.argv.find((a) => a.startsWith("--dump="));
+const DUMP = dumpArg ? dumpArg.slice(7) : null;
+let dumpTurn = 0;
+let turnNumber = 0;
+let dumpLabel = "startup";
+function setDumpContext(turn, label) { dumpTurn = turn; dumpLabel = label; }
+function recordCall(messages, opts) {
+  if (!DUMP) return;
+  appendFileSync(DUMP, JSON.stringify({
+    turn: dumpTurn,
+    call: dumpLabel,
+    maxTokens: opts.maxTokens,
+    tools: opts.tools ? opts.tools.map((t) => t.function.name) : null,
+    messages,
+  }) + "\n");
+}
 
 // ── Content, read from source so it can't drift ─────────────────────────────
 
@@ -161,6 +185,24 @@ function loadAskWell() {
   return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
 }
 
+function loadVaryYourOpening() {
+  const src = readFileSync(join(FN, "converser.ts"), "utf8");
+  const m = src.match(/export const VARY_YOUR_OPENING =\s*([\s\S]*?);\r?\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
+}
+
+function loadNeverDiscountHerPlace() {
+  const src = readFileSync(join(FN, "converser.ts"), "utf8");
+  const m = src.match(/export const NEVER_DISCOUNT_HER_PLACE =\s*([\s\S]*?);\r?\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
+}
+
+function loadReflectBack() {
+  const src = readFileSync(join(FN, "converser.ts"), "utf8");
+  const m = src.match(/export const REFLECT_BACK =\s*([\s\S]*?);\r?\n/);
+  return m ? m[1].replace(/^\s*"|"\s*\+?\s*$/gm, "").replace(/"\s*\+\s*\r?\n\s*"/g, "").trim() : "";
+}
+
 function loadFigureGuard() {
   const src = readFileSync(join(FN, "converser.ts"), "utf8");
   const m = src.match(/export const NO_INVENTED_FIGURES =\s*([\s\S]*?);\r?\n/);
@@ -203,6 +245,18 @@ const AREA_TOPIC = areaConfig.topic;
 const HISTORY_WINDOW_LOCAL = 10;
 const SUPERSEDES = areaConfig.supersedes || [];
 const FALLBACK_QUESTION = areaConfig.fallbackQuestion || "What would you like to look at next?";
+// The stage that finishes a conversation rather than advancing it, if this
+// area has one. Areas without a wrap-up stage simply leave this null and
+// behave exactly as before.
+const MARKET_DATA = areaConfig.marketData === true;
+const WRAP_UP = areaConfig.wrapUp && areaConfig.stages[areaConfig.wrapUp] ? areaConfig.wrapUp : null;
+// Used only on the rescue path, where the guards have stripped a reply to
+// nothing and the area's own fallback question would be the third time of
+// asking. Observed on confidence scenario 02: after two turns of advice she
+// escalated, everything she got back was already-said, and the coach
+// answered "What feels true for you right now?" — a question, on a turn
+// where it had nothing left to add. Offering to finish is the honest move.
+const WRAP_UP_LINE = "I think we've got something you can actually work with there. Is there anything else on your mind?";
 
 function buildFacets() {
   const f = {};
@@ -270,6 +324,22 @@ const NOT_LEAVING = /\b(?:move on to the next|moving on to the next|move on with
 // most needed answered.
 const COULD_NOT_ANSWER =
   "Sorry — that one did not come through properly on my end. Could you say it again, or put it a different way?";
+
+// She is finishing, not changing the subject.
+//
+// Observed live: "no that's everything, thank you" was classified as leaving
+// with a destination, and the coach answered "Of course — let's get into
+// career paths & roadmaps" — steering someone who had just said she was done
+// into a different area. LEAVE_PHRASES does not cover it because it is not a
+// request for another subject, and the classifier has no way to say "leaving,
+// to nothing". This layer runs before any model call, like the leave check,
+// and closes the area as the coach rather than following her somewhere.
+const DONE_PHRASES =
+  /^(?:(?:no|nope|yeah|yes|ok|okay)[,.!\s]*)?(?:(?:i|I)\s+(?:think|guess|reckon)[,.!\s]*)?(?:that'?s|thats)\s+(?:everything|it|all|the lot)\b|^(?:no|nope|nothing)[,.!\s]*(?:else|more|thanks?|thank you)?\s*$|\bnothing else\b|\bthat'?s all (?:for now|thanks|thank you)\b|^(?:i'?m|im)\s+(?:good|all set|fine)\b|^thanks?[,.!\s]*(?:that'?s|thats)?\s*(?:everything|it|all)?\s*$|^thank you[,.!\s]*(?:that'?s|thats)?\s*(?:everything|it|all)?\s*$/i;
+
+function saysDone(text) {
+  return DONE_PHRASES.test(text.trim());
+}
 
 function saysLeaving(text) {
   if (NOT_LEAVING.test(text)) return false;
@@ -345,6 +415,82 @@ function stripAdsOversell(text) {
   if (!sentences.some((s) => ADS_OVERSELL.test(s))) return text;
   const kept = sentences.filter((s) => !ADS_OVERSELL.test(s) || s.trim().endsWith("?"));
   return kept.length ? kept.join(" ").trim() : "";
+}
+
+// Numbered and bulleted rundowns, flattened into sentences so capSentences()
+// can do its job.
+//
+// flattenInlineList() bails the moment the text contains a newline, and
+// splitSentences() sees "1) Draft a tight two-minute pitch - Target role: ..."
+// as barely any sentences at all, so a five-step plan with sub-bullets sailed
+// past a three-sentence cap. Observed on the last turn of scenario 01: a
+// numbered 1-5 plan with nested bullets, in an area about self-doubt, to
+// someone whose stated problem is that she feels she has too much to prove.
+//
+// Turning each marker into a sentence boundary means the existing cap sees it
+// for what it is and keeps the lead-in plus the closing question.
+// Mirror of stripQuotaConcession() in converser.ts, which is where the unit
+// tests for it live. Same practice as stripImplausibleFigures() and the rest:
+// the harness cannot import the Deno-targeted module, so the pattern is
+// duplicated and the two are kept in step by hand.
+const QUOTA_TERM =
+  /\b(?:diversity (?:number|quota|hire|hiring|target|push|initiative|programme|program)|dei\b|affirmative action|gender quota|quota hire|tick(?:ing)? (?:a|the) box|box[- ]tick\w*|fill(?:ing)? (?:a|the|some) (?:quota|number|target)|hit(?:ting)? (?:a|the|some) (?:diversity )?(?:number|quota|target))/i;
+const PLACEMENT_TERM =
+  /\b(?:hire[ds]?|hiring|got (?:the|this|your) (?:job|role|offer|place)|picked|chosen|choose|selected|recruit\w*|offer(?:ed)?|promot\w+|admitted|accepted|place|role|job|position|seat|spot)\b/i;
+
+function stripQuotaConcession(text) {
+  const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
+  const kept = sentences.filter((x) => !(QUOTA_TERM.test(x) && PLACEMENT_TERM.test(x)));
+  if (kept.length === sentences.length) return text;
+  return kept.join(" ").replace(/\s{2,}/g, " ").trim();
+}
+
+// ── Fix 2: a question with nothing left in front of it ─────────────────────
+// capSentences() deliberately keeps the last question, so when the guards cut
+// the body the question is what survives — pointing at advice that no longer
+// exists. Two shapes of this, handled separately.
+//
+// The first is explicit: the question names what was removed. "Would you be
+// willing to try those three steps this week?" after the three steps were cut
+// by the length cap. Only fires when capping actually happened, and only on a
+// demonstrative that plainly refers back to a list.
+const DANGLING_REFERENCE =
+  /\b(?:those|these|the)\s+(?:\w+\s+)?(?:steps?|points?|items?|things?|ideas?|options?|tips?|moves?|two|three|four|first two|first three)\b/i;
+
+function dropDanglingQuestion(text, wasCapped) {
+  if (!wasCapped) return text;
+  const sentences = text.match(/[^.!?]+[.!?]*/g) || [];
+  if (sentences.length < 2) return text;
+  const last = sentences[sentences.length - 1];
+  if (!last.trim().endsWith("?") || !DANGLING_REFERENCE.test(last)) return text;
+  return sentences.slice(0, -1).join(" ").trim();
+}
+
+// The second shape has no tell in the words at all: everything except the
+// closing question was removed as already-said, so what she gets is a bare
+// question about advice she can no longer see. Eight of forty-nine replies in
+// one sweep were this, and three of them answered a direct "so what should I
+// actually do" with another question. There is nothing to salvage in the text
+// — the caller regenerates the turn as a wrap-up instead.
+function isOnlyAQuestion(text) {
+  const sentences = (text.match(/[^.!?]+[.!?]*/g) || []).map((x) => x.trim()).filter(Boolean);
+  return sentences.length > 0 && sentences.every((x) => x.endsWith("?"));
+}
+
+function flattenEnumerations(text) {
+  const markers = text.match(/(?:^|\s)(?:\d+[).]|[-\u2022*])\s+(?=[A-Za-z0-9])/g);
+  if (!markers || markers.length < 3) return text;
+  return text
+    .replace(/\s*\n+\s*/g, " ")
+    .replace(/(?:^|\s)(?:\d+[).]|[-\u2022*])\s+(?=[A-Za-z0-9])/g, ". ")
+    .replace(/\s*\.\s*\.\s*/g, ". ")
+    // The marker becomes ". ", so a list whose items already ended in their own
+    // punctuation came out as "the exact praise;. whenever praise lands" —
+    // visible junk in a transcript. Absorb any punctuation the item already had.
+    .replace(/\s*([;,:])\s*\.\s*/g, ". ")
+    .replace(/:\s*\.\s*/g, ": ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 function flattenInlineList(text) {
@@ -448,6 +594,24 @@ function dropRepeatedSentences(text, previousReplies, threshold = 0.45) {
   return kept.length ? kept.join(" ").trim() : "";
 }
 
+// One question per reply, in code.
+//
+// The prompt says one and the model writes two, welded with "and": "Does that
+// feel like something you could try this month, and what area would you
+// target?", "When is the deadline, and what are the two strongest achievements
+// you'd anchor your case on?". One question mark, two things she has to go
+// away and produce — and the second is invariably the demanding one, which is
+// why this cuts from the join rather than trying to choose between them.
+const SECOND_QUESTION =
+  /,\s+(?:and|or)\s+(?:what|how|which|who|when|where|why|whose|would|will|do|does|did|can|could|is|are|have|has|should)\b[^.!?]*\?\s*$/i;
+
+function dropSecondQuestion(text) {
+  const trimmed = text.trimEnd();
+  if (!trimmed.endsWith("?")) return text;
+  const cut = trimmed.replace(SECOND_QUESTION, "?");
+  return cut === trimmed ? text : cut;
+}
+
 function capSentences(text, keep = 3) {
   const sentences = splitSentences(text);
   if (sentences.length <= keep) return { text, capped: false };
@@ -472,6 +636,7 @@ function stripFigures(text) {
 // ── Azure ───────────────────────────────────────────────────────────────────
 
 async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1 } = {}) {
+  if (attempt === 1) recordCall(messages, { tools, maxTokens });
   const url = `${AZURE.endpoint.replace(/\/?$/, "/")}openai/deployments/${AZURE.deployment}/chat/completions?api-version=${AZURE.apiVersion}`;
   const body = { messages, max_completion_tokens: maxTokens };
   if (tools) { body.tools = tools; body.tool_choice = "required"; body.parallel_tool_calls = false; }
@@ -507,7 +672,23 @@ async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1 } = {}
       if (maxTokens < 12000) return callAzure(messages, { tools, maxTokens: maxTokens * 2 });
       return null;
     }
-    try { return JSON.parse(call.function.arguments || "{}"); } catch { return {}; }
+    // A tool call that arrives TRUNCATED is the same failure as one that never
+    // arrives, and it used to be handled as if it were a success: the parse
+    // threw, `{}` was returned, and the caller saw a classification with no
+    // stage. It then retried exactly once at 4000 and gave up — while the
+    // no-call path above climbs 2000 → 4000 → 8000 → 12000. Confidence
+    // scenario 02 died on turn 4 that way, on the message where she asked
+    // whether to say something or let it go, and answered her with "that one
+    // did not come through properly". Same ladder, same reason.
+    try {
+      return JSON.parse(call.function.arguments || "{}");
+    } catch {
+      if (maxTokens < 12000) {
+        console.log(C.dim(`  [tool arguments truncated at ${maxTokens} tokens (finish_reason: ${choice?.finish_reason || "unknown"}) — retrying at ${maxTokens * 2}]`));
+        return callAzure(messages, { tools, maxTokens: maxTokens * 2 });
+      }
+      return null;
+    }
   }
   // gpt-5-nano can spend the whole budget on hidden reasoning and return
   // nothing — retry once at double, same as callAzure() in the real function.
@@ -578,14 +759,91 @@ function stripInventedLocation(text, saidByUser) {
 // but is the same tic to her. A third reminder is not going to land where a
 // second one didn't — this checks it instead, same 4-word key the
 // noRepeatedOpeners test uses, so the guard and the check agree.
+// Shared with the scenario check, deliberately: the guard that strips a
+// reused opener and the check that fails a run for having one must agree on
+// what "the same opener" means, and while they had separate four-word
+// definitions they did not. Both now use openerShape(), which wildcards the
+// swappable noun — "That disbelief is real and", "That belief is real and" and
+// "That pattern is real and" all collapse to "that * is real and".
+//
+// Third time of asking on this one. The prompt said not to reuse an opener and
+// it was reused; VARY_YOUR_OPENING named five alternatives and the model still
+// opened three of five replies with the same construction, because
+// STAND_WITH_HER tells it in as many words to say the thing is real and
+// documented before advising. Two instructions in direct conflict do not get
+// resolved by writing a third. This is the check the storyboard's own rule
+// says to write instead.
 function openerKey(sentence) {
-  return sentence.trim().toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean).slice(0, 4).join(" ");
+  return openerShape(sentence);
 }
+// Reflecting her back, taken to its degenerate limit.
+//
+// REFLECT_BACK asks the coach to open with her own words, and the drafted
+// examples now demonstrate it. Combined with dropRepeatedSentences() stripping
+// everything else as already-said, one live turn produced a reply that was her
+// message, verbatim, and nothing else: she wrote "yeah I think I can do that —
+// I'll bring it up in our next one-to-one" and got back "Yeah, I think I can
+// do that — I'll bring it up in our next one-to-one."
+//
+// A reflection earns its place by being followed by something. On its own it
+// reads as a malfunction, and it is worse than saying nothing, because saying
+// nothing at least falls through to the wrap-up line.
+//
+// Only short replies are tested. A long answer that happens to reuse her
+// vocabulary — which is what good reflection looks like — scores far below
+// this: measured on the same run, a real reflection came out at 0.45.
+function echoesUser(text, message) {
+  const words = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9' ]/g, " ").split(/\s+/).filter((w) => w.length > 3));
+  const reply = words(text);
+  if (reply.size < 3 || text.trim().split(/\s+/).length > 30) return false;
+  const hers = words(message);
+  let shared = 0;
+  reply.forEach((w) => { if (hers.has(w)) shared += 1; });
+  return shared / reply.size >= 0.7;
+}
+
+// A validating opener is right when she has just reported being treated
+// badly, and empty when she has reported her own behaviour back to herself.
+// "That pattern is real and you're not imagining it" told a woman who had
+// just said she goes quiet in meetings that she was not imagining going quiet
+// in meetings. Only the classifier knows which case this is, so the decision
+// comes from there and this only carries it out.
+// Wider than isValidatingOpener(), on purpose. That one counts the "That X is
+// real" construction for the scenario checks; this one has to catch the whole
+// family, because the move survives every rewording. Three runs, three
+// costumes on the same sentence: "That pattern is real and you're not
+// imagining it", then "You're not imagining it — speaking up is a real hurdle
+// many women face", then "You're not alone — holding back in meetings happens
+// to many women in tech". All three told a woman who had just described her
+// own behaviour that she was not imagining her own behaviour.
+//
+// None of these is banned. VARY_YOUR_OPENING offers them and they are right
+// where she has actually been treated badly — which is what the classifier's
+// reportsExternalTreatment answers, and the only reason this can be decided in
+// code at all.
+const ACKNOWLEDGING_OPENER =
+  /^\s*(?:that|this|it)\b[^.!?]{0,60}?\b(?:is|are|'s)\s+(?:a\s+)?(?:real|very real|normal|common|documented|understandable|valid|fair|tough|hard)\b|^\s*(?:i hear you|i know that feeling|you'?re not alone|you'?re not imagining|it'?s not just you|that'?s fair|you are not alone|that sounds|i understand)\b/i;
+
+function stripUnearnedValidation(text) {
+  const sentences = text.match(/[^.!?]+[.!?]*/g) || [];
+  if (sentences.length < 2) return text;
+  if (!ACKNOWLEDGING_OPENER.test(sentences[0])) return text;
+  return sentences.slice(1).join(" ").trim();
+}
+
 function stripRepeatedOpener(text, previousReplies) {
   if (!previousReplies.length) return text;
-  const used = new Set(previousReplies.map((r) => openerKey(splitSentences(r)[0] || "")));
+  const firsts = previousReplies.map((r) => splitSentences(r)[0] || "");
+  const used = new Set(firsts.map(openerKey));
   const sentences = splitSentences(text);
-  if (sentences.length < 2 || !used.has(openerKey(sentences[0]))) return text;
+  if (sentences.length < 2) return text;
+  // Two ways of being the same opener. The shape catches a swapped noun; the
+  // second catches the whole validate-first family, which VARY_YOUR_OPENING
+  // allows exactly once in a conversation and which has more shapes than the
+  // wildcard comparison can see.
+  const sameShape = used.has(openerKey(sentences[0]));
+  const secondValidator = isValidatingOpener(sentences[0]) && firsts.some(isValidatingOpener);
+  if (!sameShape && !secondValidator) return text;
   return sentences.slice(1).join(" ").trim();
 }
 
@@ -649,6 +907,7 @@ async function searchMarketRate(role, location, context = "") {
 // appending, so it stays readable instead of growing into a file on her.
 
 async function updateProfile(message, history) {
+  setDumpContext(turnNumber, "profile note");
   const sys = [
     "You keep a short private note about someone a career coach is talking to. Rewrite it now, incorporating anything new in her latest message.",
     "",
@@ -671,7 +930,13 @@ async function updateProfile(message, history) {
     { role: "system", content: sys },
     ...history.slice(-HISTORY_WINDOW_LOCAL),
     { role: "user", content: message },
-  ], { maxTokens: 1200 });
+    // 1200 was one call's worth of budget for a model that does not reason,
+    // and gpt-5-nano does: it spent the lot thinking and returned empty, so
+    // callAzure doubled and asked again, twice. Every retry re-sends the whole
+    // prompt, so three round trips cost three times the input tokens as well
+    // as the latency. Measured over scenario 03, the note succeeded at 2400
+    // once and at 4800 twice; starting there makes it one call.
+  ], { maxTokens: 4800 });
   if (!out) return;
 
   const parts = out.split(/\n\s*\n/).map((p) => p.replace(/^\s*(?:\d[.)]\s*)?(?:WHERE SHE IS|WHAT SHE IS TRYING TO DO)\s*:?\s*/i, "").trim());
@@ -710,13 +975,18 @@ const CLASSIFY_TOOL = [{
           type: "string",
           description: "If leaving, the number of the area that suits better — always give one. Use \"none\" when not leaving. Options: " + AREA_LIST(),
         },
-        needsMarketData: {
-          type: "boolean",
-          description: "True ONLY if she is asking what a role actually pays, AND she has already named a city or country. False for everything else: how to negotiate, what to say, whether an offer is fair in principle, and anything about how she feels — self-doubt, deserving more, fear of asking. If no place has been named, this is false.",
-        },
-        role: { type: "string", description: "The role being priced, if any. e.g. mid-level backend developer." },
-        refinement: { type: "string", description: "Any narrowing this message adds to a pay question — an industry, a company type, remote vs local. Use none if there is none." },
-        location: { type: "string", description: "The city or country, if the user has given one." },
+        // Salary is the only area that can search, so it is the only one that
+        // needs these — see `marketData` in scripts/areas/salary.mjs for why
+        // asking every area for them was actively harmful.
+        ...(MARKET_DATA ? {
+          needsMarketData: {
+            type: "boolean",
+            description: "True ONLY if she is asking what a role actually pays, AND she has already named a city or country. False for everything else: how to negotiate, what to say, whether an offer is fair in principle, and anything about how she feels — self-doubt, deserving more, fear of asking. If no place has been named, this is false.",
+          },
+          role: { type: "string", description: "The role being priced, if any. e.g. mid-level backend developer." },
+          refinement: { type: "string", description: "Any narrowing this message adds to a pay question — an industry, a company type, remote vs local. Use none if there is none." },
+          location: { type: "string", description: "The city or country, if the user has given one." },
+        } : {}),
         newInformation: {
           type: "boolean",
           // Confirmed live on Mentorship: "is that going to be a problem" and
@@ -728,16 +998,41 @@ const CLASSIFY_TOOL = [{
           // actual repeat, filler, or shrug is a stall.
           description: "Did this message move the conversation forward — a fact, a constraint, an answer to what was asked, OR a genuinely new question she hasn't asked before? False only for filler, a restatement of something already said, or a shrug.",
         },
+        // Separate from newInformation, which is deliberately broad because
+        // the stall rule needs it to be: a genuinely new question counts as
+        // forward motion there. Gating the profile rewrite on it meant "so
+        // what should I actually do" triggered a rewrite of a note it had
+        // nothing to add to — three Azure calls, on a message containing no
+        // fact about her at all. Two different questions, so now two flags.
+        // STAND_WITH_HER is only correct when something was done TO her, and
+        // no regex over the reply can tell that — it is a fact about her
+        // MESSAGE, not about the answer. Observed twice: "I keep chickening
+        // out of speaking up" answered with "that pattern is real and you're
+        // not imagining it", and after the rule was rewritten to say so, "you
+        // are not imagining it — speaking up is a real hurdle many women
+        // face". She was describing her own behaviour both times. The
+        // classifier is already reading the message; it can answer this.
+        reportsExternalTreatment: {
+          type: "boolean",
+          description: "Did she describe something OTHER PEOPLE did to her? True for: being interrupted or talked over, her idea repeated back as someone else's, being paid less than a colleague, being passed over, being called difficult, being assumed junior, being dismissed or excluded, a specific thing someone said or did to her. FALSE when she is describing herself — how she feels, what she avoids, what she does not believe, a habit of her own (going quiet, not applying, rechecking her work, not counting her wins, doubting praise). A feeling ABOUT other people is still false unless she reports what they actually did.",
+        },
+        newProfileFacts: {
+          type: "boolean",
+          description: "Did she say something about HERSELF in this message that a coach would write down? True only for: her role or job title, her seniority or years of experience, her employer or team, where she is, her pay, her education or training, what she is trying to reach, what is blocking her, what she has already tried, or a constraint on any of it (time, money, care responsibilities, connectivity). FALSE for everything else — asking a question, asking for advice, agreeing, thanking, saying she will try something, or restating a feeling already mentioned. When in doubt, false: a note that misses one detail costs less than a note rewritten on every turn.",
+        },
         why: { type: "string", description: "One short clause explaining the choice." },
       },
       // All required. Optional fields get dropped intermittently by the model,
       // and a leaveTo that vanishes loses the destination it had just worked out.
-      required: ["stage", "leaveTo", "needsMarketData", "refinement", "newInformation", "why"],
+      required: MARKET_DATA
+        ? ["stage", "leaveTo", "needsMarketData", "refinement", "newInformation", "newProfileFacts", "reportsExternalTreatment", "why"]
+        : ["stage", "leaveTo", "newInformation", "newProfileFacts", "reportsExternalTreatment", "why"],
     },
   },
 }];
 
 async function classify(message, history, covered, maxTokens = 2000) {
+  setDumpContext(turnNumber, "classify");
   const sys = [
     `You are placing a message inside the "${AREA.name}" discussion area of a tech career coach.`,
     `Decide which stage of that area it belongs to, or whether the user has left the area.`,
@@ -806,6 +1101,26 @@ function overlapScore(e, words) {
   return n;
 }
 
+// The same count, divided by the square root of how long the facet is.
+//
+// overlapScore() counts how many words of the conversation appear ANYWHERE in
+// a facet's question and answer, and never divides by length — so a long
+// answer has strictly more chances to score. In Confidence that is not a
+// rounding error: the sixteen drafted answers average 97 words against
+// Otema's 51, and hers were losing close slots on size rather than on fit.
+// Measured by replaying the forty-five real user turns in this area's
+// committed transcripts through the selection code: one of her answers
+// reached the three closest on 31% of turns before, 38% after, while the
+// number of facets carried straight over from the previous turn fell from
+// 0.89 of three to 0.57.
+//
+// overlapScore() itself is left alone because matchStrength() reads it on the
+// raw scale and compares against a fixed threshold of 1. Only ranking changes.
+function fitScore(e, words) {
+  const length = `${e.question} ${e.answer}`.split(/\s+/).length;
+  return overlapScore(e, words) / Math.sqrt(length);
+}
+
 // How well the best available example actually matches what she asked. Used to
 // tell the model when it is on its own — see the note in wordalise().
 function matchStrength(pool, message) {
@@ -818,7 +1133,14 @@ function matchStrength(pool, message) {
 // random four must genuinely vary from turn to turn, but two runs of the same
 // scenario have to pick the same examples or nothing can be compared between
 // them — a regression would be indistinguishable from a reshuffle.
-const USED_PENALTY = 2.5;
+// 0.35, not 2.5, because the scale underneath it changed — see fitScore().
+// The old value was tuned as roughly 1.3x the gap between the best example and
+// the fifth-best, which was about 1.9 on the raw count. On the normalised
+// scale that gap is about 0.2, so 2.5 would not down-weight a used facet, it
+// would delete it — the opposite of what this is for. 0.35 sits at 1.75x the
+// new gap: measured over the same forty-five turns, a used facet still comes
+// back later when it is clearly the best fit again, 14 times rather than 11.
+const USED_PENALTY = 0.35;
 
 function seeded(text) {
   let h = 2166136261;
@@ -862,7 +1184,7 @@ function mostRelevant(pool, message, closest = 3, used = [], random = 4) {
     // This governs the three nearest ONLY. The random four are shuffled
     // uniformly and the penalty never reaches them — their job is the range of
     // her voice, not fit, so a repeat there costs nothing.
-    .map((e) => ({ e, score: overlapScore(e, words) - (used.includes(e.id) ? USED_PENALTY : 0) }))
+    .map((e) => ({ e, score: fitScore(e, words) - (used.includes(e.id) ? USED_PENALTY : 0) }))
     .sort((a, b) => b.score - a.score);
 
   // There used to be a guarantee here that at least one of Otema's real
@@ -888,6 +1210,7 @@ function mostRelevant(pool, message, closest = 3, used = [], random = 4) {
 }
 
 async function wordalise(message, stage, history, facets, search = null, used = [], previousReplies = []) {
+  setDumpContext(turnNumber, `generate (stage ${stage})`);
   const all = STAGES[stage].facets.map((id) => facets[id]).filter(Boolean);
   const query = conversationQuery(message, history);
   const { near, wide } = mostRelevant(all, query, 3, used);
@@ -971,11 +1294,16 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     grounding,
     "",
     "NOW THE RULES FOR YOUR REPLY, WHICH OVERRIDE EVERYTHING ABOVE:",
-    // Present in botema-coach.ts's real prompt, missing here — the harness's
-    // "Great question." opener on a live career-paths test turn confirmed
-    // this documented gap is real, not just theoretical, for every area.
-    'Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point.',
+    // The filler-acknowledgment ban used to sit here as its own line. It now
+    // lives inside VARY_YOUR_OPENING, with the rest of the opening rules,
+    // rather than in two places that can drift apart.
     loadStandWithHer(),
+    // Immediately after STAND_WITH_HER, because it is the boundary on it. The
+    // confidence sweep showed the validate-first instruction being applied to
+    // a doubt she holds about herself; this says which side of the line that
+    // falls on, and it has to be read in the same breath to do that.
+    loadNeverDiscountHerPlace(),
+    loadReflectBack(),
     loadNeverAct(),
     loadPlainLanguage(),
     loadAskWell(),
@@ -992,12 +1320,26 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     "The examples above are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.",
     "When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.",
     "You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.",
+    // HOW YOU OPEN.
+    //
+    // The previous version of this rule named the failing phrase and banned
+    // it. That is what produced the failure it was meant to prevent: told not
+    // to say "I hear you", the model settled on "That [noun] is real" instead
+    // and used it on 14 of 22 replies across the confidence sweep of 28 Aug,
+    // twice word for word in different conversations. A ban leaves one gap in
+    // the fence and everything walks through it.
+    //
+    // So this gives it a set of ways in rather than a phrase to avoid.
+    // Validating is right — Otema does it, and STAND_WITH_HER requires it
+    // where something really is documented — but there are five different
+    // ways to do it and the coach should not keep picking the same one.
+    loadVaryYourOpening(),
     previousReplies.length
       // Every opener so far, not just the last one. Looking back a single turn
       // let "That's real" come back on turn 3 after turn 2 happened to open
       // differently — the rule could not see two turns ago, so the phrase was
       // free again the moment it skipped one.
-      ? `You have already opened replies in this conversation with: ${previousReplies.map((r) => `"${r.split(/\s+/).slice(0, 6).join(" ")}…"`).join(", ")}. Do NOT begin this one like ANY of those — different first words, different shape. Openers that validate before saying anything ("That's real", "That's a real", "I hear you") wear out fastest; you have other ways in.`
+      ? `You have already opened replies in this conversation with: ${previousReplies.map((r) => `"${r.split(/\s+/).slice(0, 6).join(" ")}…"`).join(", ")}. Do NOT begin this one like ANY of those — a different first word and a different shape, not the same construction with the noun swapped.`
       : null,
     "'I would always recommend' is yours, but used every turn it stops sounding like you and starts sounding like a template.",
     "Answer only the one thing the user actually asked. You have been given several examples so that you can pick the right one — not so that you can cover them all.",
@@ -1008,10 +1350,30 @@ async function wordalise(message, stage, history, facets, search = null, used = 
           "Three or four sentences. Two figures at most — she needs an anchor, not a table.",
         ].join(" ")
       : "Two or three sentences. Never a list. Never a rundown of the whole subject.",
-    "HOW TO END. Usually end on a question — and usually a follow-on, one that moves things forward because her answer would genuinely change what you say next. That is the default and the best ending you have. Never ask one that presses her to disclose her own pay.",
-    "Where a follow-on would be forced, a lighter check is better: 'Does that make sense?', 'How does that sit with you?', 'What do you think?'.",
-    "And occasionally — where the answer is complete in itself and any question would only pad it — end on the advice and stop. That should be the exception, not a habit.",
-    "Never ask a question you do not need the answer to. A reply that stops cleanly is better than one that reaches for a question to fill the ending.",
+    // HOW TO END, inverted 28 Aug. This used to make a forward-driving
+    // follow-on the default and the light check the fallback, and the
+    // confidence sweep shows what that produces: every reply ending by asking
+    // her for more, twice with two questions stacked in one ending, and one
+    // re-asking a question she had already declined to answer. A coach that
+    // ends every turn by requisitioning more information is interviewing her.
+    // The light check is now the ordinary ending and the follow-on is the
+    // exception it has to earn.
+    "HOW TO END. Most of the time, end on a light check she can answer with a yes or a no — 'Does that make sense?', 'Does that feel like something you could actually do?', 'How does that sound to you?', 'Is that the bit you're stuck on?'. That is the ordinary ending, not a fallback.",
+    "Ask a forward-driving follow-on only where her answer would genuinely change what you say next. ONE question per reply, never two. And never re-ask something she has already left unanswered — if she skipped it, she had a reason, and asking again tells her you were not listening.",
+    "Where the answer is complete in itself, end on the advice and stop. Never ask a question you do not need the answer to. Never ask one that presses her to disclose her own pay.",
+    // The wrap-up stage, last of all because recency wins and this has to beat
+    // seven examples that all end by asking her something. Every other stage
+    // decides which answers the model is shown; this one exists to stop it
+    // reaching for any of them.
+    stage === WRAP_UP
+      ? [
+          "THIS TURN IS THE WRAP-UP, AND IT OVERRIDES THE RULES ABOVE.",
+          "She is agreeing, not asking. Do not give new advice. No extra step, no further tip, no 'one more thing', no reopening a thread she has just closed, and nothing at all from the examples above — they are here for voice only this turn.",
+          "Say back what she is actually going to do, in her words rather than yours, in one sentence. If there is nothing concrete to say back, say what she has worked out instead.",
+          "Then check whether that is genuinely it — 'I think we've got a plan, haven't we?', 'Have we covered that one?', 'Is there anything else on your mind?'. One check, warm, and short.",
+          "Two sentences. Three at the outside. A wrap-up that runs long is not a wrap-up.",
+        ].join(" ")
+      : null,
   ].join("\n");
 
   return callAzure([
@@ -1029,6 +1391,9 @@ const state = {
   touched_facets: [],
   closed_areas: [],
   stallCount: 0,
+  // Set once the coach has actually offered to finish. A second stall after
+  // that closes the area; the first one buys the wrap-up turn.
+  wrappedUp: false,
   lastStage: null,
   role: null,
   location: null,
@@ -1123,6 +1488,16 @@ async function main() {
     if (!input) continue;
     if (input.toLowerCase() === "quit") break;
     if (input.toLowerCase() === "state") { showState(); continue; }
+    turnNumber += 1;
+
+    // Layer 2a — she has finished, ahead of any model call. Checked before the
+    // leave phrases because "no that's everything, thank you" would otherwise
+    // reach the classifier and come back as a hand-off to another area.
+    if (state.active_area && saysDone(input)) {
+      console.log(C.dim("  [done-phrase check fired — she said that was everything]"));
+      await closeArea("she said that was everything", { by: "coach" });
+      break;
+    }
 
     // Layer 2 — explicit leave, ahead of any model call.
     if (state.active_area && saysLeaving(input)) {
@@ -1238,8 +1613,21 @@ async function main() {
       state.stallCount += 1;
       console.log(C.dim(`  [no new information — stall ${state.stallCount}/2]`));
       if (state.stallCount >= 2) {
-        await closeArea("two turns with nothing new added — the stall rule");
-        break;
+        // Running dry used to close the area outright. That gave a conversation
+        // that finished well and one that petered out the exact same ending,
+        // and it meant the coach's last act was always to stop talking rather
+        // than to offer to. Where the area has a wrap-up stage, the first
+        // stall buys one turn in it — say the plan back, check it is a plan —
+        // and only a stall AFTER that closes.
+        if (WRAP_UP && !state.wrappedUp && placed.stage !== WRAP_UP) {
+          console.log(C.dim(`  [stalled — wrapping up in stage ${WRAP_UP} rather than closing]`));
+          placed = { ...placed, stage: WRAP_UP, why: "nothing new added — offering to finish" };
+          state.wrappedUp = true;
+          state.stallCount = 0;
+        } else {
+          await closeArea("two turns with nothing new added — the stall rule");
+          break;
+        }
       }
     } else {
       state.stallCount = 0;
@@ -1259,8 +1647,26 @@ async function main() {
 
     // Keep the note current before answering, so this turn already benefits
     // from whatever she just said. Never block the reply on it.
-    if (placed.newInformation !== false) {
+    // Gated on newProfileFacts, not newInformation — see the field's own note.
+    // Undefined means the model dropped the field, and a dropped field should
+    // not silently switch the note off, so that still runs.
+    //
+    // One safety net. The flag is told to answer false when in doubt, and the
+    // note is the only thing that survives a fact scrolling out of the
+    // ten-message window — so a conversation where the flag is wrongly false
+    // early loses those facts permanently once the messages age out. If
+    // nothing has been recorded at all by the third turn, write the note once
+    // regardless: it costs one call, and by then the whole conversation is
+    // still inside the window for it to read.
+    const noteIsEmpty = !state.situation && !state.aims;
+    const catchUp = noteIsEmpty && turnNumber >= 3;
+    if (placed.newProfileFacts !== false || catchUp) {
+      if (catchUp && placed.newProfileFacts === false) {
+        console.log(C.dim("  [nothing recorded about her yet — writing the note anyway before it ages out]"));
+      }
       try { await updateProfile(input, history); } catch { /* ignore */ }
+    } else {
+      console.log(C.dim("  [no new facts about her — note left alone, no call made]"));
     }
 
     // W-marked behaviour: only a question about what something PAYS reaches
@@ -1317,7 +1723,13 @@ async function main() {
       continue;
     }
 
-    const { text: figureGuarded, stripped } = search ? { text: reply, stripped: false } : stripFigures(reply);
+    const unquota = stripQuotaConcession(reply);
+    if (unquota !== reply) console.log(C.amber("  [quota concession removed — she does not read that sentence]"));
+    // Undefined means the model dropped the field; leave the opener alone
+    // rather than stripping on a guess.
+    const unearned = placed.reportsExternalTreatment === false ? stripUnearnedValidation(unquota) : unquota;
+    if (unearned !== unquota) console.log(C.amber("  [validating opener dropped — she described herself, not something done to her]"));
+    const { text: figureGuarded, stripped } = search ? { text: unearned, stripped: false } : stripFigures(unearned);
     if (stripped) console.log(C.amber("  [figure guard fired — a figure or source claim was removed]"));
     const guarded = stripInventedLocation(figureGuarded, saidByUser);
     if (guarded !== figureGuarded) console.log(C.amber("  [invented-location guard fired — an unstated place was removed]"));
@@ -1341,11 +1753,77 @@ async function main() {
       // substitutes the area's fallback question.
       console.log(C.amber("  [reply was entirely repetition — treating as a stall]"));
       state.stallCount += 1;
-      if (state.stallCount >= 2) { await closeArea("nothing new left to say — the stall rule"); break; }
+      if (state.stallCount >= 2) {
+        // Same divert as the pre-generation stall, one turn later. The reply is
+        // already generated and empty, so there is nothing to regenerate from —
+        // the rescue below substitutes the wrap-up line instead of the area's
+        // fallback question, which is what she got here before.
+        if (WRAP_UP && !state.wrappedUp) {
+          console.log(C.dim("  [nothing new left to say — offering to finish rather than closing]"));
+          state.wrappedUp = true;
+          state.stallCount = 0;
+        } else {
+          await closeArea("nothing new left to say — the stall rule");
+          break;
+        }
+      }
     }
     const plausible = stripAdsOversell(stripImplausiblePeriods(stripImplausibleFigures(deduped)));
-    if (plausible !== openerFixed) console.log(C.amber("  [implausible figure removed — outlier, mixed currency, or wrong period]"));
-    let { text, capped } = capSentences(flattenInlineList(plausible), search ? 5 : 3);
+    // Compared against `deduped`, which is what these three actually received.
+    // It used to compare against `openerFixed`, one step further back, so any
+    // turn where dropRepeatedSentences() had removed a sentence also reported
+    // an implausible figure — whether or not a figure existed. Every one of
+    // the eight occurrences in the 28 Aug confidence sweep was this: no money
+    // is mentioned anywhere in that area.
+    if (plausible !== deduped) console.log(C.amber("  [implausible figure removed — outlier, mixed currency, or wrong period]"));
+    const unlisted = flattenEnumerations(plausible);
+    if (unlisted !== plausible) console.log(C.amber("  [numbered rundown flattened — it was a list]"));
+    let { text, capped } = capSentences(flattenInlineList(unlisted), search ? 5 : 3);
+    const undangled = dropDanglingQuestion(text, capped);
+    if (undangled !== text) console.log(C.amber("  [closing question dropped — it referred to advice the cap removed]"));
+    text = undangled;
+    const oneQuestion = dropSecondQuestion(text);
+    if (oneQuestion !== text) console.log(C.amber("  [second question dropped — one per reply]"));
+    text = oneQuestion;
+    // Everything except the closing question was removed as already-said, so
+    // she is being asked about advice she can no longer see. There is nothing
+    // to repair in the text; the honest reply is the one the wrap-up stage
+    // exists to write — say the plan back and check it — so the turn is
+    // regenerated there rather than shown. One extra call, on the turns that
+    // would otherwise have been a bare question.
+    // Both shapes of the same failure: the guards left only a question, or
+    // left nothing at all. The second was missed on the first pass of this
+    // fix and is the more common one — it is what produces the bare "What
+    // feels true for you right now?" on a turn where she has just added a
+    // fact. Either way there is nothing to repair in the text.
+    const somethingWasCut = capped || !deduped || deduped !== openerFixed;
+    if (somethingWasCut && (!text || isOnlyAQuestion(text)) && WRAP_UP && placed.stage !== WRAP_UP) {
+      console.log(C.amber(`  [${text ? "only a question survived" : "nothing survived"} the guards — answering as a wrap-up instead]`));
+      // Set before the call, not after: if the regeneration also comes back
+      // empty, the rescue below should offer to finish rather than serve the
+      // area's fallback question, which is the thing this branch exists to
+      // avoid. Observed doing exactly that on a live run.
+      state.wrappedUp = true;
+      const again = await wordalise(input, WRAP_UP, history, facets, search, state.usedExamples, priorReplies).catch(() => null);
+      if (again) {
+        // The same guards the first attempt got, in the same order. Running a
+        // shorter chain here let the regenerated reply open with the exact
+        // clause the opener guard had just stripped from the first one.
+        let regen = stripQuotaConcession(again);
+        if (placed.reportsExternalTreatment === false) regen = stripUnearnedValidation(regen);
+        regen = stripRepeatedOpener(regen, priorReplies);
+        regen = dropRepeatedSentences(regen, priorReplies);
+        const cleaned = capSentences(flattenInlineList(flattenEnumerations(regen)), 3).text;
+        const finished = dropSecondQuestion(cleaned || "");
+        if (finished && finished.trim() && !isOnlyAQuestion(finished)) text = finished;
+      }
+    }
+    // Before the empty-reply rescue below, so an echo falls through to it
+    // rather than being shown.
+    if (text && echoesUser(text, input)) {
+      console.log(C.amber("  [reply was her own message read back — dropped]"));
+      text = "";
+    }
     // Every reply must end on a question — it is how the coach leads. When the
     // model does not manage one, append the area's own rather than strand her.
     // No longer forces a question. An answer that ends on the advice is a
@@ -1353,8 +1831,19 @@ async function main() {
     // fallback is kept for the one case that still needs rescuing: a reply
     // left empty after the guards have stripped it.
     if (!text || !text.trim()) {
-      console.log(C.amber("  [nothing survived the guards — using the area's question]"));
-      text = FALLBACK_QUESTION;
+      // `wrappedUp` is set by the stall divert, but the classifier can put her
+      // in the wrap-up stage on its own — and then the guards can still strip
+      // the reply to nothing, which is exactly what happened on a live check:
+      // she said "okay that actually makes sense", was correctly classified
+      // stage C, and got "What feels true for you right now?" back. Being IN
+      // the wrap-up stage is the same condition as having been sent there.
+      if (state.wrappedUp || placed.stage === WRAP_UP) {
+        console.log(C.amber("  [nothing survived the guards — offering to finish]"));
+        text = WRAP_UP_LINE;
+      } else {
+        console.log(C.amber("  [nothing survived the guards — using the area's question]"));
+        text = FALLBACK_QUESTION;
+      }
     }
     if (capped) console.log(C.amber("  [sentence cap fired — the model wrote a rundown]"));
 

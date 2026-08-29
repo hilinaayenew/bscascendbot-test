@@ -36,6 +36,19 @@ import { KNOWLEDGE_BASE, TOPIC_CATEGORIES, GENERAL_FALLBACK } from "./bsc-knowle
 
 const ADVISE_SYSTEM_PROMPT = `You are the BSC AI Career Coach. Answer in first person, empathetic and practical. No markdown formatting. Never start your answer with a filler acknowledgment like "Great question," "Good question," or "Nice" — get straight to the point. Default to a short, direct answer — a sentence or two, or a short paragraph at most. The knowledge below may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} Otherwise, only give a longer, more detailed explanation if the question genuinely needs it, or the user asks you to explain more or go deeper — ${LONG_FORM_ESCAPE_HATCH} ${NO_INVENTED_FIGURES} ${STAND_WITH_HER} ${NEVER_DISCOUNT_HER_PLACE} ${REFLECT_BACK} ${NEVER_OFFER_TO_ACT} ${PLAIN_LANGUAGE} ${ASK_WITHOUT_EXTRACTING} Always end with a question that invites the user to share more about their situation. If the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.`;
 
+// Reasoning effort. gpt-5-nano reasons at roughly medium if left alone, and
+// for generation that is waste — the prompt carries the persona, the knowledge
+// and the rules, so the job is to follow a template in a voice, not to work
+// anything out. Measured on a real 19,902-character prompt: default spent
+// 1,344 tokens on hidden reasoning and took 7.3s; "low" spent 128 and took
+// 2.4s for an answer with the same substance. "minimal" was faster still and
+// started asserting things the user had not said, so low it is.
+//
+// It also removes the empty-content retry below at its source: a 2,000-token
+// budget came back with nothing because most of it went on reasoning before a
+// word was written.
+const REASONING_EFFORT = "low";
+
 // Single Azure OpenAI chat-completions call. Returns null content (not a
 // thrown error) if the API responded OK but with no visible text — that
 // happens when gpt-5-nano, a reasoning model, spends its whole token budget
@@ -51,7 +64,7 @@ async function callAzureOnce(
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json", "api-key": azure.apiKey },
-    body: JSON.stringify({ messages, max_completion_tokens: maxTokens }),
+    body: JSON.stringify({ messages, max_completion_tokens: maxTokens, reasoning_effort: REASONING_EFFORT }),
   });
   const data = await res.json();
   if (!res.ok) { console.error("Azure OpenAI error:", data); throw new Error("Azure OpenAI call failed"); }

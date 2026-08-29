@@ -3365,6 +3365,25 @@ If you've got a tech career question, bring it — I'll give you my honest take.
       <p class="prompt-intro">Assembled fresh for every turn by <code>wordalise()</code> in <code>scripts/coach-local.mjs</code>. Nothing here is a constant you can read in one place &mdash; the prompt is built from the area config, the stage the classifier just chose, what the coach has learned about her, and the seven examples scoped to that stage. This is the prompt to change when an area's replies are the wrong shape.</p>
 
       <div class="banner spec">
+        <strong>The model is told not to think hard about this.</strong> <span class="st changed">CHANGED 29 Aug</span> <code>gpt-5-nano</code> is a reasoning model and reasons at roughly medium unless told otherwise. For generation that is mostly waste &mdash; the prompt already carries the persona, the stage, seven worked examples and twenty rules, so the job is to follow a template in a voice, not to work anything out. Measured on a real 19,902-character prompt, same messages, same budget:
+        <div class="table-wrap" style="margin:12px 0 0">
+          <table class="order">
+            <thead><tr><th><code>reasoning_effort</code></th><th>Time</th><th>Reasoning tokens</th><th>Completion tokens</th></tr></thead>
+            <tbody>
+              <tr><td>minimal</td><td>1,437ms</td><td>0</td><td>116</td></tr>
+              <tr><td><strong>low</strong> &mdash; what generation uses</td><td>2,448ms</td><td>128</td><td>270</td></tr>
+              <tr><td>medium</td><td>7,169ms</td><td>1,728</td><td>1,858</td></tr>
+              <tr><td>default (no setting)</td><td>7,314ms</td><td>1,344</td><td>1,461</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <br>
+        <strong>Low rather than minimal, and the reason is quality not cost.</strong> Three runs of scenario 03 at each. At minimal the opening turn twice asserted things she had not said &mdash; one reply opened <em>&ldquo;You're carrying the weight of being interrupted, ignored, or having ideas credited to someone else&rdquo;</em> on a message that mentioned none of that. At low, three runs opened three different ways, all straight into advice, none inventing anything. That second of thinking is the difference between answering her and answering the examples.
+        <br><br>
+        The five-turn conversation now runs in <strong>34 seconds against about three minutes</strong>, and both retry ladders stopped firing entirely &mdash; the reason a 2,000-token budget came back empty was 1,344 of it going on hidden reasoning before a word was written. The profile note runs at <code>minimal</code>, since it is transcription. <strong>Classification is left at the default on purpose:</strong> it is the one call that is a judgement rather than a transcription, and everything else in the turn depends on it being right.
+      </div>
+
+      <div class="banner spec">
         <strong>Three calls a turn, and the middle one should usually not happen.</strong> <span class="st changed">CHANGED 29 Aug</span> Classify, rewrite the note about her, generate the reply. The note was being rewritten on every turn, gated on the classifier's <code>newInformation</code> flag &mdash; but that flag exists for the stall rule and is deliberately broad, counting &ldquo;a genuinely new question she hasn't asked before&rdquo; as forward motion. So &ldquo;so what should I actually do&rdquo; moved the conversation on, scored true, and triggered a rewrite of a note it had nothing to add to.
         <br><br>
         Two different questions were sharing one answer, so they now have two. <code>newProfileFacts</code> is a separate flag, and it names what counts: her role, seniority, employer or team, place, pay, education, what she is trying to reach, what is blocking her, what she has already tried, or a constraint on any of it. Asking a question, agreeing, thanking, or restating a feeling already recorded is false. On a turn where it is false the coach does not make the call at all.

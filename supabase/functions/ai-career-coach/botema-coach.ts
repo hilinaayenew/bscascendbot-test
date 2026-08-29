@@ -7,6 +7,19 @@ import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./b
 import { KNOWLEDGE_BASE, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT, BOTEMA_VALUES } from "./botema-examples.ts";
 
+// Reasoning effort. gpt-5-nano reasons at roughly medium if left alone, and
+// for generation that is waste — the prompt carries the persona, the knowledge
+// and the rules, so the job is to follow a template in a voice, not to work
+// anything out. Measured on a real 19,902-character prompt: default spent
+// 1,344 tokens on hidden reasoning and took 7.3s; "low" spent 128 and took
+// 2.4s for an answer with the same substance. "minimal" was faster still and
+// started asserting things the user had not said, so low it is.
+//
+// It also removes the empty-content retry below at its source: a 2,000-token
+// budget came back with nothing because most of it went on reasoning before a
+// word was written.
+const REASONING_EFFORT = "low";
+
 // Single Azure OpenAI chat-completions call. Returns null content (not a
 // thrown error) if the API responded OK but with no visible text — that
 // happens when gpt-5-nano, a reasoning model, spends its whole token budget
@@ -22,7 +35,7 @@ async function callAzureOnce(
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json", "api-key": azure.apiKey },
-    body: JSON.stringify({ messages, max_completion_tokens: maxTokens }),
+    body: JSON.stringify({ messages, max_completion_tokens: maxTokens, reasoning_effort: REASONING_EFFORT }),
   });
   const data = await res.json();
   if (!res.ok) { console.error("Azure OpenAI error:", data); throw new Error("Azure OpenAI call failed"); }

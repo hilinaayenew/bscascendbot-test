@@ -60,6 +60,42 @@ const AZURE = {
 
 const DRY = process.argv.includes("--dry") || !AZURE.endpoint || !AZURE.apiKey;
 
+// ── How hard the model should think, per kind of call ──────────────────────
+// gpt-5-nano is a reasoning model and, left alone, reasons at roughly medium.
+// For generation that is mostly waste: the prompt already carries the persona,
+// the stage, seven worked examples and twenty rules, so there is nothing to
+// work out — the job is to follow a template in a voice. Measured on a real
+// 19,902-character generation prompt from scenario 03, identical messages and
+// budget:
+//
+//     minimal   1,437ms      0 reasoning tokens    116 completion
+//     low       2,448ms    128 reasoning tokens    270 completion
+//     medium    7,169ms  1,728 reasoning tokens  1,858 completion
+//     default   7,314ms  1,344 reasoning tokens  1,461 completion
+//
+// `low`, not `minimal`, and the difference is quality rather than cost. Three
+// runs of scenario 03 at each: at minimal the opening turn twice asserted
+// things she had not said — one reply opened "You're carrying the weight of
+// being interrupted, ignored, or having ideas credited to someone else" on a
+// message that mentioned none of those. At low, three runs opened three
+// different ways, all straight into advice, none inventing anything. The
+// second-and-a-bit of thinking is buying the difference between answering her
+// and answering the examples.
+//
+// The whole five-turn conversation now runs in ~34 seconds against ~3 minutes,
+// and the retry ladders stopped firing altogether: the reason a 2,000-token
+// budget used to come back empty was 1,344 of it going on hidden reasoning
+// before a word was written.
+//
+// The profile note is at minimal because it genuinely is transcription — copy
+// the note forward, fold in anything new, invent nothing.
+//
+// Classification is left at the model default deliberately. It is the one call
+// that is a judgement rather than a transcription — which stage, has she left,
+// was something actually done to her — and every other call depends on it
+// being right. Cheapening it to save two seconds is the wrong trade.
+const REASONING = { generate: "low", profile: "minimal", classify: null };
+
 // --dump=<path> writes every request this harness sends to Azure, as JSONL,
 // with the messages array verbatim. Added because "what is actually in the
 // prompt" is otherwise only answerable by reading wordalise() and simulating
@@ -77,6 +113,7 @@ function recordCall(messages, opts) {
     turn: dumpTurn,
     call: dumpLabel,
     maxTokens: opts.maxTokens,
+    reasoningEffort: opts.reasoning || "(model default)",
     tools: opts.tools ? opts.tools.map((t) => t.function.name) : null,
     messages,
   }) + "\n");
@@ -635,10 +672,11 @@ function stripFigures(text) {
 
 // ── Azure ───────────────────────────────────────────────────────────────────
 
-async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1 } = {}) {
-  if (attempt === 1) recordCall(messages, { tools, maxTokens });
+async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1, reasoning } = {}) {
+  if (attempt === 1) recordCall(messages, { tools, maxTokens, reasoning });
   const url = `${AZURE.endpoint.replace(/\/?$/, "/")}openai/deployments/${AZURE.deployment}/chat/completions?api-version=${AZURE.apiVersion}`;
   const body = { messages, max_completion_tokens: maxTokens };
+  if (reasoning) body.reasoning_effort = reasoning;
   if (tools) { body.tools = tools; body.tool_choice = "required"; body.parallel_tool_calls = false; }
 
   // Transient network failures happen — two in one five-turn run left two
@@ -653,7 +691,7 @@ async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1 } = {}
   } catch (err) {
     if (attempt < 3) {
       await new Promise((r) => setTimeout(r, 800 * attempt));
-      return callAzure(messages, { tools, maxTokens, attempt: attempt + 1 });
+      return callAzure(messages, { tools, maxTokens, attempt: attempt + 1, reasoning });
     }
     throw err;
   }
@@ -669,7 +707,7 @@ async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1 } = {}
     // and it did so on the last turn of two conversations, both times on the
     // decision she had come for. Same retry, same reason.
     if (!call) {
-      if (maxTokens < 12000) return callAzure(messages, { tools, maxTokens: maxTokens * 2 });
+      if (maxTokens < 12000) return callAzure(messages, { tools, maxTokens: maxTokens * 2, reasoning });
       return null;
     }
     // A tool call that arrives TRUNCATED is the same failure as one that never
@@ -685,7 +723,7 @@ async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1 } = {}
     } catch {
       if (maxTokens < 12000) {
         console.log(C.dim(`  [tool arguments truncated at ${maxTokens} tokens (finish_reason: ${choice?.finish_reason || "unknown"}) — retrying at ${maxTokens * 2}]`));
-        return callAzure(messages, { tools, maxTokens: maxTokens * 2 });
+        return callAzure(messages, { tools, maxTokens: maxTokens * 2, reasoning });
       }
       return null;
     }
@@ -693,7 +731,7 @@ async function callAzure(messages, { tools, maxTokens = 2000, attempt = 1 } = {}
   // gpt-5-nano can spend the whole budget on hidden reasoning and return
   // nothing — retry once at double, same as callAzure() in the real function.
   if (!choice?.message?.content && maxTokens < 12000) {
-    return callAzure(messages, { maxTokens: maxTokens * 2 });
+    return callAzure(messages, { maxTokens: maxTokens * 2, reasoning });
   }
   return choice?.message?.content || null;
 }
@@ -821,8 +859,24 @@ function echoesUser(text, message) {
 // where she has actually been treated badly — which is what the classifier's
 // reportsExternalTreatment answers, and the only reason this can be decided in
 // code at all.
-const ACKNOWLEDGING_OPENER =
-  /^\s*(?:that|this|it)\b[^.!?]{0,60}?\b(?:is|are|'s)\s+(?:a\s+)?(?:real|very real|normal|common|documented|understandable|valid|fair|tough|hard)\b|^\s*(?:i hear you|i know that feeling|you'?re not alone|you'?re not imagining|it'?s not just you|that'?s fair|you are not alone|that sounds|i understand)\b/i;
+// Matched on the SENSE of the sentence rather than its first two words. Every
+// tightening of a word-list version was answered with another wording:
+// "That pattern is real and you're not imagining it", "You're not imagining
+// it — speaking up is a real hurdle many women face", "You're not alone —
+// holding back in meetings happens to many women in tech", "What you're
+// describing is real and common in our spaces". So: does the opening sentence
+// assert that her experience is real, common, normal or not her fault, or is
+// it one of the stock acknowledgements? Either way it is the same move.
+//
+// A false positive costs one dropped sentence and the advice still lands.
+// This only ever runs when the classifier has said nothing was done to her,
+// so the earned case — "being talked over is well documented" — never reaches
+// it.
+const ACKNOWLEDGING_OPENER = new RegExp(
+  "^\\s*(?:i hear you|i know that feeling|you'?re not alone|you are not alone|you'?re not imagining|it'?s not just you|that'?s fair|that sounds|i understand)\\b" +
+  "|^[^.!?]{0,120}?\\b(?:is|are|'s)\\s+(?:a\\s+|so\\s+|very\\s+|completely\\s+|entirely\\s+)*(?:real|normal|common|natural|understandable|valid|fair|not your fault|not a failure|nothing to be ashamed)\\b",
+  "i",
+);
 
 function stripUnearnedValidation(text) {
   const sentences = text.match(/[^.!?]+[.!?]*/g) || [];
@@ -936,7 +990,7 @@ async function updateProfile(message, history) {
     // prompt, so three round trips cost three times the input tokens as well
     // as the latency. Measured over scenario 03, the note succeeded at 2400
     // once and at 4800 twice; starting there makes it one call.
-  ], { maxTokens: 4800 });
+  ], { maxTokens: 4800, reasoning: REASONING.profile });
   if (!out) return;
 
   const parts = out.split(/\n\s*\n/).map((p) => p.replace(/^\s*(?:\d[.)]\s*)?(?:WHERE SHE IS|WHAT SHE IS TRYING TO DO)\s*:?\s*/i, "").trim());
@@ -1045,7 +1099,7 @@ async function classify(message, history, covered, maxTokens = 2000) {
     { role: "system", content: sys },
     ...history.slice(-10),
     { role: "user", content: message },
-  ], { tools: CLASSIFY_TOOL, maxTokens });
+  ], { tools: CLASSIFY_TOOL, maxTokens, reasoning: REASONING.classify });
 }
 
 // ── Generation: stage-scoped wordalisation ──────────────────────────────────
@@ -1380,7 +1434,7 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     { role: "system", content: sys },
     ...history.slice(-10),
     { role: "user", content: message },
-  ], { maxTokens: search ? 6000 : 2000 });
+  ], { maxTokens: search ? 6000 : 2000, reasoning: REASONING.generate });
 }
 
 // ── State: the in-memory equivalent of the migration ────────────────────────

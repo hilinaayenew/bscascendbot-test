@@ -1,6 +1,6 @@
 # Wants to work on speaking-up confidence, until it turns out one specific meeting is the problem
 
-_Run 2026-08-28 22:02 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-01 12:08 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Starts in stage B (a stalled action — speaking up), and once she narrows it to a specific, repeated pattern in one meeting, draws on S3a rather than continuing to coach it as a general confidence skill.
 
@@ -12,57 +12,79 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I keep chickening out of speaking up in meetings, so half the time I just stay quiet instead
-  [stage B — You stated that fear/doubt is causing you to not speak up in meetings (a concrete action being blocked).]
+  [stage B — User describes self-doubt causing not speaking up in meetings (concrete action affected).]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
-  [second question dropped — one per reply]
-  [sentence cap fired — the model wrote a rundown]
+  [validating opener dropped — she described herself, not something done to her]
   [drew on S3, S4, G4 — 2 Otema, 1 drafted]
   [voice only: G2, S3a, S3c, S3b]
 
 Botema
-  I hear you. That pattern is real and common for women in tech, and you’re
-  not alone. Which meeting would you try this in first?
+  I would always recommend you prep one concrete, value-adding sentence you
+  can drop in early in the discussion, using a phrase like “I’d like to add…”
+  and keep it to 15–20 seconds. Does that feel like something you could
+  actually try in your next meeting?
 
   you > actually, thinking about it more, it's really just one specific meeting — every time I try to say something there, someone repeats it back a minute later as their own idea
-  [stage B — User clarified a specific meeting where their contributions are being claimed by others, which shows a concrete action (speaking up) is stalled due to the incident, not just a general feeling.]
+  [stage B — The user is describing external behavior in a specific meeting that affects speaking up; not leaving the area.]
+  [no new facts about her — note left alone, no call made]
   [drew on S3a, S3b, S3c — 0 Otema, 3 drafted]
   [voice only: S3, G4, G2, S4]
 
 Botema
-  That pattern is real and not your imagination. In that meeting, try a calm
-  cue to finish your point when interrupted (for example, “I’d like to finish
-  my point”) and, after the session, send a brief note to the chair asking for
-  attribution in the minutes; if it continues, pre-brief the host to adopt a
-  simple credit rule. Does that feel like something you could try in that next
-  session?
+  That pattern is real and you’re not imagining it—the same meeting-room
+  dynamic where ideas are attributed to others is well documented. In the
+  moment, try a crisp reclaim like, “I’d like to finish my point about X,”
+  then proceed; would that be something you could test in that meeting next
+  time?
 
   you > it's happened at least four times now, always the same person
-  [stage B — User describes a concrete barrier (same person consistently taking credit for speaker's ideas) that blocks them from speaking up, not just a feeling.]
+  [stage B — User reports recurring external attribution of her ideas by the same person, creating a concrete barrier to speaking up.]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
   [repeated-opener guard fired — a reused opening clause was dropped]
-  [repeated advice removed]
-  [reply was entirely repetition — treating as a stall]
-  [nothing survived the guards — using the area's question]
   [drew on S3a, G2, G4 — 0 Otema, 3 drafted]
-  [voice only: S3, S3c, S3b, S4]
+  [voice only: S3, S4, S3b, S3c]
 
 Botema
-  What feels true for you right now?
+  In the moment, you can preface with a brief flag like, “That was my point
+  about X; I’d like to finish it,” then move on, or quickly re-state your line
+  and attribute it to you, not them. If it keeps happening, name the pattern
+  to the meeting lead or note-taker and ask them to track attribution next
+  time. Does that feel doable in that room?
 
   you > I'm not sure this is really a confidence problem anymore
-  [stage leaving — User says it's not a confidence issue anymore and needs support beyond imposter syndrome; likely workplace wellbeing/balance and boundary setting.]
-
-  → closeDiscussionArea() — classified as leaving → area 5 · Wellbeing & Balance
+  [stage B — The user signals that the root blocker may be external (not a confidence issue), shifting focus from internal self-doubt to external dynamics.]
+  [no new facts about her — note left alone, no call made]
+  [drew on S3a, S3, G4 — 1 Otema, 2 drafted]
+  [voice only: S3c, S3b, G2, S4]
 
 Botema
-  Of course — let's get into wellbeing & balance.
+  This isn’t a confidence problem, it’s a repeatable pattern of attribution
+  that you’re witnessing in that room—and that’s real. What I’d do next is two
+  things: in the moment, reclaim your line clearly, and after the meeting,
+  raise it with the facilitator or note-taker so they track who said what. Do
+  you want me to draft a one-minute script you can use verbatim in that
+  meeting?
+
+  you > so what do I actually do about it
+  [stage B — User asked for concrete steps to address ongoing attribution of her ideas in a specific meeting; needs actionable plan.]
+  [no new facts about her — note left alone, no call made]
+  [repeated-opener guard fired — a reused opening clause was dropped]
+  [drew on S3a, S3, G4 — 1 Otema, 2 drafted]
+  [voice only: S3b, G2, S3c, S4]
+
+Botema
+  Would you like me to tailor a one-minute script for your exact topic so you
+  can drop it in flat, no-nonsense next time?
+
+  you > quit
 
   ── state ─────────────────────────────────────────────
-  active_area     none
+  active_area     6 · Confidence & Imposter Syndrome
   covered_stages  B
   touched_facets  S3, S3b, S3c, S4, G2, G4, S3a
-  closed_areas    6
+  closed_areas    —
   role/location   — / —
-  trying to do    She is trying to change the pattern of staying quiet in meetings and speak up more, focusing on one specific meeting. The obstacle is fear or nerves about speaking up in front of others, and that in that meeting someone repeats her words a minute later and presents them as their own idea. It has happened at least four times now, always the same person. She has not described any strategies tried yet.
+  trying to do    — She is a professional seeking to speak up in meetings without having her ideas attributed to others, specifically in a recurring scenario where the same person consistently repeats her points as their own. She wants to reclaim ownership of her contributions and ensure her points are recognized in the moment. Her latest message notes that this has happened at least four times, always with the same person, and she has not yet described what she has tried in concrete terms beyond the general approach.
 
   Nothing was written to any database.
 ```

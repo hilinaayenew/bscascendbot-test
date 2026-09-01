@@ -1,6 +1,6 @@
 # Feeling like she doesn't belong, then naming a promotion she hasn't applied for
 
-_Run 2026-08-29 04:29 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-01 12:08 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stays in stage A while she's processing the feeling on its own, then moves to stage B once she names a concrete decision the feeling has stalled — without dismissing the feeling once it turns out to be attached to something real.
 
@@ -12,70 +12,77 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I constantly feel like I don't belong in this field
-  [stage A — User expresses a feeling of not belonging, fitting Stage A (imposter feelings) and not a decision to act yet.]
+  [stage A — User is expressing ongoing imposter feelings with no action blocked yet.]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
-  [sentence cap fired — the model wrote a rundown]
+  [no new facts about her — note left alone, no call made]
+  [validating opener dropped — she described herself, not something done to her]
   [drew on S1, G5, S2 — 2 Otema, 1 drafted]
-  [voice only: S5, G10, G8, G1]
+  [voice only: G1, G7, S1b, G3]
 
 Botema
-  That feeling is real, and you’re not alone—many women in tech across Africa
-  wrestle with it. It’s not a judge on your competence; it’s a signal to build
-  a support network and a few small, provable wins you own. Does that feel
-  doable for you, and if so, what one small win could you claim this week?
+  Feeling like you don’t belong in tech is incredibly common for women here,
+  not a personal flaw—you’re up against a field that’s still slowly changing
+  its culture, not you. What I’d do next: pick one small thing you can own
+  this week—log one win, ask one question in a meeting, or reach out to a
+  mentor or sister in tech for coffee. Does one of those feel doable for you
+  this week?
 
   you > everyone around me seems so much more sure of themselves than I am
-  [stage A — The user expresses ongoing self-doubt and a comparison with others, which fits Stage A (feeling to work through) rather than taking action.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
-  [drew on S1, G9, G10 — 1 Otema, 2 drafted]
-  [voice only: G1, G6, S5a, S5]
+  [classification missing/invalid stage "undefined" — retrying once at double the token budget]
+  [stage A — Expression of internal comparison and imposter feelings with no action, fits Stage A.]
+  [no new facts about her — note left alone, no call made]
+  [repeated advice removed]
+  [drew on S1, G10, G7 — 1 Otema, 2 drafted]
+  [voice only: G1, G5, G6, S5]
 
 Botema
-  I’d start with one small, public move this week: share a concise update in a
-  team meeting, including your reasoning and the concrete next step you’ll
-  take. Which meeting would you try it in first?
+  That impression is incredibly common in tech, especially for
+  women—confidence on the outside often hides the same inner dialogue you’re
+  having. What matters is what you show up with, not how loud the doubt
+  sounds. Which one feels most doable for you right now?
 
   you > there's actually a promotion open right now and I haven't put my name forward because of exactly this feeling
-  [stage B — User hasn't applied for promotion due to self-doubt; action is blocked by imposter feelings.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
+  [stage B — The user is delaying applying for a promotion due to self-doubt, i.e., a concrete action (applying) is being blocked by imposter syndrome.]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
+  [validating opener dropped — she described herself, not something done to her]
+  [repeated advice removed]
+  [second question dropped — one per reply]
   [drew on G2, S3b, S4 — 1 Otema, 2 drafted]
   [voice only: S3a, S3, G4, S3c]
 
 Botema
-  Promotions go to those who show up with potential and impact, not people who
-  wait until they feel perfectly ready. I’d push you to name yourself and
-  present a tight 3-bullet case: what you’ve delivered, what you’d deliver in
-  6–12 months if promoted, and what you need to succeed. Want me to help you
-  draft that case so you can submit today?
+  In my experience, you apply to keep the door open even when you’re not 100%
+  sure—they hire for potential and for what you can learn next, not a perfect
+  snapshot of today. What I’d do now: write a 2–3 line case for why you
+  deserve it, focusing on what you’ve shipped, what you’ve learned, and what
+  you’d tackle next in that role, and put your name forward. Does that feel
+  doable this week?
 
   you > I keep telling myself I'm just not ready for it yet
-  [stage B — User expresses self-doubt behind applying for promotion; not taking concrete action.]
+  [stage B — User expresses self-doubt that is preventing taking action (not applying for promotion).]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
+  [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
-  [sentence cap fired — the model wrote a rundown]
   [drew on G2, G4, S3a — 0 Otema, 3 drafted]
   [voice only: S3, S3b, S4, S3c]
 
 Botema
-  That feeling is exactly what impostor syndrome sounds like—and it’s common.
-  Readiness is proven by your plan and your results, not by a mood. What are
-  two concrete wins you can cite from the last 6 months, and by what date will
-  you submit?
+  What I would do next is: draft a 2–3 sentence case for why you deserve the
+  promotion (shipments, learnings, and concrete plan for the role) and submit
+  your name this week anyway. What is the smallest, truly doable piece you
+  could commit to delivering in the next two weeks to back up that pitch?
 
   you > so what should I actually do
-  [stage B — User asked for concrete actions to move past self-doubt and apply for promotion; this is action-focused (stage B).]
-  [repeated-opener guard fired — a reused opening clause was dropped]
-  [second question dropped — one per reply]
+  [stage B — User is asking for concrete actions to overcome self-doubt that is blocking applying for a promotion.]
+  [no new facts about her — note left alone, no call made]
+  [repeated advice removed]
   [drew on G2, S3b, S4 — 1 Otema, 2 drafted]
   [voice only: G4, S3a, S3c, S3]
 
 Botema
-  Do this now: draft a tight 3-bullet case for the promotion (1) your two
-  strongest outcomes that map to the role, with a quick metric, (2) what you’d
-  deliver in 6–12 months if promoted, and (3) what you need to succeed; map
-  two concrete wins from the last 6–12 months to the role; write a concise
-  submission (250–350 words); get fast feedback from 1–2 trusted colleagues or
-  a mentor, refine, and submit by the deadline; and be ready to speak to your
-  plan in a short interview if asked. Which two wins will you highlight?
+  If you want a quick win, add two bullets of recent impact and one clear
+  next-step you’d own in the new role, then run it by a trusted mentor for
+  quick feedback. Does that feel doable this week?
 
   you > quit
 
@@ -85,8 +92,8 @@ Botema
   touched_facets  S1, S1b, S2, S5, S5a, G1, G3, G5, G6, G7, G8, G9, G10, S1a, S3, S3b, S3c, S4, G2, G4, S3a
   closed_areas    —
   role/location   — / —
-  where she is    There is a promotion open right now, and she has not put her name forward because of the feeling that she doesn't belong and lacks confidence. She keeps telling herself she isn't ready for it yet.
-  trying to do    She wants to apply for the open promotion and move toward a higher role. The barrier is that she keeps telling herself she’s not ready for it yet, and that everyone around her seems more sure of themselves, which makes her hesitate. She has not tried applying yet because of this feeling. She asked what she should actually do.
+  where she is    — A mid-level professional in tech, in a place where advancement opportunities exist but she is currently hesitant to pursue them, and she has not yet submitted for the open promotion.
+  trying to do    — she wants to move into the promotion, but the fear of not being ready holds her back; she has tried reframing the doubt and considering small steps like applying despite insecurity, but she has not taken action yet for this opportunity. NONE
 
   Nothing was written to any database.
 ```

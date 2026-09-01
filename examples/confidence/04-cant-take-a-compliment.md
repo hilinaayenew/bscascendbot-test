@@ -1,6 +1,6 @@
 # Doesn't believe positive feedback and never counts her own wins either
 
-_Run 2026-08-28 22:02 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-01 12:08 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stays in stage A while nothing is named as stalled, and gives a concrete practice (writing wins down, naming what was actually said) rather than just reassurance that she's good enough.
 
@@ -12,67 +12,73 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I got really positive feedback on a project recently but I don't actually believe it
-  [stage A — User expresses discounting positive feedback as if it's not deserved, which is a feeling being worked through rather than a concrete action.]
+  [stage A — User expresses disbelief about positive feedback, indicating impostor syndrome but not taking action yet.]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
-  [numbered rundown flattened — it was a list]
-  [sentence cap fired — the model wrote a rundown]
+  [no new facts about her — note left alone, no call made]
+  [validating opener dropped — she described herself, not something done to her]
   [drew on S5, S1a, S1 — 2 Otema, 1 drafted]
-  [voice only: G1, G10, G7, S1b]
+  [voice only: G5, G10, G7, G6]
 
 Botema
-  That kind of positive feedback can feel inauthentic when you’re not used to
-  hearing it about your own work, but it’s real and common for women in tech.
-  I’d keep it simple and concrete. Would you be willing to try those three
-  steps this week?
+  Imposter feelings love company, but the concrete praise you got is evidence
+  you did real work. I would take it as a data point to anchor your own sense
+  of competence, and pair it with a quick note: what exactly did they
+  highlight, what did you contribute, what impact did it have? What one
+  concrete thing in that feedback would you want to own and carry into your
+  next project?
 
   you > I just assume they're being nice, or that it went well by luck
-  [stage A — The user expresses doubt about feedback and discounts praise, which is a feeling being worked through without concrete action.]
-  [drew on G1, G8, S1b — 0 Otema, 3 drafted]
+  [stage A — She expressed imposter feelings about praising feedback—no action, just belief.]
+  [no new facts about her — note left alone, no call made]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G1, G8, G6 — 0 Otema, 3 drafted]
   [voice only: S5a, S1, S2, G10]
 
 Botema
-  That doubt is real and common for women in tech—feedback often lands as luck
-  or niceness when you’re already doubting yourself. Try this: when someone
-  praises you, thank them and name the concrete work you did, then ask for one
-  specific example of what stood out so you can anchor it to your effort.
-  Would you try that with the next piece of feedback you get and tell me what
-  you hear?
+  That line of thinking is exactly what imposter syndrome feeds on—praise
+  feeling like luck or politeness, not real impact. I’d treat the feedback as
+  evidence of your doing real work and pull out one concrete detail you can
+  own going forward. Does that feel like something you could act on this week?
 
   you > honestly this happens pretty much every time someone compliments my work
-  [stage A — User repeats discounting positive feedback; ongoing pattern of imposter feelings without concrete action.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
-  [drew on G1, G7, G5 — 0 Otema, 3 drafted]
-  [voice only: S1b, G3, G6, S5]
+  [stage A — User expresses ongoing imposter feelings with compliments, not a concrete next step; keeps within A stage.]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
+  [validating opener dropped — she described herself, not something done to her]
+  [repeated advice removed]
+  [drew on G1, S1b, G7 — 0 Otema, 3 drafted]
+  [voice only: S5a, S5, G5, G6]
 
 Botema
-  A practical anchor is: “Thank you — I put real work into X, like Y.” Would
-  you try that the next time you’re praised and tell me what concrete detail
-  you anchored to?
+  It’s not you failing to internalise praise; it’s a common response to being
+  under constant scrutiny. I’d suggest you pick the most recent compliment,
+  write down exactly what you did, the impact, and one concrete thing you’ll
+  own from it this week.
 
   you > and I don't really keep track of my own wins either, I just forget about them
-  [stage A — User states she doesn’t keep track of her wins, which is a new self-management behavior related to confidence; fits stage A (feeling/problem without a concrete action being stalled).]
-  [drew on G1, G6, G10 — 0 Otema, 3 drafted]
-  [voice only: S5, G3, G8, G9]
+  [stage A — User is describing a pattern (forgetting wins) that keeps imposter syndrome alive; still in development phase, not yet acting on a plan.]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G1, G10, S5a — 0 Otema, 3 drafted]
+  [voice only: S2, S1, G9, G8]
 
 Botema
-  You're not alone—forgetting our wins is common, especially when you're in
-  the thick of things. I’d start with a tiny habit: a five-minute weekly recap
-  where you jot one concrete outcome you delivered, the skill that carried
-  you, and one lesson learned, all in a single line or quick note. Does that
-  feel doable for you this week?
+  That pattern is exactly how imposter feelings hide in plain sight. I would
+  start a simple wins log you actually use: one line per task, what you did,
+  the impact, and a concrete takeaway you own next time. What was your last
+  small win you could log right now?
 
   you > how do I actually get better at this
-  [stage A — User asked for concrete steps to improve handling feedback and recognizing wins, which is a progression in the Confidence & Imposter Syndrome area and indicates they are seeking actionable strategies.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
+  [stage A — User is asking for actionable steps to improve imposter syndrome in the Confidence & Imposter Syndrome area.]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
   [repeated advice removed]
-  [drew on G1, S1b, S5a — 0 Otema, 3 drafted]
-  [voice only: S5, G9, G3, G6]
+  [drew on G1, G5, S1b — 0 Otema, 3 drafted]
+  [voice only: S2, G8, G10, G3]
 
 Botema
-  Try a tiny habit: each week write one line with the outcome, the skill you
-  used, and the result; when praised, respond with “thank you — I put real
-  work into X, which led to Y,” then keep a one-minute impact summary you can
-  pull out in conversations.
+  What you’re asking for is a skill you get better at with practice and a
+  simple system you actually use. Do that for a week, then review it with a
+  trusted mentor or peer to reinforce the pattern. Does that feel doable for
+  you this week?
 
   you > quit
 
@@ -82,7 +88,6 @@ Botema
   touched_facets  S1, S1b, S2, S5, S5a, G1, G3, G5, G6, G7, G8, G9, G10, S1a
   closed_areas    —
   role/location   — / —
-  trying to do    She wants to get better at turning feedback into real evidence of her contributions, so she can believe the positive things she hears. She is hindered by believing praise is niceness or luck and by forgetting her own wins. She has not described any concrete steps she tried yet. She asked how to actually get better at this.
 
   Nothing was written to any database.
 ```
@@ -96,7 +101,7 @@ Botema
 - PASS — most replies still end on a question
 - PASS — no two replies open with the same construction
 - PASS — "that ... is real/common" used at most once
-- PASS — never stacks two questions into one ending
+- **FAIL** — never stacks two questions into one ending
 - PASS — at least one ending is a light check she can answer with yes or no
 - PASS — no reply stacks more than two jargon terms
 

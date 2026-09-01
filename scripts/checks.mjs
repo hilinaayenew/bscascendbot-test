@@ -170,8 +170,16 @@ export function maxQuestionsPerReply(out) {
 // ordinary ending; this is the check that they actually appear.
 const LIGHT_CHECK =
   /\b(?:does|do|is|are|would|will|can|could|has|have|did|shall|should|any)\b[^.!?]{0,70}\?\s*$/i;
+// Was a fixed phrase list -- "Does that approach feel actionable for you in
+// that room?" failed because "actionable" wasn't one of the listed
+// adjectives, even though the sentence is exactly the shape this check
+// exists to find. Same bug a second time: "How does that sound for a plan
+// you can try this week?" failed because "for" isn't "right/good/ok/okay".
+// "feel \w+" and "sound(?:s)? \w+" generalise both families instead of
+// enumerating adjectives one at a time; the specific phrases stay for the
+// checks that aren't a bare "feel X" / "sound X".
 const LIGHT_CHECK_WORDS =
-  /\b(?:make sense|makes sense|sound(?:s)? (?:right|good|ok|okay)|sit with you|feel like something|feel right|feel doable|work for you|what do you think|the bit you'?re stuck on|anything else|got a plan|covered that|helpful)\b/i;
+  /\b(?:make sense|makes sense|sound(?:s)? \w+|sit with you|feel \w+|work for you|what do you think|the bit you'?re stuck on|anything else|got a plan|covered that|helpful)\b/i;
 
 export function lightChecks(out) {
   return replyOf(out).split("\n\n").filter(Boolean)

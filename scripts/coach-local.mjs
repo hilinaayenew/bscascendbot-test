@@ -1032,8 +1032,10 @@ async function updateProfile(message, history) {
   const parts = out.split(/\n\s*\n/).map((p) => p.replace(/^\s*(?:\d[.)]\s*)?(?:WHERE SHE IS|WHAT SHE IS TRYING TO DO)\s*:?\s*/i, "").trim());
   // A placeholder stored as content is worse than an empty field: it reads as
   // something known. Observed once — "(no information provided in this
-  // message)" sitting where her aims should be.
-  const real = (p) => p && !/^\(?\s*(?:none|n\/a|unknown|no information|nothing)\b/i.test(p.trim());
+  // message)" sitting where her aims should be. Observed again as "— NONE" —
+  // the model prefixing the instructed placeholder with an em dash, which
+  // the leading-punctuation strip below only ever accounted for a "(" doing.
+  const real = (p) => p && !/^[(\-–—]*\s*(?:none|n\/a|unknown|no information|nothing)\b/i.test(p.trim());
   if (real(parts[0])) state.situation = parts[0];
   if (real(parts[1])) state.aims = parts[1];
 }
@@ -1129,6 +1131,14 @@ async function classify(message, history, covered, maxTokens = 2000) {
     covered.length ? `Stages already worked through: ${covered.join(", ")}. Prefer a new stage only if the message genuinely moved.` : "",
     `Judge from the user's situation, not their wording. Someone can be in stage C without using the word "raise".`,
     `Only choose "leaving" on a clear signal — an ambiguous follow-up belongs to the stage that is already open.`,
+    // Observed live: "I got promoted to lead my team about two months ago"
+    // classified as leaving Confidence for Career Paths, ending the
+    // conversation on turn 1 — before she had said anything the coach could
+    // even respond to. A bare fact that happens to name a role, a title, or
+    // an event is context she is setting up, not a request to talk about
+    // that subject instead. This is exactly what Confidence's own G8
+    // ("promoted, doubting fitness for the role") exists for.
+    `A bare statement of fact about her situation — a promotion, a new role, a life event — is context, not a request to leave. Only classify "leaving" when she explicitly asks about, or clearly wants to talk through, a subject outside this area — not just because the fact she mentioned would also fit somewhere else.`,
   ].filter(Boolean).join(" ");
 
   return callAzure([

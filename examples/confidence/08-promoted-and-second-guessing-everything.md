@@ -1,6 +1,6 @@
 # Already promoted to lead, now doubting every call she makes
 
-_Run 2026-08-28 22:02 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-01 12:08 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Draws on G8 rather than S4, and treats the doubt as post-decision second-guessing — advice about a decision she is sitting on now, not about whether to put herself forward.
 
@@ -12,63 +12,75 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I got promoted to lead my team about two months ago
-  [stage A — User shared a recent promotion to lead a team, which is a common trigger area for Confidence & Imposter Syndrome; no clear signal of leaving the area.]
+  [stage A — User shares a new career milestone (promotion) without expressing doubt or current action block.]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
+  [sentence cap fired — the model wrote a rundown]
   [drew on G8, G6, S5a — 0 Otema, 3 drafted]
   [voice only: G3, S1a, S2, S1]
 
 Botema
-  Congrats—leading a team after a promotion is a real milestone and it often
-  comes with real-time learning. In my experience, the first couple of months
-  are when you test ideas, set boundaries, and start shaping how the team
-  works under your voice. What feels hardest for you in this new role right
-  now?
+  Congrats on the promotion. Two months in is when the real work begins—you'll
+  be tested on your prioritization, your communication, and how you scale
+  decisions through the team. What’s one decision you’re sitting on this week
+  that you could own and act on?
 
   you > I don't actually feel ready and now I second-guess every single decision
-  [stage B — User identifies self-doubt as a concrete blocker in decision-making (second-guessing decisions) rather than just a general feeling.]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G2, S4, G4 — 1 Otema, 2 drafted]
-  [voice only: S3a, S3c, S3, S3b]
-
-Botema
-  That doubt is real—and it’s part of growing into leadership. I’d anchor this
-  with a quick decision workflow: pick the most urgent decision, set a tight
-  deadline to decide (48 hours, say), write a one-line rationale with the
-  risks you’ll monitor, and run it by 1–2 trusted peers or a mentor for a fast
-  sanity-check. What decision is weighing on you most right now?
-
-  you > there's one I've been sitting on for over a week because I can't decide
-  [stage B — User reports a concrete decision is stalled due to self-doubt, which aligns with Stage B (self-doubt is preventing taking a concrete action like deciding).]
+  [classification missing/invalid stage "undefined" — retrying once at double the token budget]
+  [stage A — User is expressing imposter syndrome feelings that affect decision-making, indicating stage A (feeling being worked through)]
+  [no new facts about her — note left alone, no call made]
+  [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
   [second question dropped — one per reply]
-  [drew on G2, S3a, G4 — 0 Otema, 3 drafted]
-  [voice only: S3, S3b, S4, S3c]
+  [drew on G8, G5, S1 — 1 Otema, 2 drafted]
+  [voice only: G6, G10, S1b, S2]
 
 Botema
-  That kind of indecision is exactly what leadership feels like at the start.
-  What are the two options you’re weighing?
+  I’d suggest you pick one concrete decision you’re wavering on, make a clear
+  call this week, then document your rationale and the outcome you expect so
+  you can review it with your peer or sponsor. What decision are you on the
+  fence about right now?
+
+  you > there's one I've been sitting on for over a week because I can't decide
+  [stage B — Concrete decision is stalled due to self-doubt; a decision is blocked rather than just a feeling.]
+  [no new facts about her — note left alone, no call made]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G2, G4, S4 — 1 Otema, 2 drafted]
+  [voice only: S3a, S3, S3c, S3b]
+
+Botema
+  That lingering doubt is exactly why you lead by making a call. Try this: lay
+  out two practical paths you’re weighing, write the worst-case you’re willing
+  to tolerate for each, and choose the one with the highest impact that you
+  can survive if it goes sideways. Does that feel doable this week?
 
   you > I keep thinking they'll work out they picked the wrong person
-  [stage A — The user is expressing ongoing impostor feelings without stating a concrete stalled action; it indicates A-level internal struggle rather than a concrete belief that they won't act.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
+  [classification missing/invalid stage "undefined" — retrying once at double the token budget]
+  [stage A — The user is expressing an ongoing imposter feeling without naming a concrete action they are avoiding, which fits Stage A: a feeling being worked through rather than a stalled action.]
+  [no new facts about her — note left alone, no call made]
+  [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
-  [drew on G8, S1b, S1a — 0 Otema, 3 drafted]
-  [voice only: G5, G1, S1, G6]
+  [drew on G8, S1b, G1 — 0 Otema, 3 drafted]
+  [voice only: G10, S1a, G3, G7]
 
 Botema
-  Does that sound doable for you this week?
+  I’d push you to lock in a decision you can stand behind, then ask for a
+  quick feedback loop with your sponsor to validate the approach and learn
+  what they’re watching for. Would you feel confident proposing a 15-minute
+  check-in this week to review the latest decision and get concrete feedback?
 
   you > what do I do about the decision I'm stuck on
-  [stage B — User is stuck on a concrete decision due to self-doubt and asked for next steps.]
-  [repeated-opener guard fired — a reused opening clause was dropped]
+  [stage B — Deciding whether to act on a specific lead/decision falls under self-doubt blocking action (Stage B)]
+  [no new facts about her — note left alone, no call made]
+  [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
-  [reply was entirely repetition — treating as a stall]
-  [nothing survived the guards — using the area's question]
-  [drew on G2, G4, S3 — 1 Otema, 2 drafted]
-  [voice only: S3b, S3a, S3c, S4]
+  [drew on G2, S3, S3a — 1 Otema, 2 drafted]
+  [voice only: G4, S4, S3b, S3c]
 
 Botema
-  What feels true for you right now?
+  Map two concrete paths, write the worst-case you’ll tolerate for each, pick
+  the path with the highest impact you can stand behind, and lock in a
+  15-minute check-in with your sponsor this week to get crisp feedback. Does
+  that feel doable this week?
 
   you > quit
 
@@ -78,8 +90,7 @@ Botema
   touched_facets  S1, S1b, S2, S5, S5a, G1, G3, G5, G6, G7, G8, G9, G10, S1a, S3, S3b, S3c, S4, G2, G4, S3a
   closed_areas    —
   role/location   — / —
-  where she is    She is a team lead. The promotion happened about two months ago. She does not feel ready and she second-guesses every decision. There is a decision she has been sitting on for over a week because she can't decide.
-  trying to do    She is trying to decide the pending decision and move toward being a confident leader. She is seeking guidance on what to do about the decision she is stuck on. What is in her way: persistent indecision, not feeling ready, and the fear that they will realize they picked the wrong person. She keeps thinking they'll realize they picked the wrong person. What she has already tried: NONE.
+  where she is    — She is a lead in her team, about two months into the role.
 
   Nothing was written to any database.
 ```
@@ -94,7 +105,7 @@ Botema
 - PASS — no two replies open with the same construction
 - PASS — "that ... is real/common" used at most once
 - PASS — never stacks two questions into one ending
-- **FAIL** — at least one ending is a light check she can answer with yes or no
+- PASS — at least one ending is a light check she can answer with yes or no
 - PASS — no reply stacks more than two jargon terms
 - PASS — no reply mostly restates the one before it
 

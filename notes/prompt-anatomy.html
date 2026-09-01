@@ -258,7 +258,8 @@
           <tr style="--bul:var(--k-examples)"><td>Three closest answers</td><td>the stage's facets</td><td>The material for this question</td></tr>
           <tr style="--bul:var(--k-examples)"><td>Four random answers</td><td>the same stage</td><td>Range of voice, explicitly not material — the prompt says so in as many words</td></tr>
           <tr style="--bul:var(--k-knowledge)"><td>Area knowledge</td><td>bsc-knowledge.ts</td><td>Background facts it may use if relevant</td></tr>
-          <tr style="--bul:var(--k-rules)"><td>Nine rule blocks</td><td>converser.ts + inline</td><td>What it must not do, last so it is read last</td></tr>
+          <tr style="--bul:var(--k-knowledge)"><td>NO_INVENTED_FIGURES</td><td>converser.ts</td><td>No pay figures without live data — replaced by the search rules on a turn that searched</td></tr>
+          <tr style="--bul:var(--k-rules)"><td>Ten rule blocks</td><td>converser.ts + inline</td><td>What it must not do, last so it is read last</td></tr>
         </tbody>
       </table>
       </div>
@@ -305,7 +306,7 @@
           <div class="bar"><span class="seg k-rules" style="width:52.38%" title="what it must not do — 9,823 characters"></span><span class="seg k-examples" style="width:19.35%" title="what to sound like — 3,628 characters"></span><span class="seg k-persona" style="width:14.29%" title="who she is — 2,680 characters"></span><span class="seg k-knowledge" style="width:11.76%" title="what it knows — 2,205 characters"></span><span class="seg k-area" style="width:2.22%" title="which stage — 416 characters"></span></div>
           <div class="legend"><span class="lg"><i class="k-rules"></i>what it must not do <b>52%</b></span><span class="lg"><i class="k-examples"></i>what to sound like <b>19%</b></span><span class="lg"><i class="k-persona"></i>who she is <b>14%</b></span><span class="lg"><i class="k-knowledge"></i>what it knows <b>12%</b></span><span class="lg"><i class="k-area"></i>which stage <b>2%</b></span></div>
         </div>
-        <details class="drop"><summary>The system message, block by block <span class="sum-hint">17 blocks</span></summary>
+        <details class="drop"><summary>The system message, block by block <span class="sum-hint">18 blocks</span></summary>
         <div class="blocks">
       <div class="blk k-persona">
         <div class="blk-head">
@@ -492,13 +493,20 @@ Asking her to disclose is also incoherent: you are the coach telling her not to 
         <div class="blk-head">
           <span class="blk-name">listening rules</span>
           <span class="blk-src">coach-local.mjs, inline</span>
-          <span class="blk-len">2,816 ch</span>
+          <span class="blk-len">1,172 ch</span>
         </div>
         <pre class="blk-body">ANSWER THE CONVERSATION, NOT THE TOPIC. Before you write, ask yourself what has actually already happened to her — what she has been offered, refused, told or decided in this conversation so far. Her latest message is usually a detail added to that situation, not a new question.
 The examples above are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.
 When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.
-You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.
-Vary how you open, and do not treat acknowledgement as the default. Otema's own five answers open by diagnosing (\"Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space?\"), by naming what is actually happening (\"You're likely comparing their output to yours without seeing their struggles\"), or by going straight to the instruction (\"Apply anyway\", \"Write your wins down as they happen\"). Not one of them opens by telling her a feeling is real. 
+You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.</pre>
+      </div>
+      <div class="blk k-rules">
+        <div class="blk-head">
+          <span class="blk-name">VARY_YOUR_OPENING</span>
+          <span class="blk-src">converser.ts</span>
+          <span class="blk-len">1,643 ch</span>
+        </div>
+        <pre class="blk-body">Vary how you open, and do not treat acknowledgement as the default. Otema's own five answers open by diagnosing (\"Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space?\"), by naming what is actually happening (\"You're likely comparing their output to yours without seeing their struggles\"), or by going straight to the instruction (\"Apply anyway\", \"Write your wins down as they happen\"). Not one of them opens by telling her a feeling is real. 
 Ways in, all of them yours, none of them the standing one: go straight to the advice; name the mechanism behind what she described; ask the one question that would change your answer; disagree with something in her own account of it; point at her own evidence (\"Trust yourself on this one\"); name a fact that settles it (\"That pattern is well documented\"); or hear her (\"I hear you\", \"It's not just you\"). The last two are options, not the opening move. 
 Never open two replies in the same conversation the same way, and that means the same SHAPE, not the same words — swapping the noun in 'That [feeling] is real' for 'That [pattern] is real' is the same opener twice. 
 Use a validating opener at most ONCE in a conversation, and only where something genuinely is documented and was done to her. Being talked over as the only woman in the room qualifies. Going quiet in meetings, forgetting to log your wins, rechecking your work — those are things she does, and telling her they are real and common says nothing. 
@@ -573,7 +581,7 @@ Where the answer is complete in itself, end on the advice and stop. Never ask a 
           <div class="bar"><span class="seg k-rules" style="width:52.97%" title="what it must not do — 10,057 characters"></span><span class="seg k-examples" style="width:19.11%" title="what to sound like — 3,628 characters"></span><span class="seg k-persona" style="width:14.12%" title="who she is — 2,680 characters"></span><span class="seg k-knowledge" style="width:11.61%" title="what it knows — 2,205 characters"></span><span class="seg k-area" style="width:2.19%" title="which stage — 416 characters"></span></div>
           <div class="legend"><span class="lg"><i class="k-rules"></i>what it must not do <b>53%</b></span><span class="lg"><i class="k-examples"></i>what to sound like <b>19%</b></span><span class="lg"><i class="k-persona"></i>who she is <b>14%</b></span><span class="lg"><i class="k-knowledge"></i>what it knows <b>12%</b></span><span class="lg"><i class="k-area"></i>which stage <b>2%</b></span></div>
         </div>
-        <details class="drop"><summary>The system message, block by block <span class="sum-hint">18 blocks</span></summary>
+        <details class="drop"><summary>The system message, block by block <span class="sum-hint">19 blocks</span></summary>
         <div class="blocks">
       <div class="blk k-persona">
         <div class="blk-head">
@@ -760,13 +768,20 @@ Asking her to disclose is also incoherent: you are the coach telling her not to 
         <div class="blk-head">
           <span class="blk-name">listening rules</span>
           <span class="blk-src">coach-local.mjs, inline</span>
-          <span class="blk-len">2,816 ch</span>
+          <span class="blk-len">1,172 ch</span>
         </div>
         <pre class="blk-body">ANSWER THE CONVERSATION, NOT THE TOPIC. Before you write, ask yourself what has actually already happened to her — what she has been offered, refused, told or decided in this conversation so far. Her latest message is usually a detail added to that situation, not a new question.
 The examples above are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.
 When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.
-You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.
-Vary how you open, and do not treat acknowledgement as the default. Otema's own five answers open by diagnosing (\"Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space?\"), by naming what is actually happening (\"You're likely comparing their output to yours without seeing their struggles\"), or by going straight to the instruction (\"Apply anyway\", \"Write your wins down as they happen\"). Not one of them opens by telling her a feeling is real. 
+You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.</pre>
+      </div>
+      <div class="blk k-rules">
+        <div class="blk-head">
+          <span class="blk-name">VARY_YOUR_OPENING</span>
+          <span class="blk-src">converser.ts</span>
+          <span class="blk-len">1,643 ch</span>
+        </div>
+        <pre class="blk-body">Vary how you open, and do not treat acknowledgement as the default. Otema's own five answers open by diagnosing (\"Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space?\"), by naming what is actually happening (\"You're likely comparing their output to yours without seeing their struggles\"), or by going straight to the instruction (\"Apply anyway\", \"Write your wins down as they happen\"). Not one of them opens by telling her a feeling is real. 
 Ways in, all of them yours, none of them the standing one: go straight to the advice; name the mechanism behind what she described; ask the one question that would change your answer; disagree with something in her own account of it; point at her own evidence (\"Trust yourself on this one\"); name a fact that settles it (\"That pattern is well documented\"); or hear her (\"I hear you\", \"It's not just you\"). The last two are options, not the opening move. 
 Never open two replies in the same conversation the same way, and that means the same SHAPE, not the same words — swapping the noun in 'That [feeling] is real' for 'That [pattern] is real' is the same opener twice. 
 Use a validating opener at most ONCE in a conversation, and only where something genuinely is documented and was done to her. Being talked over as the only woman in the room qualifies. Going quiet in meetings, forgetting to log your wins, rechecking your work — those are things she does, and telling her they are real and common says nothing. 
@@ -851,7 +866,7 @@ Does that feel like something you could try in your next meeting?</p></div><div 
           <div class="bar"><span class="seg k-rules" style="width:51.12%" title="what it must not do — 10,108 characters"></span><span class="seg k-examples" style="width:18.35%" title="what to sound like — 3,628 characters"></span><span class="seg k-persona" style="width:13.55%" title="who she is — 2,680 characters"></span><span class="seg k-knowledge" style="width:11.15%" title="what it knows — 2,205 characters"></span><span class="seg k-memory" style="width:3.72%" title="what it remembers — 735 characters"></span><span class="seg k-area" style="width:2.10%" title="which stage — 416 characters"></span></div>
           <div class="legend"><span class="lg"><i class="k-rules"></i>what it must not do <b>51%</b></span><span class="lg"><i class="k-examples"></i>what to sound like <b>18%</b></span><span class="lg"><i class="k-persona"></i>who she is <b>14%</b></span><span class="lg"><i class="k-knowledge"></i>what it knows <b>11%</b></span><span class="lg"><i class="k-memory"></i>what it remembers <b>4%</b></span><span class="lg"><i class="k-area"></i>which stage <b>2%</b></span></div>
         </div>
-        <details class="drop"><summary>The system message, block by block <span class="sum-hint">19 blocks</span></summary>
+        <details class="drop"><summary>The system message, block by block <span class="sum-hint">20 blocks</span></summary>
         <div class="blocks">
       <div class="blk k-persona">
         <div class="blk-head">
@@ -1048,13 +1063,20 @@ Asking her to disclose is also incoherent: you are the coach telling her not to 
         <div class="blk-head">
           <span class="blk-name">listening rules</span>
           <span class="blk-src">coach-local.mjs, inline</span>
-          <span class="blk-len">2,816 ch</span>
+          <span class="blk-len">1,172 ch</span>
         </div>
         <pre class="blk-body">ANSWER THE CONVERSATION, NOT THE TOPIC. Before you write, ask yourself what has actually already happened to her — what she has been offered, refused, told or decided in this conversation so far. Her latest message is usually a detail added to that situation, not a new question.
 The examples above are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.
 When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.
-You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.
-Vary how you open, and do not treat acknowledgement as the default. Otema's own five answers open by diagnosing (\"Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space?\"), by naming what is actually happening (\"You're likely comparing their output to yours without seeing their struggles\"), or by going straight to the instruction (\"Apply anyway\", \"Write your wins down as they happen\"). Not one of them opens by telling her a feeling is real. 
+You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.</pre>
+      </div>
+      <div class="blk k-rules">
+        <div class="blk-head">
+          <span class="blk-name">VARY_YOUR_OPENING</span>
+          <span class="blk-src">converser.ts</span>
+          <span class="blk-len">1,643 ch</span>
+        </div>
+        <pre class="blk-body">Vary how you open, and do not treat acknowledgement as the default. Otema's own five answers open by diagnosing (\"Confront where it's actually coming from — is it the field itself, or the pressure of being in a male-dominated space?\"), by naming what is actually happening (\"You're likely comparing their output to yours without seeing their struggles\"), or by going straight to the instruction (\"Apply anyway\", \"Write your wins down as they happen\"). Not one of them opens by telling her a feeling is real. 
 Ways in, all of them yours, none of them the standing one: go straight to the advice; name the mechanism behind what she described; ask the one question that would change your answer; disagree with something in her own account of it; point at her own evidence (\"Trust yourself on this one\"); name a fact that settles it (\"That pattern is well documented\"); or hear her (\"I hear you\", \"It's not just you\"). The last two are options, not the opening move. 
 Never open two replies in the same conversation the same way, and that means the same SHAPE, not the same words — swapping the noun in 'That [feeling] is real' for 'That [pattern] is real' is the same opener twice. 
 Use a validating opener at most ONCE in a conversation, and only where something genuinely is documented and was done to her. Being talked over as the only woman in the room qualifies. Going quiet in meetings, forgetting to log your wins, rechecking your work — those are things she does, and telling her they are real and common says nothing. 
@@ -1147,7 +1169,7 @@ Does that feel like something you could try in your next meeting?</p></div><div 
       <p class="kicker">Worth noticing</p>
       <h2>Three things the dump makes obvious</h2>
       <ul>
-        <li><b>Half of it is prohibitions.</b> The nine rule blocks come to <b>8,819 characters</b> against <b>3,632</b> of examples — 49% of the prompt against 20%. Every one of those rules was written because something went wrong once, and none has ever been taken out again. The material showing the coach what to <em>do</em> has not grown at the same rate, and a rule competing with an example for the model's attention usually loses, which is the argument for fixing the examples rather than adding a tenth rule.</li>
+        <li><b>Half of it is prohibitions.</b> The ten rule blocks come to <b>8,819 characters</b> against <b>3,632</b> of examples — 49% of the prompt against 20%. Every one of those rules was written because something went wrong once, and none has ever been taken out again. The material showing the coach what to <em>do</em> has not grown at the same rate, and a rule competing with an example for the model's attention usually loses, which is the argument for fixing the examples rather than adding an eleventh rule.</li>
         <li><b>The same conversation cost sixteen calls yesterday and eleven today.</b> The note about her was being rewritten every turn, gated on a flag that exists for the stall rule and counts any new question as forward motion — so <em>&ldquo;so what should I actually do&rdquo;</em> triggered a rewrite of a note it had nothing to add to. Eight of the sixteen calls were that. It now has its own flag, and a budget large enough to succeed first time rather than being retried at double and quadruple. Folding the note into the classification would save one more call and was rejected on evidence: that tool call already truncates under hidden reasoning, and two free-text paragraphs in its arguments would make the failure likelier in the one call the whole turn depends on.</li>
         <li><b>The rules can only remove.</b> Eleven guards run over the answer and not one of them can add a word — a reply that arrives wrong is cut down, never rewritten. That is why a turn can end on a bare wrap-up: everything the model produced had already been said. The upside is that nothing on this page was written by the harness; every sentence she reads came from the model, and the guards only decided how much of it she got.</li>
         <li><b>After turn one, none of Otema's five real answers reached the close-three.</b> Turn 1 drew two of hers; turns 2 and 3 drew none. Her answers still arrive in the random four, which the design says is enough for voice — but it means the advice she reads is coming from drafted material nobody has reviewed, and Otema is supplying only the tone.</li>

@@ -1,0 +1,109 @@
+# Former admin assistant plans a bootcamp path, then agrees and closes
+
+_Run 2026-09-01 08:08 UTC · 5 turns · gpt-5-nano via Azure_
+
+**What this tests.** Reaches stage D with a concrete plan, then stage E once she's agreeing rather than asking — the wrap-up reply says the plan back and checks it rather than adding a further step, short, nothing new introduced on the last turn.
+
+## Transcript
+
+```
+BSC Coach — local area harness
+  Area 1 · Getting Started · live via gpt-5-nano
+  Type freely. 'state' to inspect, 'quit' to stop.
+
+  you > I used to work as an administrative assistant, now I want to move into data analysis
+  [stage B — User has prior admin experience and is asking for a career path to data analytics, which is a field change; classify as B and route to Career Paths & Roadmaps for planning.]
+  → enterDiscussionArea(1 · Getting Started)
+  [invented-location guard fired — an unstated place was removed]
+  [numbered rundown flattened — it was a list]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S5, S5a, G4 — 1 Otema, 2 drafted]
+
+Botema
+  Nice. You’re already data-facing by organising, cleaning, and
+  reporting—those are gold for data analysis. What industry or type of data
+  would you most like to work with first?
+
+  you > I don't have money for a full degree, so probably a bootcamp or self-teaching
+  [stage C — budget constraints push toward bootcamp/self-study]
+  [no new facts about her — note left alone, no call made]
+  [repeated advice removed]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S2, S2a, S2b — 1 Otema, 2 drafted]
+  [voice only: G1a, G1]
+
+Botema
+  That’s real and common. If money is tight, start with self-teaching to build
+  a portfolio, then consider a focused bootcamp only if you can verify
+  outcomes and it fits your schedule. How many hours can you protect each week
+  to learn and build projects?
+
+  you > okay, a self-paced bootcamp with a mentor sounds right — how long would that realistically take me
+  [stage D — Requested concrete timeline for a self-paced bootcamp with mentor.]
+  [no new facts about her — note left alone, no call made]
+  [drew on S4, G2, S4a — 1 Otema, 2 drafted]
+  [voice only: S6, S6a, S3, G6]
+
+Botema
+  Realistically, with a self-paced bootcamp plus a mentor and about 8–12 hours
+  per week you’re looking at roughly 6–9 months to reach a solid junior data
+  analyst level; if you’re doing more like 15 hours a week, aim for around 4–6
+  months. In my experience, you’ll want to pace it so you’re finishing with a
+  portfolio of end-to-end analyses and a couple of dashboards. Does that hour
+  schedule fit what you can protect each week?
+
+  you > yeah, three months of steady evenings sounds doable, I think that's the plan
+  [stage D — User has decided on a 3-month self-paced bootcamp with mentor and wants concrete plan]
+  [second question dropped — one per reply]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S4, G2, S6a — 1 Otema, 2 drafted]
+  [voice only: S4a, S4b, S3, S6]
+
+Botema
+  Three months of steady evenings is tight but doable if you’re consistently
+  putting in 12–15 hours weekly and you have a mentor to keep you honest.
+  You’ll want a tightly scoped plan: core stats basics, SQL for data querying,
+  a bit of Python or R for data wrangling, and two end-to-end projects plus a
+  dashboard. Do you already have a mentor lined up?
+
+  you > no, that covers it, thank you
+  [stage E — User signaled completion of Getting Started questions with thanks; no new questions or concrete next steps.]
+  [no new facts about her — note left alone, no call made]
+  [drew on S2, G1, S1a — 1 Otema, 2 drafted]
+  [voice only: G5, S5, S3, G2]
+
+Botema
+  You’re going to run a three-month evening plan, 12–15 hours weekly, with
+  core stats, SQL, Python or R, two end-to-end projects and a dashboard, and
+  you’ll find a mentor later. Does that feel right to you?
+
+  you > quit
+
+  ── state ─────────────────────────────────────────────
+  active_area     1 · Getting Started
+  covered_stages  B, C, D, E
+  touched_facets  S5, S5a, G4, S2, S2a, S2b, G1, G1a, S3, S4, S4a, S4b, S6, S6a, G2, G6, S1, S1a, S7, S7a, S8, S8a, G3, G3a, G5
+  closed_areas    —
+  role/location   — / —
+  where she is    — NONE
+  trying to do    — NONE
+
+  Nothing was written to any database.
+```
+
+## Checks
+
+- PASS — classified stage B on the opening message (named prior career)
+- PASS — reaches stage D once a concrete method and timeline are the live question
+- PASS — reaches stage E once she's agreeing rather than asking
+- PASS — the wrap-up reply is short — three sentences at the outside
+- PASS — the wrap-up adds nothing new
+- PASS — the wrap-up ends on a check, not a demand for more information
+- PASS — most replies still end on a question
+- PASS — no two replies open with the same construction
+- PASS — no reply stacks more than two jargon terms
+- **FAIL** — no reply mostly restates the one before it
+
+---
+
+_Generated by `npm run coach:scenarios` against live Azure. Regenerate after changing prompts or content._

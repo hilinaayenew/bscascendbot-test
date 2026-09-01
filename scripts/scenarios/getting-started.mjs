@@ -9,7 +9,7 @@
 // Every conversation runs FIVE user turns.
 // ============================================================================
 
-import { replyOf, everyReplyAsks, noRepeatedOpeners, jargonPerReply, maxRepeatOverlap, extractiveQuestions } from "../checks.mjs";
+import { replyOf, everyReplyAsks, noRepeatedOpeners, jargonPerReply, maxRepeatOverlap, extractiveQuestions, noRepeatedOpenerShape, lightChecks, lastReply, wordCount } from "../checks.mjs";
 
 // The stage letter classified on each turn, in order. Line-slicing the raw
 // output (e.g. `o.split("\n").slice(0, 6)`) is fragile — the harness's own
@@ -107,34 +107,56 @@ export default [
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
     ],
   },
-  // Placeholder — no area-tester agent run against this area yet.
+  // NEW this run
   {
-    id: "05-no-clear-interest-yet",
-    title: "Doesn't know what she'd enjoy, has never tried any of it",
-    claim: "Doesn't just repeat 'what draws you to it' a second way — gives her the smallest possible concrete first action instead of asking her to introspect further.",
+    id: "05-phone-only-no-computer",
+    title: "Only has a phone, no laptop, and no direction picked yet either",
+    claim: "Probes the seam between stage A (no direction settled) and where G6 actually lives (stage D, 'method decided'): she raises a phone-only access constraint before ever choosing — or even really discussing — a method, so this checks whether the coach still surfaces real, phone-usable next steps rather than either defaulting to laptop-based advice or refusing to engage until she's 'chosen a method' first.",
     turns: [
-      "everyone says find your passion in tech but I genuinely don't know what that would be",
-      "I've never coded anything or used any of these tools",
-      "I don't even know what UX or data science actually involve day to day",
-      "how am I supposed to know what I'd enjoy",
-      "okay what's the smallest possible way to just try something",
+      "okay so I want to get into tech but honestly no idea where to even start",
+      "the thing is I don't have a laptop, just my phone, so idk if this is realistic",
+      "and at my job we're not allowed to use the computers for personal stuff, no spare ones either",
+      "so is this actually possible on just a phone or am I wasting my time here",
+      "alright — so what would I actually start doing today, on the phone",
     ],
     checks: [
-      // Scoped to the LAST reply specifically — the claim is about how the
-      // conversation closes, not whether "tiny" language appears anywhere in
-      // five turns. The original keyword list (weekend/one project/etc.) was
-      // too narrow: a real run closed with "a 15-minute browser-based Python
-      // starter — go to trinket.io, type print('Hello') and Run", which is
-      // exactly the smallest-possible-action ask, just phrased with a time-box
-      // and a named tool rather than any of the four guessed phrases.
-      ["gives a concrete tiny first action by the end", (o) => {
-        const last = replyOf(o).split("\n\n").filter(Boolean).at(-1) || "";
-        return /(\btiny\b|micro-?experiment|\d+[- ]?(minute|hour|day)s?\b|weekend|small project|start(ing)? with one)/i.test(last);
-      }],
-      ["does not just repeat the same 'what draws you' framing a second way", (o) => !/what (drew|draws) you/i.test(replyOf(o))],
-      ["treats not knowing yet as normal, not a deficiency", (o) => /(normal|fine|okay|common|expected)/i.test(o)],
+      // Was also matching "you'll need a laptop soon to actually run code" —
+      // an honest, forward-pointing caveat after already saying yes, it's
+      // possible on a phone now, not the outright dismissal this check
+      // exists to catch. Narrowed to phrasing that actually rules it out.
+      ["does not dismiss the phone-only situation as unworkable", (o) => !/(not (really )?possible|wasting your time|can.t really do (this|that) (on|with) (a|just a) phone|you (really |absolutely )?need a (laptop|computer) (to start|first|before))/i.test(replyOf(o))],
+      ["gives something concrete she can actually do on a phone", (o) => /(phone|app|browser|trinket|sololearn|mobile)/i.test(replyOf(o))],
+      ["treats the access constraint as normal, not a reason to stall her", (o) => /(normal|plenty|common|works|enough|fine|okay)/i.test(o)],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
+      ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
+      ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
+    ],
+  },
+  {
+    // Stage E has never been in front of the model — nothing in slots 01-05
+    // ever agrees and stops, the same gap Confidence had before its own
+    // stage C got a dedicated scenario. This one is built to actually land
+    // on a concrete plan and then close, rather than keep asking.
+    id: "06-lands-the-plan-and-stops",
+    title: "Former admin assistant plans a bootcamp path, then agrees and closes",
+    claim: "Reaches stage D with a concrete plan, then stage E once she's agreeing rather than asking — the wrap-up reply says the plan back and checks it rather than adding a further step, short, nothing new introduced on the last turn.",
+    turns: [
+      "I used to work as an administrative assistant, now I want to move into data analysis",
+      "I don't have money for a full degree, so probably a bootcamp or self-teaching",
+      "okay, a self-paced bootcamp with a mentor sounds right — how long would that realistically take me",
+      "yeah, three months of steady evenings sounds doable, I think that's the plan",
+      "no, that covers it, thank you",
+    ],
+    checks: [
+      ["classified stage B on the opening message (named prior career)", (o) => stagesInOrder(o)[0] === "B"],
+      ["reaches stage D once a concrete method and timeline are the live question", (o) => stagesInOrder(o).slice(0, 3).includes("D")],
+      ["reaches stage E once she's agreeing rather than asking", (o) => stagesInOrder(o).slice(3).includes("E")],
+      ["the wrap-up reply is short — three sentences at the outside", (o) => wordCount(lastReply(o)) <= 60],
+      ["the wrap-up adds nothing new", (o) => !/(one more thing|another thing|you should also|also,|start by|first,|next,|step 1|in addition)/i.test(lastReply(o))],
+      ["the wrap-up ends on a check, not a demand for more information", (o) => lightChecks(o) >= 1 && !/\b(what|which|how) (are|is|would|do|did) you\b[^?]*\?\s*$/i.test(lastReply(o))],
+      ["most replies still end on a question", (o) => everyReplyAsks(o)],
+      ["no two replies open with the same construction", (o) => noRepeatedOpenerShape(o)],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],
       ["no reply mostly restates the one before it", (o) => maxRepeatOverlap(o) < 0.5],
     ],

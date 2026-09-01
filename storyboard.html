@@ -1614,21 +1614,25 @@
       <div class="section">
         <div class="section-title">Area Flow · Area 1</div>
         <h2 class="section-heading">Inside Getting Started <span class="st proposed">PROPOSED</span></h2>
-        <p class="prompt-intro">One classification call per message places the user in one of four stages; the stage scopes which of Otema's answers, plus a small set of drafted gap-fillers, the model is shown; the model writes the reply from that material. Not a router — the edges recorded below are a coverage map read off actual closing questions, never consulted to decide what to say. <strong>This is the busiest area — most people arrive here first.</strong> Current status: runs end-to-end in the local harness, all 5 scenarios passing as of 2026-08-21; not yet wired into the live edge function, and no full dead-end sweep has been run against it.</p>
+        <p class="prompt-intro">One classification call per message places the user in one of five stages; the stage scopes which of Otema's answers, plus a set of drafted gap-fillers, the model is shown; the model writes the reply from that material. Not a router — the edges recorded below are a coverage map read off actual closing questions, never consulted to decide what to say. <strong>This is the busiest area — most people arrive here first.</strong> Current status: runs end-to-end in the local harness; not yet wired into the live edge function.</p>
 
         <div class="banner spec">
           <strong>The stages split on two axes: how far along someone is, and who they are.</strong> A pure how-far-along split (deciding → choosing method → executing) lumped a career changer's "how does my past count" question in with a first-timer's method choice — genuinely different material, not just a different point on the same line. So <strong>who they are</strong> gets its own stage too, alongside <strong>how far along</strong> they are:
           <br><br>
-          <strong>A</strong> — no prior career, hasn't settled on a direction · <strong>B</strong> — has a prior career in a different field, working out how it translates · <strong>C</strong> — direction settled, deciding HOW to learn · <strong>D</strong> — method chosen, wants concrete execution detail.
+          <strong>A</strong> — no prior career, hasn't settled on a direction · <strong>B</strong> — has a prior career in a different field, working out how it translates · <strong>C</strong> — direction settled, deciding HOW to learn · <strong>D</strong> — method chosen, wants concrete execution detail · <strong>E</strong> — the advice has landed and she's settling, not asking.
           <br><br>
-          The known risk with this split: A and B can blur when someone has a prior career AND is still field-unsure. The rule adopted is that the prior career wins — B is about background, not certainty — and that's exactly what scenario 02 in the test sweep is built to probe.
+          The known risk with the A/B split: A and B can blur when someone has a prior career AND is still field-unsure. The rule adopted is that the prior career wins — B is about background, not certainty — and that's exactly what scenario 02 in the test sweep is built to probe.
+          <br><br>
+          <strong>The same blur exists one stage over, C-vs-D.</strong> "A self-paced bootcamp sounds right — how long would that realistically take" names a method AND asks D's own giveaway question ("how long", "realistically") in the same breath — that's D, not C, mirroring the A-vs-B rule: the moment a method is named and the live question asks a concrete detail about it, classify there, whether or not the method itself was just introduced in the same message.
+          <br><br>
+          <strong>Stage E is the wrap-up</strong>, the same mechanism Confidence's stage C introduced: shown the full range of the area's facets for voice only, told to answer from none of them, and used both when the classifier hears her settling directly and when the stall rule would otherwise just close the area outright. Given this is the area most people hit first — the most turns, the most chances to stall — it's an even more natural fit here than in Confidence, since the endpoint is a literal plan (method, language, resources, timeline) rather than a feeling, so reflecting it back is a genuine, checkable question rather than a platitude. That reflection has to actually name something: the reply must state at least one concrete element of what was actually settled — the method, the language, the timeline, the resource — not just approve in general terms, and if nothing concrete was ever settled it says so honestly rather than inventing a plan to reflect back.
         </div>
       </div>
 
       <div class="section">
         <div class="section-title">Area Flow · Shape</div><h2 class="section-heading">The Shape of the Area</h2>
         <div class="stage-map">
-          <svg viewBox="0 0 900 260" role="img" aria-label="Four stages. Deciding whether/which and Translating a previous career both feed into Choosing how to learn, which leads to Executing the plan. A bypass edge skips Translating a previous career for anyone with no prior career. A return path leads from Executing the plan back to Deciding whether/which.">
+          <svg viewBox="0 0 900 380" role="img" aria-label="Five stages. Deciding whether/which and Translating a previous career both feed into Choosing how to learn, which leads to Executing the plan. A bypass edge skips Translating a previous career for anyone with no prior career. A return path leads from Executing the plan back to Deciding whether/which. All four lead down into Wrapping up once the advice has landed, and Wrapping up can return to any of them if she raises something new.">
             <defs>
               <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
@@ -1638,22 +1642,22 @@
             <rect class="sm-box" x="15" y="20" width="165" height="80" rx="9" />
             <text class="sm-label" x="28" y="40">STAGE A</text>
             <text class="sm-title" x="28" y="60">Deciding whether/which</text>
-            <text class="sm-sub" x="28" y="79">S1 · S1a · S7 · S7a · S8 · G3</text>
+            <text class="sm-sub" x="28" y="79">S1 · S1a · S7 · S7a · S8 · G3 · G5</text>
 
             <rect class="sm-box" x="15" y="145" width="165" height="80" rx="9" />
             <text class="sm-label" x="28" y="165">STAGE B</text>
             <text class="sm-title" x="28" y="185">Translating a career</text>
-            <text class="sm-sub" x="28" y="204">S5 · G4</text>
+            <text class="sm-sub" x="28" y="204">S5 · S5a · G4</text>
 
             <rect class="sm-box" x="365" y="82" width="165" height="80" rx="9" />
             <text class="sm-label" x="378" y="102">STAGE C</text>
             <text class="sm-title" x="378" y="122">Choosing how to learn</text>
-            <text class="sm-sub" x="378" y="141">S2 · S2a · G1</text>
+            <text class="sm-sub" x="378" y="141">S2 · S2a · S2b · G1</text>
 
             <rect class="sm-box" x="715" y="82" width="165" height="80" rx="9" />
             <text class="sm-label" x="728" y="102">STAGE D</text>
             <text class="sm-title" x="728" y="122">Executing the plan</text>
-            <text class="sm-sub" x="728" y="141">S3 · S4 · S6 · G2</text>
+            <text class="sm-sub" x="728" y="141">S3 · S4 · S4b · S6 · G2 · G6</text>
 
             <g style="color:var(--accent)">
               <line class="sm-edge" x1="180" y1="60" x2="358" y2="105" marker-end="url(#ah2)" />
@@ -1667,10 +1671,21 @@
             <text class="sm-edge-label" x="535" y="112">method chosen</text>
             <text class="sm-edge-label" x="250" y="-16">no prior career to translate</text>
             <text class="sm-edge-label" x="300" y="232">reconsiders — not sure this is even right</text>
+
+            <rect class="sm-box" x="325" y="298" width="250" height="72" rx="9" />
+            <text class="sm-label" x="340" y="320">STAGE E</text>
+            <text class="sm-title" x="340" y="341">Wrapping up</text>
+            <text class="sm-sub" x="340" y="360">no new advice — confirm and close</text>
+            <g style="color:var(--accent)">
+              <line class="sm-edge" x1="797" y1="162" x2="560" y2="300" marker-end="url(#ah2)" />
+              <line class="sm-edge" x1="97" y1="103" x2="340" y2="300" marker-end="url(#ah2)" />
+            </g>
+            <text class="sm-edge-label" x="640" y="260">the plan lands, she's settling</text>
+            <text class="sm-edge-label" x="140" y="260">agrees or thanks you, from any stage</text>
           </svg>
         </div>
         <div class="key">
-          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's eight real answers, numbered in question-bank order (S1–S8 = Q1–Q8). <span class="chip">G</span> is one of the four drafted gap-filling answers. Response-branch facets (S1a, S7a, S2a, S8a, G3a, G1a, S4a, S6a) are their own cards further down.</p>
+          <p class="key-intro"><strong>Reading the codes:</strong> <span class="chip">S</span> is one of Otema's eight real answers, numbered in question-bank order (S1–S8 = Q1–Q8). <span class="chip">G</span> is one of the six drafted gap-filling answers. Response-branch facets (S1a, S7a, S2a, S8a, G3a, G1a, S4a, S6a, S5a, S2b, S4b) are their own cards further down.</p>
           <div class="key-grid">
             <div><span class="chip">S1</span> No background, where do I begin?</div>
             <div><span class="chip">S2</span> Self-teach vs bootcamp vs degree</div>
@@ -1684,13 +1699,15 @@
             <div><span class="chip">G2</span> Savings needed before full-time study</div>
             <div><span class="chip">G3</span> Torn between fields, built nothing yet</div>
             <div><span class="chip">G4</span> Prior seniority, starting at the bottom</div>
+            <div><span class="chip">G5</span> Local jobs vs remote-for-abroad</div>
+            <div><span class="chip">G6</span> Phone only, no computer</div>
           </div>
         </div>
         <div class="flow-note">No cross-cutting facet found yet. Nothing so far attaches across every stage the way a single universal worry might.</div>
       </div>
 
       <div class="section">
-        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 12 Facets and Where Each Leads</h2>
+        <div class="section-title">Area Flow · Facets</div><h2 class="section-heading">The 14 Facets and Where Each Leads</h2>
         <p class="prompt-intro">Each card shows the question the answer currently ends on, and the facets that closer plausibly hands off to — read off the actual closing questions. <span class="src real">OTEMA</span> is her real questionnaire answer; <span class="src drafted">DRAFTED</span> is generated and still <code>unreviewed</code>. Response-branch facets are their own cards further down; they live in the same stage's facet pool in code, just shown separately here since they answer a specific follow-up rather than opening the topic.</p>
 
         <div class="stage-band"><span class="sb-id">Stage A</span><h3>Deciding whether, or which direction</h3><span class="sb-note">no prior career, no field settled</span></div>
@@ -1715,6 +1732,11 @@
             <p class="closer">"Which of them have you actually tried building something in?"</p>
             <div class="edges"><span class="elabel">leads to</span><span class="chip">S7</span><span class="chip">S3</span><span class="chip self">stays</span></div>
           </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G5</span><h4>Local jobs vs remote-for-abroad</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"Do you know what the market looks like in your city or country right now?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
         </div>
 
         <div class="stage-band"><span class="sb-id">Stage B</span><h3>Translating a previous career</h3><span class="sb-note">real prior work experience in a different field — the distinguishing fact, whether or not the field is also still undecided</span></div>
@@ -1731,7 +1753,7 @@
           </div>
         </div>
 
-        <div class="stage-band"><span class="sb-id">Stage C</span><h3>Choosing how to learn</h3><span class="sb-note">direction settled or not the live question — method is</span></div>
+        <div class="stage-band"><span class="sb-id">Stage C</span><h3>Choosing how to learn</h3><span class="sb-note">direction settled or not the live question — method is, with no concrete detail asked yet; the moment one is, it's stage D</span></div>
         <div class="facet-grid">
           <div class="facet real">
             <div class="facet-top"><span class="facet-id">S2</span><h4>Self-teach vs bootcamp vs degree</h4><span class="src real">OTEMA</span></div>
@@ -1745,7 +1767,7 @@
           </div>
         </div>
 
-        <div class="stage-band"><span class="sb-id">Stage D</span><h3>Actively executing a chosen plan</h3><span class="sb-note">wants a thing to use, not a decision to make</span></div>
+        <div class="stage-band"><span class="sb-id">Stage D</span><h3>Actively executing a chosen plan</h3><span class="sb-note">wants a thing to use, not a decision to make — including the concrete-detail question right after a method is first named</span></div>
         <div class="facet-grid">
           <div class="facet real">
             <div class="facet-top"><span class="facet-id">S3</span><h4>Beginner-friendly languages</h4><span class="src real">OTEMA</span></div>
@@ -1767,13 +1789,20 @@
             <p class="closer">"What does your runway look like right now?"</p>
             <div class="edges"><span class="elabel">leads to</span><span class="chip">S2a</span><span class="chip">S6</span><span class="chip self">stays</span></div>
           </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">G6</span><h4>Phone only, no computer</h4><span class="src drafted">DRAFTED</span></div>
+            <p class="closer">"What access to a computer, even occasional, do you actually have around you?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
         </div>
+
+        <div class="stage-band"><span class="sb-id">Stage E</span><h3>Wrapping up</h3><span class="sb-note">no facets of its own — shown the full range above for voice, answers from none of it, but must name at least one concrete piece of the plan actually settled</span></div>
       </div>
 
       <div class="section">
         <div class="section-title">Area Flow · Response branches</div>
         <h2 class="section-heading">What Happens After the Question <span class="st proposed">PROPOSED</span></h2>
-        <div class="banner info"><strong>Eight dead ends found reading the closers above.</strong> S1's closer assumes a passion-framed answer and has no branch for "I just want stable pay." S7's closer assumes she's tried something already. S2's closer asks about runway and has no branch for "very little of either." S8's closer has no branch for doubting the day-to-day is worth it at all. G3's closer assumes she's already tried building something. G1's closer has no branch for an income-share-agreement bootcamp. S4's closer has no branch for a genuinely compressed timeline. S6's closer has no branch for someone without reliable connectivity — the exact access gap <code>BOTEMA_VALUES</code> names directly. All eight are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here.</div>
+        <div class="banner info"><strong>Eleven dead ends found reading the closers above.</strong> S1's closer assumes a passion-framed answer and has no branch for "I just want stable pay." S7's closer assumes she's tried something already. S2's closer asks about runway and has no branch for "very little of either," or for the mirror case — decent savings, almost no time. S8's closer has no branch for doubting the day-to-day is worth it at all. G3's closer assumes she's already tried building something. G1's closer has no branch for an income-share-agreement bootcamp. S4's closer has no branch for a genuinely compressed timeline, or for a goal that isn't employment at all — freelancing or building something of her own. S5's closer assumes a conventional prior role to point to, with no branch for an employment gap or informal work. S6's closer has no branch for someone without reliable connectivity — the exact access gap <code>BOTEMA_VALUES</code> names directly. All eleven are drafted into <code>botema-generated-examples.ts</code>, <code>unreviewed</code>, same gate as everything else here.</div>
         <div class="facet-grid">
           <div class="facet drafted">
             <div class="facet-top"><span class="facet-id">S1a</span><h4>Motivation is money, not passion</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S1</span></span></div>
@@ -1814,6 +1843,21 @@
             <div class="facet-top"><span class="facet-id">S6a</span><h4>No reliable connectivity</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S6</span></span></div>
             <p class="closer">"What does your connection actually allow you to do reliably?"</p>
             <div class="edges"><span class="elabel">leads to</span><span class="chip">S3</span><span class="chip">S4</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S5a</span><h4>Employment gap, no conventional last role</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S5</span></span></div>
+            <p class="closer">"What did the day-to-day of that time actually involve?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S2b</span><h4>Money-rich but time-poor</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S2</span></span></div>
+            <p class="closer">"How many hours a week can you realistically protect, even if it's just a few?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
+          </div>
+          <div class="facet drafted">
+            <div class="facet-top"><span class="facet-id">S4b</span><h4>Wants to freelance, not get hired</h4><span class="src drafted">DRAFTED</span><span class="elabel" style="margin-left:auto">responds to <span class="chip">S4</span></span></div>
+            <p class="closer">"What would you actually want to build or offer?"</p>
+            <div class="edges"><span class="elabel">leads to</span><span class="chip self">stays</span></div>
           </div>
         </div>
       </div>

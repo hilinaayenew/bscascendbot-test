@@ -503,6 +503,21 @@ function dropDanglingQuestion(text, wasCapped) {
   return sentences.slice(0, -1).join(" ").trim();
 }
 
+// Third shape of the same failure, caught on a live getting-started run: the
+// reply's own closing STATEMENT promises content it doesn't contain — "Pick
+// one path and do these steps." with no steps anywhere in the text — because
+// an earlier guard (usually dropRepeatedSentences, since the actual steps had
+// already been given in a prior turn) removed the content the reference
+// depended on. dropDanglingQuestion only ever looked at a trailing QUESTION;
+// this is the same bug in a trailing statement. Same conclusion either way:
+// there is nothing to repair in the text, only to regenerate.
+function endsOnDanglingReference(text) {
+  const sentences = (text.match(/[^.!?]+[.!?]*/g) || []).map((s) => s.trim()).filter(Boolean);
+  const body = sentences.filter((s) => !s.endsWith("?"));
+  if (!body.length) return false;
+  return DANGLING_REFERENCE.test(body[body.length - 1]);
+}
+
 // The second shape has no tell in the words at all: everything except the
 // closing question was removed as already-said, so what she gets is a bare
 // question about advice she can no longer see. Eight of forty-nine replies in
@@ -969,7 +984,13 @@ async function updateProfile(message, history) {
     "1. WHERE SHE IS — her role, her place, what is happening with her pay or job right now.",
     "2. WHAT SHE IS TRYING TO DO — where she wants to get to, what is in her way, what she has already tried.",
     "",
-    "Write it as a note in the third person — \"She is a backend developer in Nairobi, three years in the role\" — never by quoting her back at herself.",
+    // Was "She is a backend developer in Nairobi, three years in the role" —
+    // plausible enough that an area-tester run caught the model reproducing
+    // that exact fabricated sentence as if it were a real fact about her, on
+    // a turn where she'd never mentioned a job, a city, or years of
+    // experience. An example this specific reads as content to imitate, not
+    // just a format to follow. Deliberately inert placeholders instead.
+    "Write it as a note in the third person — \"She is a job-title in a-place, N years in the role\" — never by quoting her back at herself.",
     "ACCUMULATE. The note so far is below; keep everything in it that is still true and fold in whatever is new. Do not start again from only the latest message.",
     "Record ONLY what she has actually said. Never infer, never embellish, never guess a city or a salary she has not given.",
     "If you genuinely know nothing for a paragraph, output the single word NONE for it. Never write \"no information provided\" or any other placeholder — that gets stored as if it were a fact.",
@@ -1850,9 +1871,15 @@ async function main() {
     // fix and is the more common one — it is what produces the bare "What
     // feels true for you right now?" on a turn where she has just added a
     // fact. Either way there is nothing to repair in the text.
+    // A third shape: the reply's own closing statement, not a question,
+    // promises content that isn't there — "pick one path and do these
+    // steps" with no steps anywhere, on the exact turn a phone-only user
+    // asked what to actually do. Same root cause, same fix.
     const somethingWasCut = capped || !deduped || deduped !== openerFixed;
-    if (somethingWasCut && (!text || isOnlyAQuestion(text)) && WRAP_UP && placed.stage !== WRAP_UP) {
-      console.log(C.amber(`  [${text ? "only a question survived" : "nothing survived"} the guards — answering as a wrap-up instead]`));
+    const danglingBody = !!text && endsOnDanglingReference(text);
+    if (somethingWasCut && (!text || isOnlyAQuestion(text) || danglingBody) && WRAP_UP && placed.stage !== WRAP_UP) {
+      const why = !text ? "nothing survived" : danglingBody ? "reply promised content it didn't contain" : "only a question survived";
+      console.log(C.amber(`  [${why} the guards — answering as a wrap-up instead]`));
       // Set before the call, not after: if the regeneration also comes back
       // empty, the rescue below should offer to finish rather than serve the
       // area's fallback question, which is the thing this branch exists to

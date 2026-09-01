@@ -190,6 +190,61 @@ export const BOTEMA_GENERATED_EXAMPLES: Record<string, GeneratedExample[]> = {
       reviewStatus: "unreviewed", drafted: "2026-08-27",
     },
 
+    // ── Area 1 · Round 2 — dead ends and standalone topics ────────────────
+    // Second dead-end sweep, 2026-08-31, now including the standalone-topic
+    // check. Three more response branches plus two whole topics the area
+    // never touched at all (local market viability, phone-only access).
+
+    {
+      question: "I don't really have a 'last role' — I was out of the workforce for years before this.",
+      answer:
+        "A gap isn't a blank page — whatever you were doing, you were still solving problems, managing a household budget, coordinating people, staying organised under pressure, and that counts for more than people give it credit for. Frame it as what you did, not what you didn't do on a payslip. What did the day-to-day of that time actually involve?",
+      topic: "getting_started", area: 1, facet: "S5a", respondsTo: "S5",
+      userSaid: "I don't really have a 'last role' — I was out of the workforce for years",
+      gap: "Employment gap or informal work, not a different-field switch — S5/G4 both assume a conventional prior role to point to",
+      reviewStatus: "unreviewed", drafted: "2026-08-31",
+    },
+    {
+      question: "I've got decent savings but almost zero free time — I work sixty hours a week.",
+      answer:
+        "That's the case where I'd actually spend the money — a paid, structured programme with fixed deadlines protects your few free hours better than self-teaching does, because nobody's chasing you to finish. Look for evening or weekend cohorts built for people working full-time. How many hours a week can you realistically protect, even if it's just a few?",
+      topic: "getting_started", area: 1, facet: "S2b", respondsTo: "S2",
+      userSaid: "I've got decent savings but almost zero free time",
+      gap: "Time-poor but money-rich — the mirror image of S2a, whose actual advice (self-teach, no cost pressure) runs backwards for this person",
+      reviewStatus: "unreviewed", drafted: "2026-08-31",
+    },
+    {
+      question: "I'm not trying to get hired anywhere — I want to freelance or build my own thing eventually.",
+      answer:
+        "That changes what 'job-ready' even means for you — you don't need a portfolio built for a hiring manager, you need one or two things you can actually sell or ship on your own. It usually still means starting with the same fundamentals, but I'd get you building something real and sellable much sooner than I would someone aiming for an interview. What would you actually want to build or offer?",
+      topic: "getting_started", area: 1, facet: "S4b", respondsTo: "S4",
+      userSaid: "I'm not trying to get hired anywhere — I want to freelance or build my own thing eventually",
+      gap: "Goal is self-employment/freelance, not getting hired — nothing in the area distinguishes learning-to-get-hired from learning-to-work-for-herself",
+      reviewStatus: "unreviewed", drafted: "2026-08-31",
+    },
+    {
+      question: "Is it even realistic to get a tech job locally, or should I just plan on working remotely for a company abroad?",
+      answer:
+        "It depends on the field and the company, but yes — plenty of local tech jobs exist, and plenty more African talent is working remotely for companies abroad too, so you're not choosing one path over the other from day one. What usually matters more early on is which fields have real local demand where you are. Do you know what the market looks like in your city or country right now?",
+      topic: "getting_started",
+      area: 1,
+      facet: "G5",
+      gap: "Whether real tech jobs exist locally, or she needs to plan on remote-for-abroad work — a getting-started-stage question, not covered anywhere despite BOTEMA_VALUES naming this exact split as core context",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-31",
+    },
+    {
+      question: "I only have a phone, no computer at all. Can I still learn?",
+      answer:
+        "A phone alone makes it harder but not impossible — some platforms have genuinely usable mobile apps for the fundamentals, and it's worth being honest that serious coding eventually needs a real keyboard and screen, even if it's borrowed, shared, or a few hours a week at a cyber café or library. What access to a computer, even occasional, do you actually have around you?",
+      topic: "getting_started",
+      area: 1,
+      facet: "G6",
+      gap: "Learning with a phone only, no computer at all — a device barrier distinct from S6a's connectivity/data-cost gap, which still presumes a computer exists",
+      reviewStatus: "unreviewed",
+      drafted: "2026-08-31",
+    },
+
     // ── Area 2 · Further Education — Response branches ────────────────────
     // Six dead ends found running the area's first dead-end discovery sweep,
     // 2026-08-27 — the same treatment Salary got at launch, applied here for

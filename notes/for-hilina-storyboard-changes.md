@@ -113,6 +113,50 @@ a day's work otherwise. Everything here is on top of that.
 
 ---
 
+## 2026-09-01 — Where the prompt's blocks go, tested rather than argued
+
+Short one. Nothing here changes what you build yet, except the last item, which does.
+
+**The Confidence sweep was re-run** on the five scenarios that were failing or suspect (02, 03, 05,
+08, 09). The worst thing in the 28 Aug transcripts is gone: three of ten conversations used to
+answer a direct question with the bare canned line *"What feels true for you right now?"* — the
+model produced nothing and the guards emptied the reply. Zero occurrences now. 05 and 08 pass, 02
+and 09 still fail on endings, and 03's failure is a bad check rather than a bad reply.
+
+**The order of the blocks in the generation prompt was put to a test.** The question was whether the
+positive examples should sit at the END of the prompt, with the rules in the middle — the argument
+being that recency wins, the guards can only remove, and half this prompt is prohibitions. It was
+built as a switchable stack (`--stack=rules-last|examples-last` on the harness) and both orders were
+run over four comparable scenarios, five turns each, against live Azure.
+
+The proposed order lost on every shape measure, in every scenario: 17 sentence caps against 3, 12
+flattened rundowns against 1, and 1 light-check ending against 10. The mechanism is worth knowing —
+it is **mass, not position**. The shape rules sat last in both orders, so nothing was buried. But
+~3,600 characters of Q&A next to the generation point sets the shape of the answer, and four
+sentences of length rule after them do not undo it. What the model copies from an example is its
+structure. Default stays as it was; the flag stays so the arm can be reproduced.
+
+**The one thing for you.** The harness and the deployed edge function do not agree on this order,
+and the deployed one is the arrangement that just lost. `botema-coach.ts` sends persona and rules as
+the system message, then examples and knowledge afterwards inside the user message
+(`buildFewShotPrompt`). The harness puts examples in the middle and rules last. So every Confidence
+finding we have acted on was measured against an order the live bot does not use. On the numbers
+above, the fix points at the live function: move its examples ahead of its rules. Not done — it is
+a change to deployed code and it should be a deliberate one.
+
+**Also.** `notes/prompt-anatomy.html` was showing `VARY_YOUR_OPENING` glued onto the end of an
+inline block and attributed to the wrong file; the page now shows every block in the order the call
+actually sends it, verified against a live dump rather than by reading the code.
+
+**Three open bugs, none urgent.** (1) The light-check test in `checks.mjs` whitelists check-phrases
+("feel doable", "sounds right") while the model varies the adjective, so it fails good endings —
+"Does that approach feel actionable for you in that room?" was marked a failure. (2) The profile
+note's placeholder guard misses `— NONE`, because the model prefixes the paragraph with an em dash,
+so an empty note gets stored as a fact. (3) "I got promoted to lead my team about two months ago"
+was classified as *leaving* Confidence for Career Paths, ending a conversation on turn 1.
+
+---
+
 ## 2026-08-28 — Confidence tested properly, and the four things it turned up
 
 Ran the Confidence & Imposter Syndrome area through five real conversations, read the transcripts

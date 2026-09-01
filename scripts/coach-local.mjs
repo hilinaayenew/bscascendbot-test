@@ -103,6 +103,21 @@ const REASONING = { generate: "low", profile: "minimal", classify: null };
 // look reasonable alone. Off unless asked for; costs nothing when off.
 const dumpArg = process.argv.find((a) => a.startsWith("--dump="));
 const DUMP = dumpArg ? dumpArg.slice(7) : null;
+
+// --stack=<order> chooses where the examples sit relative to the rules. Both
+// orders rest on the same fact -- recency wins, so the model imitates whatever
+// it read last -- pointed at different things. See the seg{} block in
+// wordalise() for what each one is and the evidence behind it.
+const stackArg = process.argv.find((a) => a.startsWith("--stack="));
+// Default measured, not assumed: examples-last lost on every shape measure over
+// four comparable scenarios (20 turns each side) -- 17 sentence caps against 3,
+// 12 flattened lists against 1, and 1 light-check ending against 10. See the
+// seg{} block in wordalise().
+const STACK = stackArg ? stackArg.slice(8) : "rules-last";
+if (!["rules-last", "examples-last"].includes(STACK)) {
+  console.error(`\n  Unknown --stack=${STACK} -- expected rules-last or examples-last\n`);
+  process.exit(1);
+}
 let dumpTurn = 0;
 let turnNumber = 0;
 let dumpLabel = "startup";
@@ -1331,23 +1346,78 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     "If you gave her figures earlier in this conversation, do NOT repeat them. She has them. Answer only what she has just narrowed to, and refer back in one clause if you must — 'those were general roles, but for fintech…'. Restating the same numbers reads as if you weren't listening.",
   ].join("\n") : "";
 
-  // Order matters. The length constraint goes LAST because recency wins: with
-  // five examples and a knowledge dump above it, an instruction at the top gets
-  // buried and the model writes a rundown of everything it was given.
-  const sys = [
-    loadSystemPrompt(),
-    "",
-    `Where the user is right now: ${STAGES[stage].describes}`,
-    "",
-    // What a mentor would remember about her, kept as prose rather than
-    // variables. Placed before the examples so it frames them: the examples
-    // are generic, she is not.
+  // ── The stack, and why its order is a variable ────────────────────────────
+  // Every block below is built once and then composed in the order STACK asks
+  // for. Two orders exist, and the argument for each is the same argument --
+  // recency wins, the model imitates whatever it read last -- aimed at
+  // different things.
+  //
+  //   rules-last     Examples in the middle, prohibitions at the end. Set when
+  //                  an instruction at the TOP of the prompt was buried by
+  //                  seven examples and a page of background and the model
+  //                  wrote a rundown of everything it had been given.
+  //   examples-last  The advice in the middle, the answers she should sound
+  //                  like at the end. The case for it is in this prompt's own
+  //                  proportions: 49% of it is prohibitions against 20%
+  //                  examples, and the guards downstream can only REMOVE --
+  //                  nothing can put voice back once the reply arrives without
+  //                  it. So put what to DO where recency helps it. It is also
+  //                  what the deployed edge function does: botema-coach.ts
+  //                  sends persona and rules as the system message and the
+  //                  examples afterwards, inside the user message.
+  //
+  // Measured, 31 Aug, Confidence scenarios 02/03/05/09, five turns each, both
+  // orders against live Azure. examples-last lost on every shape measure, in
+  // every scenario, with no exception:
+  //
+  //                        rules-last   examples-last
+  //   scenarios passing         3/4          1/4
+  //   light-check endings        10            1
+  //   sentence cap fired          3           17
+  //   rundowns flattened          1           12
+  //   second question cut         2            5
+  //
+  // The mechanism is NOT the 28 Aug burial -- the shape rules sit last in both
+  // orders here. It is mass rather than position: ~3,600 characters of Q&A
+  // adjacent to the generation point sets the shape of the answer, and four
+  // sentences of length rule after them do not undo it. What the model copies
+  // from an example last read is its STRUCTURE, and several drafted answers
+  // are themselves multi-clause. Same scenario, same turn, same three facets
+  // drawn -- rules-last gave one concrete move and a yes/no check;
+  // examples-last gave three abstractions that had to be flattened and capped
+  // and then asked her for homework.
+  //
+  // In both orders the shape rules -- length, how to end, the wrap-up override
+  // -- stay genuinely last. Those are the specific lines that were observed
+  // being buried, and they are four sentences rather than seven examples, so
+  // pinning them costs little and the evidence for doing it is direct.
+  const EX = STACK === "examples-last" ? "below" : "above";
+
+  const seg = {};
+
+  seg.persona = [loadSystemPrompt()];
+
+  seg.stage = [`Where the user is right now: ${STAGES[stage].describes}`];
+
+  // What a mentor would remember about her, kept as prose rather than
+  // variables. Ahead of the examples in either order, because it frames them:
+  // the examples are generic, she is not.
+  seg.note = [
     state.situation ? `WHAT YOU KNOW ABOUT HER: ${state.situation}` : null,
     state.aims ? `WHAT SHE IS TRYING TO DO: ${state.aims}` : null,
     state.situation || state.aims
       ? "Use this. Never ask her again for something she has already told you, and never recite it back at her — just let it shape the answer."
       : null,
-    state.situation || state.aims ? "" : null,
+  ];
+
+  seg.examples = [
+    // Said plainly when the examples come after the rules: the rules still
+    // win. Recency is being used here to lend the examples force, not
+    // authority, and without this line the model can read the last thing in
+    // the prompt as the thing that overrides.
+    STACK === "examples-last"
+      ? "These come last because they are what you should SOUND like, and it is the last thing you read that sticks. They do not override the rules above — the rules still decide what you may say, and these decide how it reads."
+      : null,
     thin
       ? "Answers you have given to OTHER questions. Nothing here is close to what she just asked, so take ONLY the voice from them — the directness, the length, the habit of giving her one thing she can act on. The advice must be your own, worked out for her question from what you know. Do not bend her question towards these answers because they are what you have."
       : "Answers you have given to related questions. These are your VOICE REFERENCE — match their tone, their directness and above all their length. Do not quote them, and do not answer questions the user did not ask.",
@@ -1361,14 +1431,22 @@ async function wordalise(message, stage, history, facets, search = null, used = 
       : null,
     wide.length ? "" : null,
     wide.length ? render(wide) : null,
-    "",
+  ];
+
+  seg.knowledge = [
     "Background you may draw on if it is relevant to what was actually asked:",
     loadKnowledge(AREA_TOPIC),
-    "",
+  ];
+
+  seg.figures = [
     search ? "" : loadFigureGuard(),
     grounding,
-    "",
-    "NOW THE RULES FOR YOUR REPLY, WHICH OVERRIDE EVERYTHING ABOVE:",
+  ];
+
+  seg.advice = [
+    STACK === "examples-last"
+      ? "NOW THE RULES FOR YOUR REPLY. THEY OVERRIDE EVERYTHING ELSE IN THIS PROMPT, THE EXAMPLES BELOW INCLUDED:"
+      : "NOW THE RULES FOR YOUR REPLY, WHICH OVERRIDE EVERYTHING ABOVE:",
     // The filler-acknowledgment ban used to sit here as its own line. It now
     // lives inside VARY_YOUR_OPENING, with the rest of the opening rules,
     // rather than in two places that can drift apart.
@@ -1392,7 +1470,7 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     // someone still seeking one, given to someone who had already been
     // offered it. The examples were about asking, so it advised asking.
     "ANSWER THE CONVERSATION, NOT THE TOPIC. Before you write, ask yourself what has actually already happened to her — what she has been offered, refused, told or decided in this conversation so far. Her latest message is usually a detail added to that situation, not a new question.",
-    "The examples above are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.",
+    `The examples ${EX} are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.`,
     "When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.",
     "You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.",
     // HOW YOU OPEN.
@@ -1417,7 +1495,10 @@ async function wordalise(message, stage, history, facets, search = null, used = 
       ? `You have already opened replies in this conversation with: ${previousReplies.map((r) => `"${r.split(/\s+/).slice(0, 6).join(" ")}…"`).join(", ")}. Do NOT begin this one like ANY of those — a different first word and a different shape, not the same construction with the noun swapped.`
       : null,
     "'I would always recommend' is yours, but used every turn it stops sounding like you and starts sounding like a template.",
-    "Answer only the one thing the user actually asked. You have been given several examples so that you can pick the right one — not so that you can cover them all.",
+    `Answer only the one thing the user actually asked. You have been given several examples ${EX} so that you can pick the right one — not so that you can cover them all.`,
+  ];
+
+  seg.shape = [
     search
       ? [
           "FIRST PERSON, always. You are telling her what you found, not publishing it. Start with what YOU found or couldn't find — \"I could only find a couple of figures for Lagos\", \"I couldn't find much on fintech specifically\" — then give the numbers with their sources, then what to do with them.",
@@ -1443,13 +1524,24 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     stage === WRAP_UP
       ? [
           "THIS TURN IS THE WRAP-UP, AND IT OVERRIDES THE RULES ABOVE.",
-          "She is agreeing, not asking. Do not give new advice. No extra step, no further tip, no 'one more thing', no reopening a thread she has just closed, and nothing at all from the examples above — they are here for voice only this turn.",
+          `She is agreeing, not asking. Do not give new advice. No extra step, no further tip, no 'one more thing', no reopening a thread she has just closed, and nothing at all from the examples ${EX} — they are here for voice only this turn.`,
           "Say back what she is actually going to do, in her words rather than yours, in one sentence. If there is nothing concrete to say back, say what she has worked out instead.",
           "Then check whether that is genuinely it — 'I think we've got a plan, haven't we?', 'Have we covered that one?', 'Is there anything else on your mind?'. One check, warm, and short.",
           "Two sentences. Three at the outside. A wrap-up that runs long is not a wrap-up.",
         ].join(" ")
       : null,
-  ].join("\n");
+  ];
+
+  // One blank line between segments, and a segment that came back empty
+  // contributes nothing rather than a gap.
+  const ORDER = STACK === "examples-last"
+    ? ["persona", "stage", "note", "knowledge", "figures", "advice", "examples", "shape"]
+    : ["persona", "stage", "note", "examples", "knowledge", "figures", "advice", "shape"];
+
+  const sys = ORDER
+    .map((name) => seg[name].filter((l) => l !== null && l !== undefined).join("\n").trim())
+    .filter(Boolean)
+    .join("\n\n");
 
   return callAzure([
     { role: "system", content: sys },

@@ -2,7 +2,7 @@
 // Botema — Career Coach persona
 // Direct, personal, African-context aware. Uses Otema's Q&A examples as few-shot data.
 
-import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices, NARROW_SELF_CHECK, LONG_FORM_ESCAPE_HATCH, resolveNarrowOrAnswer, pickRandom, NO_INVENTED_FIGURES, HISTORY_WINDOW, STAND_WITH_HER, VARY_YOUR_OPENING, NEVER_DISCOUNT_HER_PLACE, REFLECT_BACK, NEVER_OFFER_TO_ACT, PLAIN_LANGUAGE, ASK_WITHOUT_EXTRACTING } from "./converser.ts";
+import { Converser, ConverserContext, AzureConfig, WordaliseFunction, InstructionsFunction, EngageFunction, OAIMessage, ChatFunction, FunctionType, withChoices, NARROW_SELF_CHECK, LONG_FORM_ESCAPE_HATCH, resolveNarrowOrAnswer, pickRandom, NO_INVENTED_FIGURES, HISTORY_WINDOW, VARY_YOUR_OPENING, NEVER_DISCOUNT_HER_PLACE, REFLECT_BACK, NEVER_OFFER_TO_ACT, PLAIN_LANGUAGE, ASK_WITHOUT_EXTRACTING } from "./converser.ts";
 import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./bsc-functions.ts";
 import { KNOWLEDGE_BASE, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT, BOTEMA_VALUES } from "./botema-examples.ts";
@@ -95,13 +95,31 @@ class BotemaAdvise extends WordaliseFunction {
 
   async generateResponse(prompt: string, _question: string): Promise<string> {
     const history = this.converser.context.conversationHistory.slice(-HISTORY_WINDOW);
+    // Rules moved from the system message to the end of the user message,
+    // after the examples rather than before them. Measured on the harness
+    // (scripts/coach-local.mjs, the rules-last vs examples-last comparison,
+    // Confidence scenarios 02/03/05/09 against live Azure): rules-last won
+    // on every measure -- 3/4 scenarios passing against 1/4, far fewer times
+    // the safety-net guards had to intervene afterward. The mechanism is
+    // proximity to the generation point, not the system/user role label:
+    // whatever the model reads last shapes the reply's structure most, and
+    // this used to leave ~3,600 characters of examples as the last thing
+    // read before the rules that were meant to govern them.
+    // STAND_WITH_HER removed for now — a comparison against main's shorter
+    // prompt (which never had it) showed markedly fewer validating-opener
+    // overuses without it. Kept NEVER_DISCOUNT_HER_PLACE, which covers the
+    // one thing STAND_WITH_HER's absence could reopen (the "diversity hire"
+    // bug) — its own wording no longer references STAND_WITH_HER, see
+    // converser.ts. Revisit once the opener-overuse problem has a real
+    // code-level fix rather than being solved by removing the rule.
+    const rules = `${VARY_YOUR_OPENING} The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} ${LONG_FORM_ESCAPE_HATCH} ${NO_INVENTED_FIGURES} ${NEVER_DISCOUNT_HER_PLACE} ${REFLECT_BACK} ${NEVER_OFFER_TO_ACT} ${PLAIN_LANGUAGE} ${ASK_WITHOUT_EXTRACTING} Otherwise, if the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.`;
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: BOTEMA_VALUES + "\n\n" + BOTEMA_SYSTEM_PROMPT + ` ${VARY_YOUR_OPENING} The knowledge you're given may cover several sub-areas of this topic — answer only the specific angle the user actually asked about, don't summarize every related sub-area 'just in case'. ${NARROW_SELF_CHECK} ${LONG_FORM_ESCAPE_HATCH} ${NO_INVENTED_FIGURES} ${STAND_WITH_HER} ${NEVER_DISCOUNT_HER_PLACE} ${REFLECT_BACK} ${NEVER_OFFER_TO_ACT} ${PLAIN_LANGUAGE} ${ASK_WITHOUT_EXTRACTING} Otherwise, if the user's question isn't about a TECH career specifically — general trivia, unrelated technical help, or explicitly wanting a career/field that is NOT tech — do not answer it — say briefly that it's outside what you help with, and redirect to tech career topics instead. Being about careers/jobs in general isn't enough; it has to be about tech.`,
+        content: BOTEMA_VALUES + "\n\n" + BOTEMA_SYSTEM_PROMPT,
       },
       ...history,
-      { role: "user", content: prompt },
+      { role: "user", content: `${prompt}\n\nNOW THE RULES FOR YOUR REPLY, WHICH OVERRIDE EVERYTHING ABOVE:\n${rules}` },
     ];
     const raw = await callAzure(this.converser.azureConfig, messages);
     return resolveNarrowOrAnswer(raw);
@@ -136,13 +154,17 @@ class BoteMindset extends WordaliseFunction {
 
   async generateResponse(prompt: string, _question: string): Promise<string> {
     const history = this.converser.context.conversationHistory.slice(-HISTORY_WINDOW);
+    // Same reorder as BotemaAdvise above, same reason — see the comment there.
+    // STAND_WITH_HER removed for now — see the comment on the same change in
+    // BotemaAdvise.generateResponse() above.
+    const rules = `Be warm and honest when addressing a mindset challenge, and get straight into a helpful, specific response rather than a scripted opening line. ${VARY_YOUR_OPENING} ${NEVER_DISCOUNT_HER_PLACE} ${REFLECT_BACK} ${NEVER_OFFER_TO_ACT} ${PLAIN_LANGUAGE} ${ASK_WITHOUT_EXTRACTING} ${LONG_FORM_ESCAPE_HATCH}`;
     const messages: OAIMessage[] = [
       {
         role: "system",
-        content: BOTEMA_VALUES + "\n\n" + BOTEMA_SYSTEM_PROMPT + ` Be warm and honest when addressing a mindset challenge, and get straight into a helpful, specific response rather than a scripted opening line. ${VARY_YOUR_OPENING} ${STAND_WITH_HER} ${NEVER_DISCOUNT_HER_PLACE} ${REFLECT_BACK} ${NEVER_OFFER_TO_ACT} ${PLAIN_LANGUAGE} ${ASK_WITHOUT_EXTRACTING} ${LONG_FORM_ESCAPE_HATCH}`,
+        content: BOTEMA_VALUES + "\n\n" + BOTEMA_SYSTEM_PROMPT,
       },
       ...history,
-      { role: "user", content: prompt },
+      { role: "user", content: `${prompt}\n\nNOW THE RULES FOR YOUR REPLY, WHICH OVERRIDE EVERYTHING ABOVE:\n${rules}` },
     ];
     const raw = await callAzure(this.converser.azureConfig, messages);
     return resolveNarrowOrAnswer(raw);

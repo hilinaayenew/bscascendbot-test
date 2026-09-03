@@ -1,6 +1,6 @@
 # Can't settle between data and UX, hasn't built anything in either
 
-_Run 2026-09-01 08:08 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-03 10:35 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stays in stage A throughout — still deciding, not yet executing — and pushes toward trying something small rather than more thinking, without ignoring that she has little time to try both properly.
 
@@ -12,86 +12,85 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I don't know if tech is even for me, I keep going back and forth
-  [stage A — No prior field stated; user is unsure about whether tech is right for them, indicating stage A uncertainty about entering tech.]
+  [stage A — User is unsure if tech is right for them and is exploring whether to pursue tech at all; stage A (unclear direction)]
   → enterDiscussionArea(1 · Getting Started)
   [no new facts about her — note left alone, no call made]
-  [validating opener dropped — she described herself, not something done to her]
+  [closing question dropped — it referred to advice the cap removed]
   [sentence cap fired — the model wrote a rundown]
   [drew on G3, S1, G3a — 1 Otema, 2 drafted]
   [voice only: S8, S1a, G5, S7]
 
 Botema
-  Being torn doesn’t mean you’re not cut out for tech—it usually means you’re
-  still feeling your way and that’s okay. What I would always recommend in
-  this moment: pick two tiny, finishing projects in two different
-  tech-adjacent areas and complete them over a weekend. Does that feel like
-  something you could start this weekend?
+  That doubting is totally normal when you’re exploring tech from scratch. I
+  would always recommend you test the waters with tiny, finishable projects in
+  a couple of fields you’re curious about, then let the work decide.
 
   you > one week I want to do data science, the next I want UX
-  [stage A — User is torn between data science and UX, exploring fit by trying both areas.]
+  [stage A — User is expressing ongoing field uncertainty between data science and UX; still unclear which field to pursue.]
+  [no new facts about her — note left alone, no call made]
+  [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
   [drew on S1a, S7a, G5 — 0 Otema, 3 drafted]
   [voice only: S8a, S1, G3, S8]
 
 Botema
-  That back-and-forth is your signal that you haven’t yet tasted the work
-  end-to-end in each field. Try this: this weekend, do a small data science
-  project (a clean dataset, a simple model, a clear outcome) and, in parallel,
-  a tiny UX task (sketch a product flow or wireframe a screen for a real user
-  scenario). You’re not picking a life career; you’re testing energy and
-  clarity.
+  I would always recommend you run two very small, finishable weekend
+  projects—one in data science and one in UX—then compare how they felt and
+  what you could ship in a simple, tangible sense. What two tiny projects
+  would you actually start this weekend, one for data and one for UX, so we
+  can compare the experience side by side?
 
   you > I've never actually built anything in either one
-  [stage D — User has zero hands-on practice in both fields and asks for concrete beginner steps, moving from theory to actionable tasks.]
+  [stage C — User hasn't built anything yet and is asking how to start; needs beginner-friendly, concrete project ideas and a plan to get hands-on.]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
   [repeated advice removed]
-  [second question dropped — one per reply]
   [sentence cap fired — the model wrote a rundown]
-  [drew on S4b, G6, S4a — 0 Otema, 3 drafted]
-  [voice only: S6, G2, S6a, S4]
+  [drew on S2b, G1, S2a — 0 Otema, 3 drafted]
+  [voice only: S2, G1a]
 
 Botema
-  That’s honest and common. Many people start here. Does that sound doable for
-  you this weekend?
+  That’s a great honesty to bring. Since you’ve never built anything in either
+  area, here are two ultra-beginner, finishable weekend projects you can do
+  with zero setup. Data science tiny project: fetch a small CSV (like a
+  tips.csv or a Titanic dataset), load it, and answer one question with one
+  chart (for example, “What’s the average tip by day?” or “Which feature best
+  predicts survival?”).
 
   you > I don't have much time to try both properly
-  [stage D — User has a concrete time constraint and asks for a practical, single-field tasting plan rather than attempting both.]
-  [no new facts about her — note left alone, no call made]
+  [stage C — Time constraint shifts focus to prioritizing a single option and practical quick tests (method-level decision).]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
   [repeated advice removed]
-  [drew on S6a, S6, S4 — 2 Otema, 1 drafted]
-  [voice only: S4b, G6, G2, S3]
+  [second question dropped — one per reply]
+  [drew on S2, S2b, G1a — 1 Otema, 2 drafted]
+  [voice only: S2a, G1]
 
 Botema
-  Time is tight, I get that. Pick the path you want to test first, and use the
-  other 15–30 minutes to reflect on how it felt. Which path do you want to
-  test this weekend, data science or UX, and approximately how much total time
-  can you spare?
+  That’s real and it’s okay to be time-poor. I’d recommend you pick one path
+  and do a single, ultra-light weekend project this weekend—nothing more than
+  2–3 hours—to see if you enjoy it, then decide if you want to go deeper.
+  Which path feels closer to your long-term goals: data science or UX?
 
   you > so where do I actually start
-  [stage D — User asked for concrete starting steps and a plan to begin taking small actions in data science or UX; previous messages show they're torn and need a practical entry plan.]
-  [no new facts about her — note left alone, no call made]
+  [stage D — User asked for concrete, ready-to-action starting steps for beginning a single ultra-light project in either data science or UX.]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
   [repeated advice removed]
   [sentence cap fired — the model wrote a rundown]
-  [drew on S4b, S3, S6a — 1 Otema, 2 drafted]
-  [voice only: S4a, G2, S4, G6]
+  [drew on S4b, S6a, G6 — 0 Otema, 3 drafted]
+  [voice only: S3, S6, G2, S4a]
 
 Botema
-  Start with one clear, tiny first step that you can actually finish this
-  weekend. If you pick data science, do a 2–3 hour mini project: download a
-  tiny public dataset, run a basic model, and plot one result that answers a
-  real question. If you pick UX, do a 2–3 hour task: sketch two alternative
-  flows for a real, relatable task (e.g., signing up for a local service) and
-  note where users might struggle.
+  Great question. Start by picking one path and taking one concrete first
+  step. If you choose data science: get Python basics and a simple notebook
+  set up.
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     1 · Getting Started
-  covered_stages  A, D
-  touched_facets  S1, S1a, S7, S7a, S8, S8a, G3, G3a, G5, S3, S4, S4a, S4b, S6, S6a, G2, G6
+  covered_stages  A, C, D
+  touched_facets  S1, S1a, S7, S7a, S8, S8a, G3, G3a, G5, S2, S2a, S2b, G1, G1a, S3, S4, S4a, S4b, S6, S6a, G2, G6
   closed_areas    —
   role/location   — / —
-  where she is    — NONE
-  trying to do    — NONE
 
   Nothing was written to any database.
 ```
@@ -101,7 +100,7 @@ Botema
 - PASS — classified stage A
 - PASS — pushes toward a small, concrete try rather than more deliberation
 - PASS — respects the limited-time constraint rather than telling her to try both fully
-- PASS — most replies still end on a question
+- **FAIL** — most replies still end on a question
 - PASS — no two replies open the same way
 - PASS — no reply stacks more than two jargon terms
 - PASS — no reply mostly restates the one before it

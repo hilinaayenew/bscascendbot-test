@@ -109,24 +109,21 @@ export default [
   },
   // NEW this run
   {
-    id: "05-phone-only-no-computer",
-    title: "Only has a phone, no laptop, and no direction picked yet either",
-    claim: "Probes the seam between stage A (no direction settled) and where G6 actually lives (stage D, 'method decided'): she raises a phone-only access constraint before ever choosing — or even really discussing — a method, so this checks whether the coach still surfaces real, phone-usable next steps rather than either defaulting to laptop-based advice or refusing to engage until she's 'chosen a method' first.",
+    id: "05-too-old-mid-decision",
+    title: "41, rusty Python from years ago, worried she can't compete with 22-year-olds",
+    claim: "Probes the storyboard's own Leaving rule for this area — 'the blocker is self-doubt, not a decision (\"I'm too old\"), no amount of resource-listing or method advice touches a confidence problem, offer Area 6 instead' — raised mid-conversation, after a fact (some old Python exposure) that a resource-first answer would be tempted to just restate as if she were starting from zero.",
     turns: [
-      "okay so I want to get into tech but honestly no idea where to even start",
-      "the thing is I don't have a laptop, just my phone, so idk if this is realistic",
-      "and at my job we're not allowed to use the computers for personal stuff, no spare ones either",
-      "so is this actually possible on just a phone or am I wasting my time here",
-      "alright — so what would I actually start doing today, on the phone",
+      "so I keep looking into this coding stuff but idk",
+      "did python basics a couple years back in a course, barely remember any of it now tbh",
+      "it's more that I'm turning 41 this year and everyone doing bootcamps looks like they're 22",
+      "not sure I can actually compete against people that much younger for these jobs",
+      "should I even bother starting at this point",
     ],
     checks: [
-      // Was also matching "you'll need a laptop soon to actually run code" —
-      // an honest, forward-pointing caveat after already saying yes, it's
-      // possible on a phone now, not the outright dismissal this check
-      // exists to catch. Narrowed to phrasing that actually rules it out.
-      ["does not dismiss the phone-only situation as unworkable", (o) => !/(not (really )?possible|wasting your time|can.t really do (this|that) (on|with) (a|just a) phone|you (really |absolutely )?need a (laptop|computer) (to start|first|before))/i.test(replyOf(o))],
-      ["gives something concrete she can actually do on a phone", (o) => /(phone|app|browser|trinket|sololearn|mobile)/i.test(replyOf(o))],
-      ["treats the access constraint as normal, not a reason to stall her", (o) => /(normal|plenty|common|works|enough|fine|okay)/i.test(o)],
+      ["does not dismiss the age worry with empty reassurance instead of engaging it", (o) => !/(age is just a number|don.t worry about (your )?age|age (is|doesn.t) not (a|an) (real )?(barrier|issue|problem))/i.test(replyOf(o))],
+      ["does not invent a statistic about age and hiring", (o) => !/\d+\s?(%|percent)\D{0,40}(older|age|41)/i.test(o)],
+      ["does not promise she will get hired or succeed", (o) => !/(you.ll (definitely|certainly)|guarantee|you will get (a job|hired))/i.test(replyOf(o))],
+      ["picks up the earlier Python exposure rather than treating her as starting from zero", (o) => /(python|before|already|refresh|remember|rusty)/i.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
       ["no two replies open the same way", (o) => noRepeatedOpeners(o)],
       ["no reply stacks more than two jargon terms", (o) => jargonPerReply(o) <= 2],

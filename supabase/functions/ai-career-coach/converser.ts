@@ -704,11 +704,20 @@ export function resolveNarrowOrAnswer(raw: string): string {
 const SECOND_QUESTION =
   /,\s+(?:and|or)\s+(?:what|how|which|who|when|where|why|whose|would|will|do|does|did|can|could|is|are|have|has|should)\b[^.!?]*\?\s*$/i;
 
+// Checks every question-ending sentence, not just a trailing one — found by
+// area-tester (2026-09-03) firing on a stacked question in the OPENING
+// sentence of a reply, which a check for only the very end of the text can't
+// see. Same fix ported into scripts/coach-local.mjs.
 export function dropSecondQuestion(text: string): string {
-  const trimmed = text.trimEnd();
-  if (!trimmed.endsWith("?")) return text;
-  const cut = trimmed.replace(SECOND_QUESTION, "?");
-  return cut === trimmed ? text : cut;
+  const sentences = splitSentences(text);
+  let changed = false;
+  const fixed = sentences.map((s) => {
+    if (!s.trim().endsWith("?")) return s;
+    const cut = s.replace(SECOND_QUESTION, "?");
+    if (cut !== s) changed = true;
+    return cut;
+  });
+  return changed ? fixed.join(" ") : text;
 }
 
 // Same 4-word "shape" the noRepeatedOpenerShape scenario check uses, so the
@@ -793,6 +802,14 @@ export function flattenEnumerations(text: string): string {
 const DANGLING_REFERENCE =
   /\b(?:those|these|the)\s+(?:\w+\s+)?(?:steps?|points?|items?|things?|ideas?|options?|tips?|moves?|two|three|four|first two|first three)\b/i;
 
+// A second shape of the same promise-with-nothing-behind-it failure — found
+// by area-tester (2026-09-03) on a reply that said "Try this in order." with
+// no routine anywhere in the text (dropRepeatedSentences() had stripped it as
+// already-said). DANGLING_REFERENCE only matches a demonstrative next to a
+// list-noun ("those steps"); this names no noun at all.
+const DANGLING_PROMISE =
+  /\btry\s+(?:this|that|these|it)\b[^.!?]*\b(?:in order|first|below|next|like (?:this|so))\b/i;
+
 export function dropDanglingQuestion(text: string, wasCapped: boolean): string {
   if (!wasCapped) return text;
   const sentences = text.match(/[^.!?]+[.!?]*/g) || [];
@@ -810,7 +827,8 @@ export function endsOnDanglingReference(text: string): boolean {
   const sentences = (text.match(/[^.!?]+[.!?]*/g) || []).map((s) => s.trim()).filter(Boolean);
   const body = sentences.filter((s) => !s.endsWith("?"));
   if (!body.length) return false;
-  return DANGLING_REFERENCE.test(body[body.length - 1]);
+  const last = body[body.length - 1];
+  return DANGLING_REFERENCE.test(last) || DANGLING_PROMISE.test(last);
 }
 
 // The other shape has no tell in the words at all — everything except the

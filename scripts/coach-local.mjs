@@ -509,6 +509,17 @@ function stripQuotaConcession(text) {
 const DANGLING_REFERENCE =
   /\b(?:those|these|the)\s+(?:\w+\s+)?(?:steps?|points?|items?|things?|ideas?|options?|tips?|moves?|two|three|four|first two|first three)\b/i;
 
+// A second shape of the same promise-with-nothing-behind-it failure, found
+// by area-tester on Confidence scenario 10: "I'd stick with a tiny, concrete
+// routine you can run in the moment. Try this in order." — no routine
+// anywhere in the text, because dropRepeatedSentences() had already stripped
+// it as already-said. DANGLING_REFERENCE only matches a demonstrative next to
+// a list-noun ("those steps"); "try this in order" names no noun at all, so
+// it never matched. Same conclusion either way: nothing to repair, only to
+// regenerate — see endsOnDanglingReference() below.
+const DANGLING_PROMISE =
+  /\btry\s+(?:this|that|these|it)\b[^.!?]*\b(?:in order|first|below|next|like (?:this|so))\b/i;
+
 function dropDanglingQuestion(text, wasCapped) {
   if (!wasCapped) return text;
   const sentences = text.match(/[^.!?]+[.!?]*/g) || [];
@@ -530,7 +541,8 @@ function endsOnDanglingReference(text) {
   const sentences = (text.match(/[^.!?]+[.!?]*/g) || []).map((s) => s.trim()).filter(Boolean);
   const body = sentences.filter((s) => !s.endsWith("?"));
   if (!body.length) return false;
-  return DANGLING_REFERENCE.test(body[body.length - 1]);
+  const last = body[body.length - 1];
+  return DANGLING_REFERENCE.test(last) || DANGLING_PROMISE.test(last);
 }
 
 // The second shape has no tell in the words at all: everything except the
@@ -672,11 +684,23 @@ function dropRepeatedSentences(text, previousReplies, threshold = 0.45) {
 const SECOND_QUESTION =
   /,\s+(?:and|or)\s+(?:what|how|which|who|when|where|why|whose|would|will|do|does|did|can|could|is|are|have|has|should)\b[^.!?]*\?\s*$/i;
 
+// Only checked the sentence at the very end of the whole reply — found by
+// area-tester on Confidence scenario 04: "what exactly did they say, and what
+// impact did the project have that you can point to?" was the stacked
+// question, but it was the OPENING sentence, followed by two more sentences
+// of advice. Checking only the trailing "?" let a mid-reply double question
+// straight through. Every question-ending sentence gets the same check now,
+// not just the last one.
 function dropSecondQuestion(text) {
-  const trimmed = text.trimEnd();
-  if (!trimmed.endsWith("?")) return text;
-  const cut = trimmed.replace(SECOND_QUESTION, "?");
-  return cut === trimmed ? text : cut;
+  const sentences = splitSentences(text);
+  let changed = false;
+  const fixed = sentences.map((s) => {
+    if (!s.trim().endsWith("?")) return s;
+    const cut = s.replace(SECOND_QUESTION, "?");
+    if (cut !== s) changed = true;
+    return cut;
+  });
+  return changed ? fixed.join(" ") : text;
 }
 
 function capSentences(text, keep = 3) {
@@ -1483,6 +1507,23 @@ async function wordalise(message, stage, history, facets, search = null, used = 
     `The examples ${EX} are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe — she already has the offer, she already resigned, she already got the raise — then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.`,
     "When she adds a fact, the reply must be ABOUT that fact. 'I asked twice before and got nothing' is not background colour — it is evidence about how her employer behaves, and it should change what you tell her, not sit alongside the same advice as before.",
     "You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause ('using the floor rate we worked out') and spend the reply on what is new.",
+    // Found by area-tester 2026-09-03 on Confidence: asked "how long is this
+    // going to realistically take" right after saying stability was her whole
+    // reason for switching, she got "3-6 months" — even though S4, the drawn
+    // example for that exact question, calls the three-month promise "a
+    // facade" and says a year or two is realistic. And on "they'll realise I
+    // don't know what I'm doing" before a technical interview, the reply went
+    // straight to a tactics checklist though the drawn example (G9) opens by
+    // naming that nerves aren't a readout of preparedness. Both times the
+    // example's opening CLAIM — the thing that reframes what she's afraid of
+    // or asking — got mined for topic-adjacent tactics and dropped.
+    `If the closest example ${EX} opens by stating a fact that reframes her situation or her fear — a promise is false, a feeling isn't a signal of unpreparedness, a number is really a floor not a ceiling — that fact is not optional colour. Keep it, in your own words, before you move to what to do.`,
+    // Found the same day on Getting Started: a full "which field should I
+    // pick" conversation gave five turns of build-it-yourself advice — small
+    // projects, free resources, a learning plan — and never once named a
+    // person, though S1 (drawn on turn 1) explicitly says to talk to people
+    // already in the field, and lifting as she climbs is a stated value.
+    `Likewise, if the closest example ${EX} points her toward a person — a mentor, someone already in the field, a community, BSC's own programme — keep that pointer somewhere in your reply. Don't let the advice narrow down to resources and self-directed work alone.`,
     // HOW YOU OPEN.
     //
     // The previous version of this rule named the failing phrase and banned
@@ -1710,19 +1751,29 @@ async function main() {
     // with a TypeError on STAGES[undefined] instead of speaking. One retry,
     // then speak rather than throw, same as every other failure path here.
     if (placed.stage !== "leaving" && !STAGES[placed.stage]) {
-      console.log(C.dim(`  [classification missing/invalid stage "${placed.stage}" — retrying once at double the token budget]`));
       // Same reasoning-model shape as the empty-content retry in callAzure():
       // a longer system prompt (more stages, more description text, per area)
       // means more hidden reasoning before the model can emit the tool call,
       // so the same 2000-token budget that worked for 3 stages started
-      // dropping the required field more often at 4. Double it here rather
-      // than raising the default for every call — most classifications don't
-      // need it.
-      const retried = DRY ? null : await classify(input, history, state.covered_stages, 4000).catch(() => null);
-      if (retried && (retried.stage === "leaving" || STAGES[retried.stage])) {
+      // dropping the required field more often at 4, and Getting Started's
+      // 5th stage (E) made a single retry at 4000 insufficient too — an
+      // area-tester run on 2026-09-03 caught it failing twice in one
+      // five-turn conversation, including the turn that confirms her plan
+      // right before the wrap-up reads it back. A single fixed retry doesn't
+      // scale with area size; ladder up the same way callAzure()'s own
+      // empty-tool-call retry does, to the same 12000 ceiling, rather than
+      // raising the default for every call — most classifications don't need
+      // any of this.
+      let retried = null;
+      for (const budget of [4000, 8000, 12000]) {
+        console.log(C.dim(`  [classification missing/invalid stage "${placed.stage}" — retrying at ${budget} tokens]`));
+        const attempt = DRY ? null : await classify(input, history, state.covered_stages, budget).catch(() => null);
+        if (attempt && (attempt.stage === "leaving" || STAGES[attempt.stage])) { retried = attempt; break; }
+      }
+      if (retried) {
         placed = retried;
       } else {
-        console.log(C.dim("  [still no valid stage after retry]"));
+        console.log(C.dim("  [still no valid stage after retries]"));
         console.log(`\n${C.wine("Botema")}`);
         console.log(wrap(COULD_NOT_ANSWER));
         console.log("");

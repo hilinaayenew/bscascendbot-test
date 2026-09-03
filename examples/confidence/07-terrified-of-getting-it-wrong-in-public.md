@@ -1,6 +1,6 @@
 # One visible mistake would prove she doesn't belong
 
-_Run 2026-09-01 12:08 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-03 10:35 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Stays in stage A and draws on G5, treating the fear as perfectionism rather than a realistic forecast — without promising her she won't get anything wrong, and without a list of preparation rituals.
 
@@ -12,83 +12,71 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I'm terrified of getting something wrong in front of the whole team
-  [stage A — The user is expressing a fear that prevents speaking up, which is a confidence & imposter syndrome-related barrier without an explicit action being stalled.]
+  [stage A — The message reveals an internal fear about making mistakes in public; no action taken or requested yet, which is stage A.]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
   [no new facts about her — note left alone, no call made]
   [validating opener dropped — she described herself, not something done to her]
-  [sentence cap fired — the model wrote a rundown]
   [drew on G5, G8, G6 — 0 Otema, 3 drafted]
   [voice only: S5, S1a, S2, S1b]
 
 Botema
-  I would always recommend reframing mistakes as data: they show you’re trying
-  and learning, not that you don’t belong. Try this: pick one upcoming small,
-  low-risk contribution, prepare a tight 2–3 sentence update, and ask for
-  quick feedback before you speak to the whole group. Does that feel doable
-  for you this week?
+  I would always recommend creating low-stakes moments to practice speaking
+  up—prepare one clear, compact point you can share in the next meeting, and
+  ask for quick feedback right after. Does that feel like something you could
+  try in your next stand-up or team call?
 
   you > it feels like one mistake would just prove what I already suspect about myself
-  [stage A — User expresses ongoing fear about making a mistake; still exploring confidence & imposter syndrome, not asking to leave.]
-  [no new information — stall 1/2]
+  [stage A — Stage A: expresses imposter feelings without stating a concrete action avoidance; no leaving.]
   [no new facts about her — note left alone, no call made]
   [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
-  [second question dropped — one per reply]
-  [drew on G5, S1, G10 — 1 Otema, 2 drafted]
-  [voice only: S5, G9, G7, G6]
+  [only a question survived the guards — answering as a wrap-up instead]
+  [drew on G5, G4, S1 — 1 Otema, 2 drafted]
+  [voice only: S1b, G9, S3, S3b]
 
 Botema
-  That fear is exactly how impostor feelings trap you: one slip becomes proof
-  of “you don’t belong. ” In my experience, the antidote is small, real
-  practice with feedback built in. Pick one tiny, low‑risk contribution,
-  script your 2–3 sentences, and ask for a fast, specific feedback right after
-  you present it. This shifts the moment from “proof of a flaw” to “data you
-  can improve with. " What one small update could you commit to delivering
-  this week?
+  What’s the smallest moment you could test this in—like the stand-up where
+  you share one line and ask for feedback right after?
 
   you > I check everything about four times before I push anything, it takes me ages
-  [stage B — The user describes a concrete behavior (excessive pre-push checking) caused by self-doubt; this shows self-doubt is blocking action.]
+  [stage B — The user describes a concrete action (checking code four times before pushing) that is blocked by self-doubt, which matches stage B (decision to act is blocked by the feeling).]
   [nothing recorded about her yet — writing the note anyway before it ages out]
-  [repeated advice removed]
-  [drew on G4, G2, S3b — 0 Otema, 3 drafted]
-  [voice only: S3, S3a, S3c, S4]
-
-Botema
-  That pattern is exactly the perfectionism trap I’ve seen a lot: four checks
-  turn a small update into a multi-hour delay. Try a two-pass rule and a hard
-  timer this week: first pass for the essential correctness, second pass only
-  for the highest-risk item (no more than 10–15 minutes total), and set a
-  20-minute timer to finish the second pass. Then push the update and gather
-  fast feedback.
-
-  you > nothing bad has actually happened yet, I know that sounds silly
-  [stage A — The user is expressing ongoing impostor feelings and a plan to act but with no concrete action yet; they remain in the exploration phase (A).]
-  [no new facts about her — note left alone, no call made]
-  [repeated advice removed]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G5, S5a, G9 — 0 Otema, 3 drafted]
-  [voice only: G7, G8, G6, S5]
-
-Botema
-  Not silly at all—that fear is exactly what keeps many of us over‑prepping.
-  It’s your brain trying to shield you from the first slip, even when nothing
-  bad has happened yet. What’s the tiny update you’re willing to ship this
-  week that would prove to you you can move fast and still be solid?
-
-  you > how do I stop doing this to myself
-  [stage B — User is asking for strategies to stop perfectionist self-criticism, signaling a shift from just feeling to seeking actionable change within Confidence & Imposter Syndrome area (B stage).]
-  [no new facts about her — note left alone, no call made]
   [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
-  [drew on S4, S3, S3c — 2 Otema, 1 drafted]
-  [voice only: G2, S3a, S3b, G4]
+  [drew on G2, S3b, S4 — 1 Otema, 2 drafted]
+  [voice only: S3c, G4, S3a, S3]
 
 Botema
-  The way out is a hard, repeatable ritual: cap your prep time (say 25 minutes
-  total), do a tiny true‑ship update, and get a fast, specific thumbs‑up or
-  thumbs‑down from a teammate right after you push. Also keep a quick log of
-  what you shipped and what you learned, so you build evidence that you can
-  move fast without breaking things.
+  I would push you to timebox your draft reviews to a hard limit (say 15
+  minutes) and limit yourself to two passes max before you push. Could you try
+  a 15-minute window for your next change and see if you can stop after two
+  passes, then tell me how it felt?
+
+  you > nothing bad has actually happened yet, I know that sounds silly
+  [stage A — User expresses ongoing self-doubt without concrete action, nothing bad happening yet; still in feeling stage]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
+  [repeated advice removed]
+  [drew on G5, S5a, G9 — 0 Otema, 3 drafted]
+  [voice only: G10, G6, S1b, G1]
+
+Botema
+  Your fear isn’t silly—it’s how your brain protects you in a space that asks
+  more from you. Even when nothing bad has happened, you’ve still built proof
+  you can push with a tight draft window.
+
+  you > how do I stop doing this to myself
+  [stage B — User is asking for strategies to stop self-damaging checking habits driven by impostor syndrome; they want actionable steps rather than more feelings.]
+  [no new facts about her — note left alone, no call made]
+  [drew on S3, S3c, G4 — 1 Otema, 2 drafted]
+  [voice only: S4, G2, S3b, S3a]
+
+Botema
+  You’re looping on self-criticism because your brain is trying to protect
+  you, not because you’re failing. Two concrete moves: first, replace “I’ll be
+  judged if I’m wrong” with “I’ll share one concrete point, and I’ll learn
+  from the feedback.” Second, set a tiny deadline and log one win after each
+  change (even if it’s “I spoke up for 30 seconds”). What one small change
+  could you test this week that would feel like a real shift?
 
   you > quit
 
@@ -98,7 +86,8 @@ Botema
   touched_facets  S1, S1b, S2, S5, S5a, G1, G3, G5, G6, G7, G8, G9, G10, S1a, S3, S3b, S3c, S4, G2, G4, S3a
   closed_areas    —
   role/location   — / —
-  trying to do    She aims to reduce perfectionism-driven delays by delivering a small, low-risk update this week, but she is blocked by needing to check everything four times, which makes delivery slow. She has not yet shared what specific update she will commit to or what feedback mechanisms she will use to shorten the process. NONE
+  where she is    — She is a software engineer in the team, currently anxious about public mistakes and still in the early stages of seeking more confident communication. There is no mention of a change in pay or role beyond ongoing efforts to improve speaking up and push processes.
+  trying to do    — She wants to speak up more in meetings and tests her ideas in low-stakes moments, aiming to reduce perfectionism and time spent on drafting. The main barriers are fear of making mistakes in front of the team and self-criticism. She has attempted timeboxed, two-pass draft reviews and short feedback after stand-ups, and is trying 15-minute drafting windows to limit overchecking. NONE
 
   Nothing was written to any database.
 ```
@@ -115,7 +104,7 @@ Botema
 - PASS — never stacks two questions into one ending
 - PASS — at least one ending is a light check she can answer with yes or no
 - PASS — no reply stacks more than two jargon terms
-- PASS — no reply mostly restates the one before it
+- **FAIL** — no reply mostly restates the one before it
 
 ---
 

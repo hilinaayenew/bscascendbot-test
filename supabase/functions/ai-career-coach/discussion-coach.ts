@@ -279,6 +279,19 @@ function buildAreaSystemPrompt(
     "The examples above are the nearest material you have. They are not necessarily the right material. If her situation has moved past what they describe, then say what fits HER, and let the examples inform only your voice. Advice that would have been right two turns ago is wrong now, and she will notice.",
     "When she adds a fact, the reply must be ABOUT that fact. It is not background colour — it is evidence about her situation, and it should change what you tell her, not sit alongside the same advice as before.",
     "You can see everything you have already said in this conversation. Do NOT repeat advice you have already given — she heard it. If a point still applies, refer back to it in a clause and spend the reply on what is new.",
+    // Found by area-tester 2026-09-03: a drawn example's opening CLAIM — the
+    // thing that reframes what she's afraid of or asking, not just its topic
+    // — was repeatedly getting mined for tactics and dropped. "How long will
+    // this realistically take" got a plain timeline even though the drawn
+    // answer calls the short-timeline promise "a facade"; "they'll realise I
+    // don't know what I'm doing" got a tactics checklist even though the
+    // drawn answer opens by saying nerves aren't a readout of preparedness.
+    "If the closest example above opens by stating a fact that reframes her situation or her fear — a promise is false, a feeling isn't a signal of unpreparedness, a number is really a floor not a ceiling — that fact is not optional colour. Keep it, in your own words, before you move to what to do.",
+    // Found the same day: a full "which field should I pick" conversation
+    // gave nothing but build-it-yourself advice and never once named a
+    // person, though the drawn example explicitly says to talk to people
+    // already in the field, and lifting as she climbs is a stated value.
+    "Likewise, if the closest example above points her toward a person — a mentor, someone already in the field, a community, BSC's own programme — keep that pointer somewhere in your reply. Don't let the advice narrow down to resources and self-directed work alone.",
     VARY_YOUR_OPENING,
     priorReplies.length
       ? `You have already opened replies in this conversation with: ${priorReplies.map((r) => `"${r.split(/\s+/).slice(0, 6).join(" ")}…"`).join(", ")}. Do NOT begin this one like ANY of those — a different first word and a different shape, not the same construction with the noun swapped.`
@@ -415,15 +428,21 @@ export class DiscussArea extends WordaliseFunction {
     // same failure shape as no tool call at all, just one layer deeper. A
     // longer system prompt (more stages, more description text) means more
     // hidden reasoning before the tool call, so the same budget that works
-    // for a 3-stage area drops the field more often on a 4-stage one. One
-    // retry at double the budget, then speak rather than strand her.
+    // for a 3-stage area drops the field more often on a 5-stage one. A
+    // single retry at double the budget held for a while but wasn't enough
+    // once Getting Started grew a 5th stage (E, the wrap-up) — an
+    // area-tester run on 2026-09-03 caught it failing twice in one five-turn
+    // conversation via the harness's equivalent path. Laddered up to match,
+    // to the same 12000 ceiling callAzure() already uses elsewhere.
     if (!placed || (placed.stage !== "leaving" && !this.area.stages[placed.stage])) {
-      try {
-        const retried = await classify(this.area, question, history, state.coveredFacets, this.azure, 4000);
-        placed = retried && (retried.stage === "leaving" || this.area.stages[retried.stage]) ? retried : null;
-      } catch {
-        placed = null;
+      let recovered: ClassifyResult | null = null;
+      for (const budget of [4000, 8000, 12000]) {
+        try {
+          const retried = await classify(this.area, question, history, state.coveredFacets, this.azure, budget);
+          if (retried && (retried.stage === "leaving" || this.area.stages[retried.stage])) { recovered = retried; break; }
+        } catch { /* try the next budget */ }
       }
+      placed = recovered;
     }
     if (!placed) return COULD_NOT_ANSWER;
 

@@ -1,6 +1,6 @@
 # A teacher switching in purely for stability, not passion
 
-_Run 2026-09-01 08:08 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-03 10:35 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Deliberately probes the A/B boundary: a named prior career (teacher) should place her in stage B even while she's also unsure what to pick — the prior career is what distinguishes B, not field-certainty. Doesn't moralise about a purely financial motivation, values her teaching background, and reaches stage D once she asks a concrete timeline question.
 
@@ -12,73 +12,74 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I'm a teacher and I want to switch into tech
-  [stage B — She has a prior career as a teacher and wants to switch into tech; this is a career change scenario, not starting from scratch.]
+  [stage B — Prior teaching experience is a non-tech background; user is asking about applying to tech, which is a career change.]
   → enterDiscussionArea(1 · Getting Started)
-  [second question dropped — one per reply]
   [sentence cap fired — the model wrote a rundown]
   [drew on S5, G4, S5a — 1 Otema, 2 drafted]
 
 Botema
-  Nice. Switching from teaching to tech is a real path many of us have walked,
-  and your strengths (Explain concepts clearly, structure learning for others,
-  manage projects) are highly transferable. What area in tech are you most
-  drawn to?
+  That’s a real and doable transition. Your classroom experience already gave
+  you problem-solving, communication, and mentoring—exactly what tech teams
+  value, especially for roles like data, product, or frontend with a
+  user-focus. What area in tech are you most drawn to—data, web development,
+  UX, or something else—and what’s your current time availability for learning
+  each week?
 
   you > honestly it's not really passion, I just want more stable pay
-  [stage C — Motivation shifts from passion to financial stability; evaluating method/path questions rather than a specific program.]
-  [no new facts about her — note left alone, no call made]
-  [no close example — voice only, advice from knowledge]
+  [stage B — The user is transitioning from teaching to tech with stability/pay as the primary driver, not passion; this is a new information point that moves from initial exploration (A) toward B with a focus on applicability of prior experience.]
+  [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
-  [numbered rundown flattened — it was a list]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S2, G1a, S2a — 1 Otema, 2 drafted]
-  [voice only: G1, S2b]
-
-Botema
-  That’s a real motivation, and stability is a legitimate driver. If you want
-  quicker, tangible pay stability without too heavy a time or money pull, I’d
-  target data-focused roles or software engineering with a clear, low-friction
-  entry path. Does that feel like a workable plan you could start this month?
-
-  you > is that a bad reason to do this
-  [stage B — User with prior teaching career asking if seeking higher pay/stability is a valid reason to switch to tech; moving from B to C/D if they act on it.]
-  [no new facts about her — note left alone, no call made]
-  [second question dropped — one per reply]
   [sentence cap fired — the model wrote a rundown]
   [drew on S5, S5a, G4 — 1 Otema, 2 drafted]
 
 Botema
-  Not bad at all. In tech, stability is a real, practical driver, and you’re
-  allowed to aim for a solid, sustainable path. Does that framing feel
-  believable for your situation?
+  stability matters, and you’re right to go for a role with steady pay and
+  clear progression. In my experience, data analytics, IT support, and QA are
+  solid entry points with reliable pathways and local demand, especially if
+  you’re open to remote-for-abroad or local roles. How much time per week can
+  you realistically commit to learning over the next 3–6 months?
+
+  you > is that a bad reason to do this
+  [stage C — User is asking whether a money/stability motive is a valid driver for switching into tech; this is a mindset/method question rather than a specific plan.]
+  [no new facts about her — note left alone, no call made]
+  [no close example — voice only, advice from knowledge]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S2, G1a, S2a — 1 Otema, 2 drafted]
+  [voice only: S2b, G1]
+
+Botema
+  No—it's a solid, honest reason to switch. Financial stability is real and
+  important, and tech often offers clearer progression than teaching if you
+  choose a path with real demand. How quickly can you start a 2–3 month
+  bootstrapped plan to land a first entry role in one of those areas?
 
   you > what should I actually pick, given that
-  [stage D — User asked for concrete, actionable guidance on which path to pick (data-focused roles vs software engineering), given motivation of income stability.]
-  [repeated advice removed]
-  [numbered rundown flattened — it was a list]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S6a, S4b, S4a — 0 Otema, 3 drafted]
-  [voice only: S3, S4, G6, S6]
-
-Botema
-  Good question. Based on your aim for stability with a reasonable entry path,
-  I’d rank three realistic picks. Does that plan feel realistic for what you
-  can start this month?
-
-  you > how long is this going to realistically take me
-  [stage D — The user asked for a concrete,timeline-focused question, which is characteristic of stage D (concrete details after a method has been chosen).]
+  [stage C — User asks which pathway to pick among data analytics, IT support, QA for stability and quick entry.]
   [no new facts about her — note left alone, no call made]
   [second question dropped — one per reply]
-  [drew on S4, S6, G2 — 2 Otema, 1 drafted]
-  [voice only: S4a, S4b, S6a, S3]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S2b, G1, G1a — 0 Otema, 3 drafted]
+  [voice only: S2, S2a]
 
 Botema
-  Realistically, you’re looking at about 6–12 months of focused study and
-  steady job searching if you can put in decent hours weekly; 12–18 months if
-  you’re balancing it fully around teaching. The fastest path tends to be a
-  junior role like QA, a data analyst, or a beginner software engineer, with a
-  structured bootcamp or self-study plus small projects. How many hours a week
-  can you dedicate?
+  Given your priority for stability, I’d pick IT support or QA as the most
+  realistic entry points right now. IT support is the fastest to land and you
+  can lean on your teaching communication skills; QA gives you a solid doorway
+  into product teams with less math upfront. Does IT support feel more
+  plausible to you to start this month?
+
+  you > how long is this going to realistically take me
+  [stage D — User asks for a realistic timeline to land a first entry IT support/QA role; moving from method talk to concrete timeline.]
+  [no new facts about her — note left alone, no call made]
+  [drew on S4, S6a, S4b — 1 Otema, 2 drafted]
+  [voice only: S3, G6, G2, S6]
+
+Botema
+  Realistically, 4–6 months of focused, part-time study (around 15–20 hours a
+  week) to land an entry IT support or QA role; if you can go full-time, 3–4
+  months is possible. The key is steady weekly practice, a small ticketing/QA
+  project you can show, and targeted job applications as you learn. Does that
+  timeline fit what you can commit starting this month?
 
   you > quit
 
@@ -88,8 +89,8 @@ Botema
   touched_facets  S5, S5a, G4, S2, S2a, S2b, G1, G1a, S3, S4, S4a, S4b, S6, S6a, G2, G6
   closed_areas    —
   role/location   — / —
-  where she is    — NONE
-  trying to do    — NONE
+  where she is    — A teacher exploring a switch into tech, seeking more stable pay, with current role in education and ongoing interest in a tech path that supports steadier compensation.
+  trying to do    — She wants to move toward a tech role that offers reliable pay, focusing less on passion-driven motivation and more on financial stability. She has mentioned stability as a priority and has not specified a preferred area in tech or concrete steps taken so far. NONE
 
   Nothing was written to any database.
 ```

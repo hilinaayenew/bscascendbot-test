@@ -1,6 +1,6 @@
 # Full-time job, two kids, maybe an hour a day
 
-_Run 2026-09-01 08:08 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-03 10:35 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Treats self-teaching plus one protected hour a day as a real, respected plan rather than discouraging her or suggesting money/time she doesn't have.
 
@@ -12,92 +12,90 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I want to get into tech but I have a full time job and two kids
-  [stage A — User wants to enter tech but has heavy time/childcare constraints; needs guidance on feasible, time-efficient paths.]
+  [stage C — Method-focused question: balancing full-time work and parenting with tech study.]
   → enterDiscussionArea(1 · Getting Started)
-  [validating opener dropped — she described herself, not something done to her]
-  [drew on S1a, S8, S1 — 2 Otema, 1 drafted]
-  [voice only: S8a, G3a, S7a, S7]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S2, S2b, G1a — 1 Otema, 2 drafted]
+  [voice only: S2a, G1]
 
 Botema
-  I’d recommend a small, flexible path: pick one entry project-based area
-  (Python for data or web basics, or SQL) and commit a steady, limited
-  schedule (even 3–4 hours a week) for the next 3–6 months, using bite-sized
-  courses and a simple project you can finish in a weekend. What part of tech
-  feels most doable with your current schedule—data, development, or something
-  like helping users with tech (support/UX) — and how many hours a week could
-  you realistically carve out right now?
+  That’s a real juggle, but it’s absolutely doable with the right plan. Given
+  your full-time job and two kids, I’d aim for a low-friction, structured path
+  you can fit into a few hours a week—think an evening or weekend block, with
+  a clear project at the end to show for it. How many hours per week can you
+  realistically protect for learning right now?
 
   you > there's basically no spare money for courses
-  [stage D — Budget constraint: asking for affordable or free learning options; needs concrete plan using no-cost resources.]
+  [stage C — The user states financial constraints on learning; this is a method-level question about how to learn tech affordably (free/low-cost resources and plan).]
   [no new facts about her — note left alone, no call made]
+  [repeated-opener guard fired — a reused opening clause was dropped]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on S2a, G1, S2b — 0 Otema, 3 drafted]
+  [voice only: G1a, S2]
+
+Botema
+  With almost no money for courses, I’d start with free, structured
+  self-teaching and a tiny, concrete project you can finish in a few weekends.
+  Use free resources (CS50, freeCodeCamp, The Odin Project) and pair them with
+  a low-cost or free toolkit (a basic laptop you already have or borrow a
+  moment, free cloud credits if you can get them). Does that feel doable?
+
+  you > I can maybe get an hour a day if I'm lucky
+  [stage C — User updated constraint: now can commit about 1 hour per day, affecting the chosen learning method and timeline.]
   [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
   [sentence cap fired — the model wrote a rundown]
-  [drew on G2, S6, S4a — 1 Otema, 2 drafted]
-  [voice only: S6a, G6, S3, S4b]
+  [drew on S2b, S2a, S2 — 1 Otema, 2 drafted]
+  [voice only: G1, G1a]
 
 Botema
-  I’d zero in on free, offline-friendly paths and tiny, doable projects. What
-  I’d do now: - Use free, text-heavy resources you can download or read
-  offline: freeCodeCamp (text-first), The Odin Project, CS50 notes, and Khan
-  Academy basics. Clear next step: which free path feels most natural—web
-  basics (HTML/CSS/JS), Python for data, or SQL—and how many hours could you
-  reliably set aside each week?
-
-  you > I can maybe get an hour a day if I'm lucky
-  [stage D — Time is tight; plan must fit a small, repeatable daily window.]
-  [nothing recorded about her yet — writing the note anyway before it ages out]
-  [repeated advice removed]
-  [numbered rundown flattened — it was a list]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on S6a, S4, G6 — 1 Otema, 2 drafted]
-  [voice only: S6, G2, S3, S4a]
-
-Botema
-  One hour a day is a solid, real commitment. Recommendation: start with
-  HTML/CSS and basic JavaScript for web fundamentals. Do a simple project like
-  a personal portfolio page plus a little interactive feature (a to-do list).
+  I’d pick a single track and a tiny, finishable project to anchor it. My
+  suggestion: start with Python basics or JavaScript basics (both have plenty
+  of free, guided material). Does that feel like the right first track for
+  your one-hour-a-day rhythm?
 
   you > is that even enough to get anywhere
-  [stage D — User is asking if a 1-hour-a-day plan is enough to make progress in tech and wants milestone guidance.]
-  [no new information — stall 1/2]
+  [classification missing/invalid stage "undefined" — retrying at 4000 tokens]
+  [stage D — User asked for a viability check on a one-hour/day plan and wants concrete outcomes.]
   [no new facts about her — note left alone, no call made]
   [repeated advice removed]
-  [second question dropped — one per reply]
   [sentence cap fired — the model wrote a rundown]
-  [drew on S4b, S3, G2 — 1 Otema, 2 drafted]
-  [voice only: G6, S4, S6, S4a]
+  [drew on G2, S6, S4b — 1 Otema, 2 drafted]
+  [voice only: S4, S3, S4a, S6a]
 
 Botema
-  Yes, it can, but you’ll need a focused, output-driven plan. With about 1
-  hour a day, six to nine months of steady, project-based learning can get you
-  a solid portfolio (two or three small web projects), basic JS interactivity,
-  and Git/GitHub basics. Does that feel like something you could start now?
+  Short answer: yes, with discipline it can move you forward, but you’ll want
+  a tight plan and a tangible project to prove progress. If you’re at one hour
+  a day, you’re looking at steady basics for a few months, then a small,
+  finishable project you can actually show. Pick one track (Python or
+  JavaScript) and stick to a free, structured path (CS50, freeCodeCamp, The
+  Odin Project) while you build a 2–3 module project that demonstrates a real
+  outcome (a simple web app, data tiny project, or automation script).
 
   you > what should I actually spend that hour on
-  [stage D — The user asked for concrete, time-bound daily plan (one hour) after having settled on HTML/CSS/JS path and is seeking actionable steps.]
+  [stage D — You’re asking for a concrete, hour-by-hour plan for a one-hour daily study session.]
   [no new facts about her — note left alone, no call made]
-  [repeated advice removed]
-  [numbered rundown flattened — it was a list]
   [sentence cap fired — the model wrote a rundown]
-  [drew on S4b, S6a, G2 — 0 Otema, 3 drafted]
-  [voice only: S4, S4a, S3, G6]
+  [drew on S6a, G6, S4a — 0 Otema, 3 drafted]
+  [voice only: G2, S3, S6, S4]
 
 Botema
-  Yes. With one hour a day you can build real momentum—just be relentlessly
-  practical and output-focused. Here’s a concrete, repeatable 4-week plan you
-  can follow every weekday (60 minutes per day).
+  Great question. I’d structure your hour like this: 20 minutes of guided
+  learning (CS50/FreeCodeCamp Python or JavaScript), 25 minutes of hands-on
+  practice (write small scripts or mini‑projects in the browser or a local
+  editor), and 15 minutes to journal your progress and outline the next small
+  step. Does that feel doable for your current routine?
 
   you > quit
 
   ── state ─────────────────────────────────────────────
   active_area     1 · Getting Started
-  covered_stages  A, D
-  touched_facets  S1, S1a, S7, S7a, S8, S8a, G3, G3a, G5, S3, S4, S4a, S4b, S6, S6a, G2, G6
+  covered_stages  C, D
+  touched_facets  S2, S2a, S2b, G1, G1a, S3, S4, S4a, S4b, S6, S6a, G2, G6
   closed_areas    —
   role/location   — / —
-  where she is    A full-time employee with two kids, exploring a transition into tech, currently able to dedicate about an hour a day if lucky.
-  trying to do    Wants to break into tech while managing family and work responsibilities, focusing on free, offline-friendly learning paths and small projects; she has tried freeCodeCamp, The Odin Project, CS50 notes, and Khan Academy, and is seeking a realistic plan that fits roughly 7 hours a week.
+  where she is    — A software-adjacent aspiring professional who currently works full time and has two kids. No salary details provided yet, but she is balancing caregiving with a limited amount of time for learning—approximately one hour per day is what she can protect.
+  trying to do    — She wants to break into tech by building foundational skills through free, self-guided learning and a small, finishable project. The plan hinges on free resources (such as CS50, freeCodeCamp, The Odin Project) and a minimal toolkit, aiming for a low-friction path that fits into about one hour per day, with a concrete project to demonstrate capability.
 
   Nothing was written to any database.
 ```

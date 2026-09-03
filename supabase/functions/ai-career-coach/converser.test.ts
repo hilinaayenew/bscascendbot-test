@@ -650,6 +650,17 @@ describe("dropSecondQuestion", () => {
     const raw = "That's the approach I'd take here.";
     expect(dropSecondQuestion(raw)).toBe(raw);
   });
+
+  it("cuts a stacked question in the OPENING sentence, not just the trailing one", () => {
+    // Live regression, area-tester 2026-09-03: the stacked question was the
+    // first sentence, followed by two more sentences of advice — a check
+    // that only looked at the end of the whole text let it straight through.
+    const raw = "I'd trust the concrete signals: what exactly did they say, and what impact did the project have that you can point to? I'd recommend writing it down. Does that feel doable this week?";
+    const out = dropSecondQuestion(raw);
+    expect(out).toContain("what exactly did they say?");
+    expect(out).not.toContain("what impact did the project have");
+    expect(out).toContain("Does that feel doable this week?");
+  });
 });
 
 describe("openerShape / isValidatingOpener / stripRepeatedOpener", () => {
@@ -722,6 +733,15 @@ describe("dropDanglingQuestion / endsOnDanglingReference", () => {
   it("flags a closing statement that promises content that isn't there", () => {
     expect(endsOnDanglingReference("Pick one path and do these steps.")).toBe(true);
     expect(endsOnDanglingReference("Pick one path and start today.")).toBe(false);
+  });
+
+  it("flags a promise with no list-noun at all — 'try this in order'", () => {
+    // Live regression, area-tester 2026-09-03: "I'd stick with a tiny,
+    // concrete routine you can run in the moment. Try this in order." — no
+    // routine anywhere in the text. DANGLING_REFERENCE alone missed this
+    // because it names no noun ("those steps") to match against.
+    expect(endsOnDanglingReference("I'd stick with a tiny routine. Try this in order.")).toBe(true);
+    expect(endsOnDanglingReference("I'd stick with a tiny routine. Try box breathing before you speak.")).toBe(false);
   });
 });
 

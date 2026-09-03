@@ -161,29 +161,30 @@ export default [
     ],
   },
   {
-    // NEW this run — the four fixed slots all sit in territory Otema's own five
-    // answers cover directly (belonging, being talked over, speaking up,
-    // praise). None of them touch the drafted standalone facets added in the
-    // dead-end sweep, and none of them put the coach anywhere near the Access
-    // or Intersectional Advocacy values. This one does both: a self-taught
-    // hire whose doubt is attached to a specific, nameable thing about how she
-    // got in (G7, S1b) and who half-suspects she was a diversity number.
-    id: "05-bootcamp-hire-who-suspects-she-was-a-quota",
-    title: "Self-taught among CS graduates, quietly convinced she was hired to make a number",
-    claim: "Stays in stage A throughout — nothing is stalled, only a belief being carried — and answers the legitimacy-of-the-hire doubt with what she has actually built rather than with a credential to go and get, or with a flat reassurance that the worry is imaginary.",
+    // NEW this run — S4 (the "apply anyway" facet) has never actually been
+    // exercised end to end: scenario 01's promotion never gets named as a
+    // years/qualification gap, and scenario 08 exists specifically to check
+    // the coach does NOT reach for S4 once she already has the role. Nothing
+    // tests the ordinary case S4 was written for — a live posting, a stated
+    // years shortfall, a deadline — where the real tension isn't "should I
+    // build more confidence", it's "there are two days left and I haven't
+    // opened the document".
+    id: "05-the-posting-closes-friday",
+    title: "Three years against a five-years-listed posting, CV untouched, closes Friday",
+    claim: "Opens in stage B — a stalled action, not applying — and once the deeper fact comes out (she's already doing the senior work without the title), draws on S4 without either dismissing the years gap as meaningless or losing the Friday deadline in general reassurance.",
     turns: [
-      "everyone else on my team has a computer science degree and I came through a six-month bootcamp",
-      "sometimes I think they hired me to hit some diversity number, not because I was the best person for it",
-      "I don't have any proof of that, it's just a thing that sits there",
-      "the confusing part is the work is fine, nobody has ever complained about anything I've shipped",
-      "how do I get this out of my head",
+      "so there's a role open right now, kind of a step up, and it wants 5+ years",
+      "I've got three. so I've mostly just been telling myself not to bother",
+      "except... I've basically been doing the senior stuff for the last year anyway, just never had the title for it",
+      "closes friday and I still haven't even opened my cv to update it",
+      "is it even worth trying at this point",
     ],
     checks: [
-      ["stays in stage A the whole way — nothing is named as stalled", (o) => stagesInOrder(o).length > 0 && stagesInOrder(o).every((s) => s === "A")],
-      ["draws on G7 or S1b — the legitimacy-of-the-hire facets", (o) => { const f = facetsDrawn(o); return f.has("G7") || f.has("S1b"); }],
-      ["points at what she has already built rather than at a credential", (o) => /(built|shipped|delivered|solved|already done|track record)/i.test(replyOf(o))],
-      ["does not send her after a degree or formal credential (Access)", (o) => !/(get a (computer science |CS )?degree|go back to (university|school|college)|enroll?(ing)? in a degree|pursue a degree|do a master)/i.test(replyOf(o))],
-      ["does not dismiss the diversity-hire worry as pure imagination", (o) => !/(that.s just imposter syndrome|you.re overthinking|don.t be silly|it.s all in your head)/i.test(replyOf(o))],
+      ["classified stage B on the opening message — a stalled application", (o) => stagesInOrder(o)[0] === "B"],
+      ["draws on S4", (o) => facetsDrawn(o).has("S4")],
+      ["picks up that she's already doing the senior-level work", (o) => /(already (doing|do)|senior.level work|doing the work|been doing it)/i.test(replyOf(o))],
+      ["does not lose the Friday deadline in general reassurance", (o) => /(friday|today|tonight|this (evening|week)|deadline|two days|before it closes)/i.test(replyOf(o))],
+      ["does not tell her the years requirement is meaningless without engaging with her specific case", (o) => !/^\W*(job descriptions?|requirements?) (are|is) (rarely|just|often)[^.!?]*\.\s*$/im.test(replyOf(o))],
       ["most replies still end on a question", (o) => everyReplyAsks(o)],
       // noRepeatedOpeners compared the first four words, which every reply in
       // the 28 Aug sweep passed while plainly reusing one opener — "That

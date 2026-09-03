@@ -1,6 +1,6 @@
 # An 8-week bootcamp promising a job, wanting $6000 upfront
 
-_Run 2026-09-01 08:08 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-03 10:35 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Flags the too-good-to-be-true timeline, asks for real outcome evidence rather than trusting the bootcamp's own stats, and stays practical rather than alarmist.
 
@@ -12,81 +12,75 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I've decided I want to do a bootcamp instead of teaching myself
-  [stage C — She chose a bootcamp as her learning path.]
+  [stage C — Choosing a bootcamp as learning path after considering self-learning]
   → enterDiscussionArea(1 · Getting Started)
-  [second question dropped — one per reply]
+  [no new facts about her — note left alone, no call made]
   [sentence cap fired — the model wrote a rundown]
   [drew on S2, S2a, S2b — 1 Otema, 2 drafted]
   [voice only: G1a, G1]
 
 Botema
-  Nice. Bootcamp can be a strong move when you want structure, hands-on
-  projects, and a tighter network to lean on. What field are you aiming for
-  with the bootcamp?
+  Nice. A bootcamp can give you structure and a faster path to a role, but
+  you’ll want to pick one that actually leads to a job and fits your reality
+  here. Does that feel doable for you this week?
 
   you > there's one that says I'll be job ready in 8 weeks
-  [stage D — The user referenced a concrete 8-week bootcamp timeline and is asking for concrete details about it.]
+  [stage D — New detail about a specific bootcamp claim moves the live question from choosing/assessing a method to evaluating concrete outcomes and next steps (job search).]
   [no new facts about her — note left alone, no call made]
   [repeated advice removed]
-  [numbered rundown flattened — it was a list]
   [sentence cap fired — the model wrote a rundown]
   [drew on G2, S4b, S4a — 0 Otema, 3 drafted]
   [voice only: S3, S4, S6a, G6]
 
 Botema
-  eight weeks to job-ready sounds marketing-y to me. realistically, you’ll
-  likely land an entry point or a role that’s close to an internship, but
-  becoming truly job-ready in eight weeks is rare unless you already have
-  related skills and the bootcamp is tightly aligned with a clear,
-  structure-heavy pipeline. Does that frame help you decide whether to push
-  the button or push for a more conservative timeline?
+  Eight weeks to “job-ready” is a red flag in practice. Bootcamps can
+  accelerate learning and get you into an entry point, but in our markets you
+  typically shift into a junior role after a bit more hands-on build and
+  interview practice beyond the core curriculum. What’s the bootcamp name and
+  what have they promised you beyond the eight-week claim?
 
   you > how do I know if it's actually legit
-  [stage D — User asked how to verify a bootcamp's legitimacy and requested concrete checks.]
+  [stage C — User asked for criteria to evaluate bootcamp legitimacy (method-level question).]
   [nothing recorded about her yet — writing the note anyway before it ages out]
   [validating opener dropped — she described herself, not something done to her]
-  [invented-location guard fired — an unstated place was removed]
-  [second question dropped — one per reply]
-  [drew on S6a, S3, S4 — 2 Otema, 1 drafted]
-  [voice only: G2, G6, S6, S4b]
+  [repeated advice removed]
+  [drew on G1, G1a, S2a — 0 Otema, 3 drafted]
+  [voice only: S2, S2b]
 
 Botema
-  To tell legit from fluff, look for: clear outcomes (alumni job titles,
-  companies, time to hire), transparent cohort metrics (completion rate,
-  placement rate with definitions), a real pipeline with partner employers or
-  internships, a published curriculum and project work you’ll build, strong
-  mentorship and career coaching, a guarantee or refund policy if outcomes
-  don’t materialize, and transparent costs with funding options. ” Does that
-  framing help you assess the specific bootcamp you’re considering? What’s the
-  program listing you’re looking at?
+  I would ask for their last three cohorts’ job placement rates, average time
+  to placement, salary ranges, and a list of companies that hire from them,
+  plus a direct contact from a recent graduate you can reach. Does the
+  bootcamp provide verifiable outcomes in writing (with names or a portfolio
+  of alumni) and a clear refund policy if you don’t land in a relevant role?
 
   you > they want $6000 upfront
-  [stage D — the user asked for concrete details about financing a bootcamp and this is a cost/financing question.]
-  [no new facts about her — note left alone, no call made]
+  [stage D — Pricing and upfront payment is a concrete detail requiring risk assessment and planning]
+  [nothing recorded about her yet — writing the note anyway before it ages out]
   [figure guard fired — a figure or source claim was removed]
-  [repeated advice removed]
-  [numbered rundown flattened — it was a list]
-  [second question dropped — one per reply]
-  [sentence cap fired — the model wrote a rundown]
-  [drew on G6, S6, S4b — 1 Otema, 2 drafted]
-  [voice only: S4, S3, S4a, G2]
+  [drew on S6a, S3, S4 — 2 Otema, 1 drafted]
+  [voice only: S4a, G2, S6, G6]
 
 Botema
-  I would always push for terms that align payment with delivered outcomes.
-  What I’d push for now. Do you have a way to pay in installments?
+  I would push for a milestone-based payment plan, a written outcomes
+  guarantee (with named companies or a portfolio of alumni), and a refundable
+  portion if you don’t land a relevant role within a defined period. Also ask
+  about what you actually get besides the curriculum (mentorship, interview
+  practice, portfolio review, visa/remote-work support if relevant). Does the
+  bootcamp offer a formal outcomes guarantee and a transparent refund policy
+  if you’re not placed in a role after completion?
 
   you > should I just trust their placement stats
-  [stage C — User is asking for criteria to verify bootcamp placement statistics (method-level decision).]
+  [stage D — User asked for concrete details about bootcamp placement stats.]
   [no new facts about her — note left alone, no call made]
-  [repeated advice removed]
-  [drew on G1, G1a, S2 — 1 Otema, 2 drafted]
-  [voice only: S2a, S2b]
+  [sentence cap fired — the model wrote a rundown]
+  [drew on G6, S6, S4b — 1 Otema, 2 drafted]
+  [voice only: S4a, S6a, S4, G2]
 
 Botema
-  No—don’t trust placement stats at face value. Look for third-party
-  verification or a lived-out pipeline (internships, apprenticeships, or paid
-  roles) rather than promises. Do you have the exact numbers they’re sharing
-  and the time frame they’re using?
+  No. placement stats can be inflated or cherry-picked. Does the bootcamp
+  provide transparent, verifiable data and a real-world contact you can reach
+  before you commit?
 
   you > quit
 
@@ -96,8 +90,8 @@ Botema
   touched_facets  S2, S2a, S2b, G1, G1a, S3, S4, S4a, S4b, S6, S6a, G2, G6
   closed_areas    —
   role/location   — / —
-  where she is    She is a teacher exploring a transition to a bootcamp, weighing a structured program over self-study.
-  trying to do    She wants to determine if a bootcamp claim of eight weeks to being job-ready is legitimate and what indicators will reveal the program’s credibility, including alignment with a clear pipeline and realistic outcomes. NONE
+  where she is    — She is a teacher exploring a pivot, currently considering a bootcamp option and weighing upfront cost versus potential job outcomes.
+  trying to do    — She wants to move from self-guided learning to a structured program that leads to a job, but the $6,000 upfront fee is a barrier and she is seeking verified outcomes, placement data, and a clear refund policy to assess legitimacy. NONE
 
   Nothing was written to any database.
 ```

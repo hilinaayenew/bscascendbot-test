@@ -1,6 +1,6 @@
 # Already promoted to lead, now doubting every call she makes
 
-_Run 2026-09-01 12:08 UTC · 5 turns · gpt-5-nano via Azure_
+_Run 2026-09-03 10:35 UTC · 5 turns · gpt-5-nano via Azure_
 
 **What this tests.** Draws on G8 rather than S4, and treats the doubt as post-decision second-guessing — advice about a decision she is sitting on now, not about whether to put herself forward.
 
@@ -12,75 +12,70 @@ BSC Coach — local area harness
   Type freely. 'state' to inspect, 'quit' to stop.
 
   you > I got promoted to lead my team about two months ago
-  [stage A — User shares a new career milestone (promotion) without expressing doubt or current action block.]
+  [classification missing/invalid stage "undefined" — retrying at 4000 tokens]
+  [stage A — User stated a promotion; this is context about her role, not an expressed confidence issue, so it fits the 'A' stage (feeling worked through) classification.]
   → enterDiscussionArea(6 · Confidence & Imposter Syndrome)
-  [sentence cap fired — the model wrote a rundown]
   [drew on G8, G6, S5a — 0 Otema, 3 drafted]
   [voice only: G3, S1a, S2, S1]
 
 Botema
-  Congrats on the promotion. Two months in is when the real work begins—you'll
-  be tested on your prioritization, your communication, and how you scale
-  decisions through the team. What’s one decision you’re sitting on this week
-  that you could own and act on?
+  Two months in is exactly when the doubt shows up; you were promoted because
+  you showed the capability, not because you’re perfect. I would always
+  recommend you pick one decision you’ve been hesitating on, make the call
+  this week, and log the outcome. What decision are you sitting on right now
+  that you could own this week?
 
   you > I don't actually feel ready and now I second-guess every single decision
-  [classification missing/invalid stage "undefined" — retrying once at double the token budget]
-  [stage A — User is expressing imposter syndrome feelings that affect decision-making, indicating stage A (feeling being worked through)]
+  [stage A — The user expresses ongoing impostor syndrome and general self-doubt without a concrete action being blocked; this fits Stage A.]
   [no new facts about her — note left alone, no call made]
-  [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
-  [second question dropped — one per reply]
   [drew on G8, G5, S1 — 1 Otema, 2 drafted]
   [voice only: G6, G10, S1b, S2]
 
 Botema
-  I’d suggest you pick one concrete decision you’re wavering on, make a clear
-  call this week, then document your rationale and the outcome you expect so
-  you can review it with your peer or sponsor. What decision are you on the
-  fence about right now?
+  That feeling is exactly what happens around month two: you’re proving
+  yourself in real time, and doubt shows up louder than it should.
 
   you > there's one I've been sitting on for over a week because I can't decide
-  [stage B — Concrete decision is stalled due to self-doubt; a decision is blocked rather than just a feeling.]
+  [stage B — Blocked by ongoing doubt leading to inaction on a concrete leadership decision.]
   [no new facts about her — note left alone, no call made]
-  [sentence cap fired — the model wrote a rundown]
+  [validating opener dropped — she described herself, not something done to her]
+  [repeated advice removed]
   [drew on G2, G4, S4 — 1 Otema, 2 drafted]
   [voice only: S3a, S3, S3c, S3b]
 
 Botema
-  That lingering doubt is exactly why you lead by making a call. Try this: lay
-  out two practical paths you’re weighing, write the worst-case you’re willing
-  to tolerate for each, and choose the one with the highest impact that you
-  can survive if it goes sideways. Does that feel doable this week?
+  Pick one option, set a firm 72-hour deadline, implement it, and schedule a
+  quick review to learn what you’d do differently next time.
 
   you > I keep thinking they'll work out they picked the wrong person
-  [classification missing/invalid stage "undefined" — retrying once at double the token budget]
-  [stage A — The user is expressing an ongoing imposter feeling without naming a concrete action they are avoiding, which fits Stage A: a feeling being worked through rather than a stalled action.]
+  [stage A — The user is expressing ongoing self-doubt about fit, not taking action.]
   [no new facts about her — note left alone, no call made]
-  [validating opener dropped — she described herself, not something done to her]
-  [repeated advice removed]
   [drew on G8, S1b, G1 — 0 Otema, 3 drafted]
   [voice only: G10, S1a, G3, G7]
 
 Botema
-  I’d push you to lock in a decision you can stand behind, then ask for a
-  quick feedback loop with your sponsor to validate the approach and learn
-  what they’re watching for. Would you feel confident proposing a 15-minute
-  check-in this week to review the latest decision and get concrete feedback?
+  That doubt is a familiar companion in the first months, and it comes from
+  caring about doing right by your team. I would push back with a concrete
+  move: name the doubt in a quick one-on-one with your manager, share three
+  measurable wins you’ve led, and ask for two concrete feedback points to
+  improve over the next sprint. Does that feel like a step you could try this
+  week?
 
   you > what do I do about the decision I'm stuck on
-  [stage B — Deciding whether to act on a specific lead/decision falls under self-doubt blocking action (Stage B)]
+  [stage B — User asks for steps to resolve a specific stuck decision, indicating self-doubt is blocking concrete action.]
   [no new facts about her — note left alone, no call made]
-  [validating opener dropped — she described herself, not something done to her]
   [repeated advice removed]
+  [second question dropped — one per reply]
   [drew on G2, S3, S3a — 1 Otema, 2 drafted]
   [voice only: G4, S4, S3b, S3c]
 
 Botema
-  Map two concrete paths, write the worst-case you’ll tolerate for each, pick
-  the path with the highest impact you can stand behind, and lock in a
-  15-minute check-in with your sponsor this week to get crisp feedback. Does
-  that feel doable this week?
+  Name the decision clearly, lay out the two most viable options with one edge
+  for each, and set a hard 72-hour deadline to pick and act. Then announce
+  your choice with a brief plan for success and a 15-minute review after the
+  sprint to learn what to do next. Does that structure fit the pace of your
+  current sprint?
 
   you > quit
 
@@ -90,7 +85,8 @@ Botema
   touched_facets  S1, S1b, S2, S5, S5a, G1, G3, G5, G6, G7, G8, G9, G10, S1a, S3, S3b, S3c, S4, G2, G4, S3a
   closed_areas    —
   role/location   — / —
-  where she is    — She is a lead in her team, about two months into the role.
+  where she is    — She is a team lead, about two months into the role, with the promotion just recently completed.
+  trying to do    — She wants to succeed as a leader and advance further, but specifics about next steps or obstacles are not provided yet.
 
   Nothing was written to any database.
 ```

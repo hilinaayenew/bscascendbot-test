@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods, dropRepeatedSentences, stripAdsOversell, stripQuotaConcession } from "./converser.ts";
+import { resolveNarrowOrAnswer, withChoices, CHOICES_MARKER, pickRandom, LONG_FORM_ESCAPE_HATCH, stripUnsourcedFigures, hasUnsourcedFigure, NO_RELIABLE_PAY_DATA, capSentences, flattenInlineList, stripImplausibleFigures, stripImplausiblePeriods, dropRepeatedSentences, stripAdsOversell, stripQuotaConcession, dropSecondQuestion, openerShape, isValidatingOpener, stripRepeatedOpener, stripUnearnedValidation, flattenEnumerations, dropDanglingQuestion, endsOnDanglingReference, isOnlyAQuestion, echoesUser, stripInventedLocation, mentionedByUser, capSentencesFlagged } from "./converser.ts";
 
 describe("pickRandom", () => {
   it("returns exactly n items when the pool is larger than n", () => {
@@ -630,5 +630,159 @@ describe("stripQuotaConcession", () => {
   it("does not fire on ordinary talk about a diversity programme she might join", () => {
     const raw = "BSC runs a mentorship programme worth looking at. Would that help?";
     expect(stripQuotaConcession(raw).stripped).toBe(false);
+  });
+});
+
+// ── Area/stage model guards (ported from scripts/coach-local.mjs) ──────────
+
+describe("dropSecondQuestion", () => {
+  it("cuts a second question welded onto the first with 'and'", () => {
+    const raw = "Does that feel like something you could try this month, and what area would you target?";
+    expect(dropSecondQuestion(raw)).toBe("Does that feel like something you could try this month?");
+  });
+
+  it("leaves a single question alone", () => {
+    const raw = "Does that make sense to you?";
+    expect(dropSecondQuestion(raw)).toBe(raw);
+  });
+
+  it("leaves a reply with no closing question alone", () => {
+    const raw = "That's the approach I'd take here.";
+    expect(dropSecondQuestion(raw)).toBe(raw);
+  });
+});
+
+describe("openerShape / isValidatingOpener / stripRepeatedOpener", () => {
+  it("collapses a swapped-noun validating opener to the same shape", () => {
+    expect(openerShape("That disbelief is real and common."))
+      .toBe(openerShape("That pattern is real and common."));
+  });
+
+  it("recognises the validating-opener family", () => {
+    expect(isValidatingOpener("That pattern is real and you're not imagining it.")).toBe(true);
+    expect(isValidatingOpener("Apply anyway.")).toBe(false);
+  });
+
+  it("strips an opener that repeats a previous reply's exact shape", () => {
+    const previous = ["That pattern is real and you're not imagining it. Here's what to do."];
+    const reply = "That belief is real and worth naming. Try writing your wins down.";
+    expect(stripRepeatedOpener(reply, previous)).toBe("Try writing your wins down.");
+  });
+
+  it("allows a second validating opener when the first reply didn't use one", () => {
+    const previous = ["Apply anyway. It's the only way to find out."];
+    const reply = "That pattern is real and you're not imagining it. Try it.";
+    expect(stripRepeatedOpener(reply, previous)).toBe(reply);
+  });
+
+  it("leaves a single-sentence reply alone (nothing to strip down to)", () => {
+    const previous = ["That pattern is real."];
+    const reply = "That pattern is real.";
+    expect(stripRepeatedOpener(reply, previous)).toBe(reply);
+  });
+});
+
+describe("stripUnearnedValidation", () => {
+  it("drops an acknowledging opener ahead of advice", () => {
+    const raw = "That's real and common in tech. Apply anyway and see what happens.";
+    expect(stripUnearnedValidation(raw)).toBe("Apply anyway and see what happens.");
+  });
+
+  it("leaves a reply with no acknowledging opener alone", () => {
+    const raw = "Apply anyway and see what happens.";
+    expect(stripUnearnedValidation(raw)).toBe(raw);
+  });
+});
+
+describe("flattenEnumerations", () => {
+  it("flattens a numbered list into sentences", () => {
+    const raw = "Here's the plan: 1. Draft a CV. 2. Apply to five roles. 3. Follow up in a week.";
+    const out = flattenEnumerations(raw);
+    expect(out).not.toMatch(/\d\./);
+    expect(out).toContain("Draft a CV");
+  });
+
+  it("leaves plain prose with fewer than 3 markers alone", () => {
+    const raw = "First, update your CV. Then apply.";
+    expect(flattenEnumerations(raw)).toBe(raw);
+  });
+});
+
+describe("dropDanglingQuestion / endsOnDanglingReference", () => {
+  it("drops a closing question that refers to steps the cap just removed", () => {
+    const raw = "Update your CV first. Would you be willing to try those three steps this week?";
+    expect(dropDanglingQuestion(raw, true)).toBe("Update your CV first.");
+  });
+
+  it("does nothing when capping never happened", () => {
+    const raw = "Update your CV first. Would you be willing to try those three steps this week?";
+    expect(dropDanglingQuestion(raw, false)).toBe(raw);
+  });
+
+  it("flags a closing statement that promises content that isn't there", () => {
+    expect(endsOnDanglingReference("Pick one path and do these steps.")).toBe(true);
+    expect(endsOnDanglingReference("Pick one path and start today.")).toBe(false);
+  });
+});
+
+describe("isOnlyAQuestion", () => {
+  it("is true when every sentence ends in a question mark", () => {
+    expect(isOnlyAQuestion("What feels true for you right now?")).toBe(true);
+  });
+
+  it("is false when any sentence is a statement", () => {
+    expect(isOnlyAQuestion("Here's what I'd try. Does that make sense?")).toBe(false);
+  });
+});
+
+describe("echoesUser", () => {
+  it("catches a short reply that is mostly her own words read back", () => {
+    const message = "yeah I think I can do that — I'll bring it up in our next one-to-one";
+    const reply = "Yeah, I think I can do that — I'll bring it up in our next one-to-one.";
+    expect(echoesUser(reply, message)).toBe(true);
+  });
+
+  it("does not flag a normal reflective opener followed by real advice", () => {
+    const message = "eight months of the same maintenance tickets and nothing's changed";
+    const reply = "Eight months of the same tickets is a long time to wait quietly. Ask your manager directly for a rotation date.";
+    expect(echoesUser(reply, message)).toBe(false);
+  });
+});
+
+describe("mentionedByUser / stripInventedLocation", () => {
+  it("only counts a place as real if she actually said it", () => {
+    expect(mentionedByUser("Ghana", "i am not sure where to start")).toBe(false);
+    expect(mentionedByUser("Ghana", "i live in accra ghana and want to switch careers")).toBe(true);
+  });
+
+  it("never treats a non-place word as satisfying the check", () => {
+    expect(mentionedByUser("remote", "i work remote for a company")).toBe(false);
+  });
+
+  it("strips a sentence naming a place she never mentioned, even inside a question", () => {
+    const raw = "Are you aiming for local Ghana roles or remote-for-abroad opportunities? Either way, start with your network.";
+    const out = stripInventedLocation(raw, "i am not sure where to start");
+    expect(out).not.toMatch(/ghana/i);
+    expect(out).toContain("start with your network");
+  });
+
+  it("leaves a place alone once she has actually said it", () => {
+    const raw = "Nairobi's market favours generalists early on.";
+    expect(stripInventedLocation(raw, "i am based in nairobi")).toBe(raw);
+  });
+});
+
+describe("capSentencesFlagged", () => {
+  it("reports capped:true and keeps the closing question when it trims", () => {
+    const raw = "One. Two. Three. Four. Five. Does that make sense?";
+    const { text, capped } = capSentencesFlagged(raw, 3);
+    expect(capped).toBe(true);
+    expect(text.endsWith("Does that make sense?")).toBe(true);
+  });
+
+  it("reports capped:false when nothing needed trimming", () => {
+    const raw = "One thing. Does that make sense?";
+    const { capped } = capSentencesFlagged(raw, 3);
+    expect(capped).toBe(false);
   });
 });

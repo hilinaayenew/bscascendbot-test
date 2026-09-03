@@ -12,7 +12,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { BotemaCoach } from "./botema-coach.ts";
 import { HISTORY_WINDOW, HISTORY_FETCH } from "./converser.ts";
-import type { UserProfile, ConverserContext, AzureConfig, AzureToolSchema, OAIMessage } from "./converser.ts";
+import type { UserProfile, ConverserContext, AreaState, AzureConfig, AzureToolSchema, OAIMessage } from "./converser.ts";
+import { AREAS, AREA_TOPIC_TO_FUNCTION_NAME, saysDone, saysLeaving } from "./discussion-areas.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -112,9 +113,16 @@ Deno.serve(async (req) => {
     if (!azureConfig.endpoint || !azureConfig.apiKey) throw new Error("Azure OpenAI credentials not set");
 
     // ── 1. Load persisted user profile ───────────────────────────────
+    // Area-state columns (active_area, covered_facets, etc.) are the v4
+    // area/stage model's persistence — see the migration in
+    // supabase/migrations/20260815120000_area_state_and_location.sql and
+    // discussion-coach.ts. A profile row without them (migration not yet
+    // applied, or a brand-new user) just comes back with those fields
+    // undefined, and areaState below falls back to "outside any area" —
+    // the flat-topic path behaves exactly as it does today either way.
     const { data: savedProfile } = await supabase
       .from("coach_user_profiles")
-      .select("career_stage, current_background, target_role, goals, challenges")
+      .select("career_stage, current_background, target_role, goals, challenges, active_area, covered_facets, closed_areas, location, situation, aims, stall_count, wrapped_up, last_stage")
       .eq("user_id", sender_id)
       .single();
 
@@ -124,6 +132,18 @@ Deno.serve(async (req) => {
       target_role: savedProfile?.target_role || "",
       goals: savedProfile?.goals || "",
       challenges: savedProfile?.challenges || [],
+    };
+
+    const areaState: AreaState = {
+      activeArea: savedProfile?.active_area || null,
+      coveredFacets: savedProfile?.covered_facets || [],
+      closedAreas: savedProfile?.closed_areas || [],
+      location: savedProfile?.location || null,
+      situation: savedProfile?.situation || "",
+      aims: savedProfile?.aims || "",
+      stallCount: savedProfile?.stall_count || 0,
+      wrappedUp: savedProfile?.wrapped_up || false,
+      lastStage: savedProfile?.last_stage || null,
     };
 
     // ── 2. Load conversation history (OpenAI format) ─────────────────
@@ -149,31 +169,76 @@ Deno.serve(async (req) => {
       currentEntities: [],
       userProfile,
       conversationHistory,
+      areaState,
     };
 
     const coach = new BotemaCoach(context, supabase, sender_id, azureConfig);
 
-    // ── 4. Routing — entirely the AI's own judgment ───────────────────
-    // Whether this message needs narrowing (inviteUserContext) or can be
-    // answered directly is decided by the model itself, per rule 5 in the
-    // coach's routing instructions — no deterministic pre-check here.
-    const { fnName, fnArgs, debug: routingDebug } = await routeWithAI(
-      coach.instructions,
-      coach.functionSchemas,
-      conversationHistory,
-      message,
-      azureConfig
-    );
-    console.log(`[Converser] Routing → ${fnName}`, fnArgs, routingDebug ? `(${routingDebug})` : "");
-
-    // ── 5. Execute the selected function ──────────────────────────────
+    // ── 4. Routing ──────────────────────────────────────────────────
     let replyText: string;
-    const functionCalled = fnName;
+    let functionCalled: string;
+    let routingDebug: string | undefined;
 
-    {
-      const fn = coach.getFunctionByName(fnName) || coach.getFunctionByName("adviseOnCareerTopic");
-      if (!fn) throw new Error(`No function found: ${fnName}`);
-      replyText = await fn.call(fnArgs, message);
+    const activeAreaConfig = areaState.activeArea ? AREAS[areaState.activeArea] : null;
+
+    if (activeAreaConfig && saysDone(message)) {
+      // Layer 2a — she has finished, ahead of any model call. Checked before
+      // the leave phrases so "no that's everything, thank you" can't be read
+      // as a hand-off to another area. Mirrors scripts/coach-local.mjs.
+      areaState.closedAreas = [...new Set([...areaState.closedAreas, areaState.activeArea!])];
+      areaState.activeArea = null;
+      areaState.stallCount = 0;
+      areaState.wrappedUp = false;
+      areaState.lastStage = null;
+      await supabase.from("coach_user_profiles").upsert({
+        user_id: sender_id,
+        active_area: null, closed_areas: areaState.closedAreas,
+        stall_count: 0, wrapped_up: false, last_stage: null,
+        updated_at: new Date().toISOString(),
+      });
+      replyText = "Hope that's been helpful. Is there anything else on your mind?";
+      functionCalled = "closeDiscussionArea";
+    } else if (activeAreaConfig && saysLeaving(message)) {
+      // Layer 2 — explicit leave, ahead of any model call.
+      areaState.closedAreas = [...new Set([...areaState.closedAreas, areaState.activeArea!])];
+      areaState.activeArea = null;
+      areaState.stallCount = 0;
+      areaState.wrappedUp = false;
+      areaState.lastStage = null;
+      await supabase.from("coach_user_profiles").upsert({
+        user_id: sender_id,
+        active_area: null, closed_areas: areaState.closedAreas,
+        stall_count: 0, wrapped_up: false, last_stage: null,
+        updated_at: new Date().toISOString(),
+      });
+      replyText = "Of course — what's on your mind?";
+      functionCalled = "closeDiscussionArea";
+    } else if (activeAreaConfig) {
+      // An area is already open — go straight to it rather than risk the
+      // generic router reclassifying a continuing message into something
+      // else. Mirrors the local harness, which has no generic router inside
+      // an area at all; one classification call decides everything.
+      const fnName = AREA_TOPIC_TO_FUNCTION_NAME[areaState.activeArea!];
+      const fn = coach.getFunctionByName(fnName);
+      if (!fn) throw new Error(`No discussion-area function found for ${areaState.activeArea}`);
+      replyText = await fn.call({}, message);
+      functionCalled = fnName;
+    } else {
+      // No area open — entirely the AI's own judgment which function to
+      // call, per rule 5 in the coach's routing instructions.
+      const routed = await routeWithAI(
+        coach.instructions,
+        coach.functionSchemas,
+        conversationHistory,
+        message,
+        azureConfig
+      );
+      routingDebug = routed.debug;
+      console.log(`[Converser] Routing → ${routed.fnName}`, routed.fnArgs, routingDebug ? `(${routingDebug})` : "");
+      const fn = coach.getFunctionByName(routed.fnName) || coach.getFunctionByName("adviseOnCareerTopic");
+      if (!fn) throw new Error(`No function found: ${routed.fnName}`);
+      replyText = await fn.call(routed.fnArgs, message);
+      functionCalled = routed.fnName;
     }
 
     // ── 6. Save AI reply to messages table ────────────────────────────

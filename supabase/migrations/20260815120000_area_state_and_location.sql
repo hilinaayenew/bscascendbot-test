@@ -32,6 +32,27 @@ COMMENT ON COLUMN public.coach_user_profiles.covered_facets IS
 COMMENT ON COLUMN public.coach_user_profiles.closed_areas IS
   'Areas explicitly closed, so the coach can offer what has not been covered yet.';
 
+-- ── Stall + wrap-up tracking (Phase 4 port) ─────────────────────────────────
+-- The local test harness (scripts/coach-local.mjs) keeps these three fields in
+-- an in-memory `state` object that starts fresh every run. A stateless edge
+-- function has nowhere to keep them between requests without a column each —
+-- without stall_count, "two turns with nothing new added" can never be
+-- detected across a request boundary; without last_stage, every turn looks
+-- like a stage change; without wrapped_up, the coach could re-offer to finish
+-- every single turn instead of exactly once before closing.
+
+ALTER TABLE public.coach_user_profiles
+  ADD COLUMN IF NOT EXISTS stall_count int NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS wrapped_up boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS last_stage text;
+
+COMMENT ON COLUMN public.coach_user_profiles.stall_count IS
+  'Consecutive turns in the active area with no new information added. Reset to 0 whenever a turn adds something; two in a row triggers the wrap-up (if the area has one) or closes the area.';
+COMMENT ON COLUMN public.coach_user_profiles.wrapped_up IS
+  'Whether the coach has already offered to finish the active area once. A second stall after this closes the area rather than offering again. Reset whenever an area is (re-)entered.';
+COMMENT ON COLUMN public.coach_user_profiles.last_stage IS
+  'The stage letter from the most recent classification in the active area, so the stall check can tell a repeated stage from a genuine change. NULL outside an area.';
+
 -- ── ISSUE-014 · Location ───────────────────────────────────────────────────
 -- S1 asks "What role and location?" and routing rule 3 names location as
 -- capturable, but there has never been anywhere to put it. Salary advice

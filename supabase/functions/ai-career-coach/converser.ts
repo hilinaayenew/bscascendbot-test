@@ -345,6 +345,21 @@ export function capSentences(text: string, keep = 4): string {
   return [...body, closing].filter(Boolean).join(" ");
 }
 
+// Same cap, but reports whether it actually fired — the area/stage guard
+// chain needs that flag to decide whether dropDanglingQuestion() should look
+// at the closing sentence at all (unlike the flat-topic capSentences() above,
+// this one does not bail out on paragraph/list shape, matching the harness's
+// version — flattenEnumerations()/flattenInlineList() have already turned any
+// list into plain sentences by the time this runs in that pipeline).
+export function capSentencesFlagged(text: string, keep = 3): { text: string; capped: boolean } {
+  const sentences = splitSentences(text);
+  if (sentences.length <= keep) return { text, capped: false };
+  const closingIndex = findLastIndex(sentences, (s) => s.endsWith("?"));
+  const closing = closingIndex >= 0 ? sentences[closingIndex] : null;
+  const body = sentences.slice(0, keep - (closing ? 1 : 0)).filter((_, i) => i !== closingIndex);
+  return { text: [...body, closing].filter(Boolean).join(" "), capped: true };
+}
+
 // Splits on sentence boundaries without cutting inside a quotation. The model
 // often quotes a script for her to say — "Based on my research, I'm looking at
 // X" — and splitting inside it strands half a sentence in the output.
@@ -632,25 +647,42 @@ export const NO_INVENTED_FIGURES =
   "If someone asks what a role pays, tell them how to find out instead: what to compare, who to ask, and what makes a source trustworthy. " +
   "Being honest that reliable public data is thin in many markets is a better answer than a confident number.";
 
-export function resolveNarrowOrAnswer(raw: string): string {
+// Front half of resolveNarrowOrAnswer(), split out so the area/stage
+// generation path (DiscussArea, in botema-coach.ts) can reuse the same
+// self-report/long-form/enumerated-hedge handling and then run its OWN,
+// richer back-half guard chain instead of the one below — no behaviour
+// change here for the flat-topic path, which still calls
+// resolveNarrowOrAnswer() exactly as before.
+export function parseNarrowSelfReport(raw: string): string | null {
   const selfReported = raw.match(NARROW_OUTPUT_PATTERN);
-  if (selfReported) {
-    const question = selfReported[1].trim();
-    const options = selfReported[2].split("|").map((o) => o.trim()).filter(Boolean);
-    if (question && options.length >= 2) return withChoices(question, options);
-  }
+  if (!selfReported) return null;
+  const question = selfReported[1].trim();
+  const options = selfReported[2].split("|").map((o) => o.trim()).filter(Boolean);
+  return question && options.length >= 2 ? withChoices(question, options) : null;
+}
 
+export function stripLongFormMarker(raw: string): { body: string; isLongForm: boolean } {
   const longFormMatch = raw.match(LONG_FORM_OK_PATTERN);
-  const body = longFormMatch ? raw.slice(longFormMatch[0].length) : raw;
+  return longFormMatch ? { body: raw.slice(longFormMatch[0].length), isLongForm: true } : { body: raw, isLongForm: false };
+}
 
-  // Hedging across tracks is still wrong even in a deliberately long
-  // answer, so this check runs regardless of the long-form marker.
+// Hedging across tracks is wrong even in a deliberately long answer, so this
+// runs regardless of the long-form marker.
+export function enumeratedOptionsReply(body: string): string | null {
   const enumeratedOptions = extractEnumeratedOptions(body);
-  if (enumeratedOptions) {
-    return withChoices("Which one would you like to focus on?", enumeratedOptions);
-  }
+  return enumeratedOptions ? withChoices("Which one would you like to focus on?", enumeratedOptions) : null;
+}
 
-  const resolved = longFormMatch ? body : capSentences(capParagraphs(flattenInlineList(stripAdsOversell(stripImplausiblePeriods(stripImplausibleFigures(body))))));
+export function resolveNarrowOrAnswer(raw: string): string {
+  const selfReport = parseNarrowSelfReport(raw);
+  if (selfReport) return selfReport;
+
+  const { body, isLongForm } = stripLongFormMarker(raw);
+
+  const enumerated = enumeratedOptionsReply(body);
+  if (enumerated) return enumerated;
+
+  const resolved = isLongForm ? body : capSentences(capParagraphs(flattenInlineList(stripAdsOversell(stripImplausiblePeriods(stripImplausibleFigures(body))))));
 
   // Last gate before the user sees it. Runs on every generation path — both
   // personas, advice and mindset alike — because this is the single funnel
@@ -658,6 +690,194 @@ export function resolveNarrowOrAnswer(raw: string): string {
   // the sentence it removes must never reach her by any route, including a
   // long-form answer, which is why it sits outside the capSentences branch.
   return stripQuotaConcession(stripUnsourcedFigures(resolved)).text;
+}
+
+// ── Area/stage model guards ──────────────────────────────────────────────
+// Ported from the local test harness (scripts/coach-local.mjs), which had
+// these and the flat-topic path above did not. Used only by the area/stage
+// generation path (discussion-areas.ts, botema-coach.ts's DiscussArea) —
+// the older flat-topic path is untouched, so this is purely additive.
+
+// One question per reply, in code. The prompt says one and the model
+// sometimes writes two, welded with "and" — this cuts from the join rather
+// than trying to choose between them.
+const SECOND_QUESTION =
+  /,\s+(?:and|or)\s+(?:what|how|which|who|when|where|why|whose|would|will|do|does|did|can|could|is|are|have|has|should)\b[^.!?]*\?\s*$/i;
+
+export function dropSecondQuestion(text: string): string {
+  const trimmed = text.trimEnd();
+  if (!trimmed.endsWith("?")) return text;
+  const cut = trimmed.replace(SECOND_QUESTION, "?");
+  return cut === trimmed ? text : cut;
+}
+
+// Same 4-word "shape" the noRepeatedOpenerShape scenario check uses, so the
+// guard that strips a reused opener and the check that fails a run for
+// having one agree on what "the same opener" means. Wildcards the swappable
+// noun so "That disbelief is real and" and "That pattern is real and"
+// collapse to the same shape.
+const OPENER_FRAME = new Set([
+  "a", "an", "the", "and", "but", "so", "not", "no", "it", "its", "this", "that", "these", "those",
+  "i", "you", "your", "we", "our", "she", "her", "they", "them",
+  "is", "are", "was", "were", "be", "been", "do", "does", "did", "have", "has", "had",
+  "would", "will", "can", "could", "should", "in", "of", "to", "for", "on", "at", "with",
+  "real", "common", "normal", "fair", "valid", "true", "right", "hard", "tough", "understandable",
+]);
+
+export function openerShape(reply: string): string {
+  return reply.trim().toLowerCase()
+    .replace(/[^a-z0-9' ]/g, " ")
+    .split(/\s+/).filter(Boolean).slice(0, 5)
+    .map((w) => (OPENER_FRAME.has(w) ? w : "*"))
+    .join(" ");
+}
+
+// A validating opener is right when she has just reported being treated
+// badly, and empty when she has reported her own behaviour back to herself.
+// Matched on the SENSE of the sentence, not a fixed phrase list — every
+// tightening of a word-list version was answered with a different wording
+// for the same move.
+const ACKNOWLEDGING_OPENER = new RegExp(
+  "^\\s*(?:i hear you|i know that feeling|you'?re not alone|you are not alone|you'?re not imagining|it'?s not just you|that'?s fair|that sounds|i understand)\\b" +
+  "|^[^.!?]{0,120}?\\b(?:is|are|'s)\\s+(?:a\\s+|so\\s+|very\\s+|completely\\s+|entirely\\s+)*(?:real|normal|common|natural|understandable|valid|fair|not your fault|not a failure|nothing to be ashamed)\\b",
+  "i",
+);
+
+// Wider than isValidatingOpener() below — this catches the whole
+// acknowledge-first family, not just the "That X is real" construction.
+export function stripUnearnedValidation(text: string): string {
+  const sentences = text.match(/[^.!?]+[.!?]*/g) || [];
+  if (sentences.length < 2) return text;
+  if (!ACKNOWLEDGING_OPENER.test(sentences[0])) return text;
+  return sentences.slice(1).join(" ").trim();
+}
+
+const VALIDATING_OPENER = /^\s*(?:that|this|it)\b[^.!?]{0,40}?\b(?:is|are|'s|s)\s+(?:a\s+)?(?:real|very real|completely normal|normal|common|understandable|valid)\b/i;
+
+export function isValidatingOpener(sentence: string): boolean {
+  return VALIDATING_OPENER.test(sentence || "");
+}
+
+export function stripRepeatedOpener(text: string, previousReplies: string[]): string {
+  if (!previousReplies.length) return text;
+  const firsts = previousReplies.map((r) => splitSentences(r)[0] || "");
+  const used = new Set(firsts.map(openerShape));
+  const sentences = splitSentences(text);
+  if (sentences.length < 2) return text;
+  const sameShape = used.has(openerShape(sentences[0]));
+  const secondValidator = isValidatingOpener(sentences[0]) && firsts.some(isValidatingOpener);
+  if (!sameShape && !secondValidator) return text;
+  return sentences.slice(1).join(" ").trim();
+}
+
+// Numbered and bulleted rundowns, flattened into sentences so capSentences()
+// can do its job — a five-step numbered plan with sub-bullets otherwise
+// sails past a sentence cap that only knows how to count on ". ".
+export function flattenEnumerations(text: string): string {
+  const markers = text.match(/(?:^|\s)(?:\d+[).]|[-•*])\s+(?=[A-Za-z0-9])/g);
+  if (!markers || markers.length < 3) return text;
+  return text
+    .replace(/\s*\n+\s*/g, " ")
+    .replace(/(?:^|\s)(?:\d+[).]|[-•*])\s+(?=[A-Za-z0-9])/g, ". ")
+    .replace(/\s*\.\s*\.\s*/g, ". ")
+    .replace(/\s*([;,:])\s*\.\s*/g, ". ")
+    .replace(/:\s*\.\s*/g, ": ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+// A question with nothing left in front of it, two shapes. The first is
+// explicit: the question names what a length cap just removed ("would you be
+// willing to try those three steps this week?" after the three steps were
+// cut). Only fires when capping actually happened.
+const DANGLING_REFERENCE =
+  /\b(?:those|these|the)\s+(?:\w+\s+)?(?:steps?|points?|items?|things?|ideas?|options?|tips?|moves?|two|three|four|first two|first three)\b/i;
+
+export function dropDanglingQuestion(text: string, wasCapped: boolean): string {
+  if (!wasCapped) return text;
+  const sentences = text.match(/[^.!?]+[.!?]*/g) || [];
+  if (sentences.length < 2) return text;
+  const last = sentences[sentences.length - 1];
+  if (!last.trim().endsWith("?") || !DANGLING_REFERENCE.test(last)) return text;
+  return sentences.slice(0, -1).join(" ").trim();
+}
+
+// The same failure in a trailing STATEMENT rather than a question — the
+// reply's own closing line promises content ("pick one path and do these
+// steps") that isn't there because an earlier guard removed it. Nothing to
+// repair in the text here either; the caller regenerates instead.
+export function endsOnDanglingReference(text: string): boolean {
+  const sentences = (text.match(/[^.!?]+[.!?]*/g) || []).map((s) => s.trim()).filter(Boolean);
+  const body = sentences.filter((s) => !s.endsWith("?"));
+  if (!body.length) return false;
+  return DANGLING_REFERENCE.test(body[body.length - 1]);
+}
+
+// The other shape has no tell in the words at all — everything except the
+// closing question was removed as already-said, leaving a bare question
+// about advice she can no longer see. Nothing to salvage; the caller
+// regenerates the turn as a wrap-up instead.
+export function isOnlyAQuestion(text: string): boolean {
+  const sentences = (text.match(/[^.!?]+[.!?]*/g) || []).map((x) => x.trim()).filter(Boolean);
+  return sentences.length > 0 && sentences.every((x) => x.endsWith("?"));
+}
+
+// REFLECT_BACK asks the coach to open with her own words, taken to its
+// degenerate limit: combined with dropRepeatedSentences() stripping
+// everything else as already-said, a reply can end up being her own message
+// read back at her and nothing else. Only short replies are tested — a long
+// answer that happens to reuse her vocabulary is what good reflection looks
+// like, not this failure.
+export function echoesUser(text: string, message: string): boolean {
+  const words = (s: string) => new Set(s.toLowerCase().replace(/[^a-z0-9' ]/g, " ").split(/\s+/).filter((w) => w.length > 3));
+  const reply = words(text);
+  if (reply.size < 3 || text.trim().split(/\s+/).length > 30) return false;
+  const hers = words(message);
+  let shared = 0;
+  reply.forEach((w) => { if (hers.has(w)) shared += 1; });
+  return shared / reply.size >= 0.7;
+}
+
+// Words that describe a location without being one — the model reaches for
+// these when it has no city, and they must never satisfy mentionedByUser().
+const NON_PLACES = [
+  "unspecified", "unknown", "none", "remote", "global", "local", "market",
+  "based", "abroad", "international", "anywhere", "various", "your", "their",
+];
+
+// True only when the candidate place actually appears in what she typed.
+export function mentionedByUser(candidate: string, saidByUser: string): boolean {
+  const words = String(candidate)
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 3 && !NON_PLACES.includes(w));
+  return words.length > 0 && words.some((w) => saidByUser.includes(w));
+}
+
+// A curated, not exhaustive, list — extend it if a different invented place
+// turns up. The model has volunteered a specific country/city unprompted on
+// areas with no location given at all; this catches that the same way an
+// invented pay figure is caught.
+const KNOWN_PLACES = [
+  "ghana", "accra", "nigeria", "lagos", "abuja", "kenya", "nairobi",
+  "south africa", "cape town", "johannesburg", "uganda", "kampala",
+  "rwanda", "kigali", "tanzania", "ethiopia", "addis ababa", "senegal",
+  "dakar", "egypt", "cairo", "morocco", "zambia", "malawi", "zimbabwe",
+  "germany", "berlin", "united kingdom", "united states",
+];
+
+export function stripInventedLocation(text: string, saidByUser: string): string {
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  const invented = (s: string) => {
+    const low = s.toLowerCase();
+    return KNOWN_PLACES.some((p) => low.includes(p) && !mentionedByUser(p, saidByUser));
+  };
+  if (!sentences.some(invented)) return text;
+  // A place named inside a question is still a fabrication — no exemption
+  // for questions here, unlike some of the other guards.
+  const kept = sentences.filter((s) => !invented(s));
+  return kept.join(" ").trim();
 }
 
 // Azure OpenAI config — passed through from index.ts (loaded from Supabase secrets)
@@ -870,10 +1090,28 @@ export interface OAIMessage {
   content: string;
 }
 
+// Persisted state for the v4 area/stage model (discussion-areas.ts). Kept
+// separate from UserProfile deliberately — this is about the CONVERSATION
+// (which area is open, what's been covered), not about HER (career stage,
+// background). Optional because the flat-topic path (bsc-functions.ts) never
+// reads or writes it.
+export interface AreaState {
+  activeArea: string | null; // area topic key, e.g. "salary" — matches AreaConfig.topic
+  coveredFacets: string[];
+  closedAreas: string[];
+  location: string | null;
+  situation: string;
+  aims: string;
+  stallCount: number;
+  wrappedUp: boolean;
+  lastStage: string | null;
+}
+
 export interface ConverserContext {
   currentEntities: string[];
   userProfile: UserProfile;
   conversationHistory: OAIMessage[];
+  areaState?: AreaState;
 }
 
 // Base converser class

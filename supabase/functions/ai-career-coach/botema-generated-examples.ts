@@ -909,3 +909,20 @@ export function approvedGeneratedExamples(
     .filter((ex) => (topic ? ex.topic === topic : true))
     .map(({ question, answer, topic }) => ({ question, answer, topic }));
 }
+
+/**
+ * The facet-graph counterpart to approvedGeneratedExamples() — same review
+ * gate (only 'approved' is ever served), scoped to one discussion area and
+ * keyed by facet ID rather than topic, for the v4 area/stage model.
+ *
+ * Facet IDs are only unique WITHIN an area (Getting Started's G1 and Salary's
+ * G1 are unrelated content sharing a name), so this always filters by `area`
+ * first — never call it without one.
+ */
+export function approvedGeneratedFacets(
+  area: number,
+): Array<{ id: string; question: string; answer: string; respondsTo?: string }> {
+  return (BOTEMA_GENERATED_EXAMPLES.adviseOnCareerTopic || [])
+    .filter((ex) => ex.reviewStatus === "approved" && ex.area === area && ex.facet)
+    .map((ex) => ({ id: ex.facet!, question: ex.question, answer: ex.answer, respondsTo: ex.respondsTo }));
+}

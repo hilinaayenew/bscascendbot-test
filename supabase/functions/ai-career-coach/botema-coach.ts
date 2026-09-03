@@ -6,6 +6,8 @@ import { Converser, ConverserContext, AzureConfig, WordaliseFunction, Instructio
 import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./bsc-functions.ts";
 import { KNOWLEDGE_BASE, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT, BOTEMA_VALUES } from "./botema-examples.ts";
+import { DiscussArea } from "./discussion-coach.ts";
+import { SALARY_AREA, GETTING_STARTED_AREA, AREA_TOPIC_TO_FUNCTION_NAME } from "./discussion-areas.ts";
 
 // Reasoning effort. gpt-5-nano reasons at roughly medium if left alone, and
 // for generation that is waste — the prompt carries the persona, the knowledge
@@ -316,6 +318,13 @@ Always call exactly one function.`;
       new BotemaHowItWorks(this),
       new BotemaInvite(this),
       new BotemaOutOfScope(this),
+      // v4 area/stage model — Salary & Negotiation and Getting Started only,
+      // see discussion-areas.ts and discussion-coach.ts. UpdateCareerTopic
+      // chains into these instead of adviseOnCareerTopic for these two
+      // topics; index.ts calls them directly once an area is already open,
+      // bypassing the router entirely (see routeWithAI's caller).
+      new DiscussArea(this, SALARY_AREA, AREA_TOPIC_TO_FUNCTION_NAME.salary),
+      new DiscussArea(this, GETTING_STARTED_AREA, AREA_TOPIC_TO_FUNCTION_NAME.getting_started),
     ];
   }
 }

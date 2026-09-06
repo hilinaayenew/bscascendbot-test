@@ -223,6 +223,17 @@ Deno.serve(async (req) => {
       if (!fn) throw new Error(`No discussion-area function found for ${areaState.activeArea}`);
       replyText = await fn.call({}, message);
       functionCalled = fnName;
+    } else if (saysDone(message)) {
+      // A bare acknowledgment/farewell with no area open to close — "no
+      // thank you" right after an area had just been closed by the turn
+      // before. Nothing here for the generic router's rules to grab onto
+      // (it isn't a topic, a mindset, background, a greeting, or something
+      // needing narrowing), and observed live routing it to answerOutOfScope
+      // instead — treating a plain "thanks" as unrelated to tech careers.
+      // Same deterministic check as the in-area case, just a warmer reply
+      // since there is nothing to summarize here.
+      replyText = "You're welcome — I'm here whenever you want to talk something through.";
+      functionCalled = "acknowledgeClose";
     } else {
       // No area open — entirely the AI's own judgment which function to
       // call, per rule 5 in the coach's routing instructions.

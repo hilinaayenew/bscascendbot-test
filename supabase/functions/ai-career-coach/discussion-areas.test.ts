@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   SALARY_AREA,
   GETTING_STARTED_AREA,
+  MENTORSHIP_AREA,
   buildFacets,
   mostRelevant,
   queryWords,
@@ -36,6 +37,14 @@ describe("buildFacets", () => {
     // Both areas have a "G1" of their own — they must not be the same object.
     if (salary.G1 && gettingStarted.G1) {
       expect(salary.G1.question).not.toBe(gettingStarted.G1.question);
+    }
+  });
+
+  it("wires Mentorship's 6 real Otema answers to S1..S6, in order", () => {
+    const facets = buildFacets(MENTORSHIP_AREA);
+    for (const id of MENTORSHIP_AREA.realOrder) {
+      expect(facets[id]).toBeDefined();
+      expect(facets[id].source).toBe("OTEMA");
     }
   });
 

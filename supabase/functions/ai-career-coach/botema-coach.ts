@@ -7,7 +7,7 @@ import { UpdateCareerTopic, CaptureUserBackground, InviteUserContext } from "./b
 import { KNOWLEDGE_BASE, GENERAL_FALLBACK } from "./bsc-knowledge.ts";
 import { BOTEMA_EXAMPLES, BOTEMA_SYSTEM_PROMPT, BOTEMA_VALUES } from "./botema-examples.ts";
 import { DiscussArea } from "./discussion-coach.ts";
-import { SALARY_AREA, GETTING_STARTED_AREA, AREA_TOPIC_TO_FUNCTION_NAME } from "./discussion-areas.ts";
+import { SALARY_AREA, GETTING_STARTED_AREA, MENTORSHIP_AREA, AREA_TOPIC_TO_FUNCTION_NAME } from "./discussion-areas.ts";
 
 // Reasoning effort. gpt-5-nano reasons at roughly medium if left alone, and
 // for generation that is waste — the prompt carries the persona, the knowledge
@@ -325,6 +325,7 @@ Always call exactly one function.`;
       // bypassing the router entirely (see routeWithAI's caller).
       new DiscussArea(this, SALARY_AREA, AREA_TOPIC_TO_FUNCTION_NAME.salary),
       new DiscussArea(this, GETTING_STARTED_AREA, AREA_TOPIC_TO_FUNCTION_NAME.getting_started),
+      new DiscussArea(this, MENTORSHIP_AREA, AREA_TOPIC_TO_FUNCTION_NAME.mentorship),
     ];
   }
 }

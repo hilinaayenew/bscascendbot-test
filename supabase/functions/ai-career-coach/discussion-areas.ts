@@ -143,17 +143,48 @@ export const GETTING_STARTED_AREA: AreaConfig = {
   },
 };
 
+// Ported verbatim from scripts/areas/mentorship.mjs.
+export const MENTORSHIP_AREA: AreaConfig = {
+  n: 4,
+  name: "Mentorship",
+  realOrder: ["S1", "S2", "S3", "S4", "S5", "S6"],
+  topic: "mentorship",
+  wrapUp: null,
+  stageSummary: {
+    A: "finding and approaching a mentor",
+    B: "making an existing mentorship work",
+  },
+  fallbackQuestion: "Where are you at with mentorship right now?",
+  supersedes: [],
+  stages: {
+    A: {
+      label: "Finding a mentor",
+      describes:
+        "No mentor yet — the live question is where to find one, what to look for, or how to approach them. Giveaway words: \"find a mentor\", \"how do I approach\", \"don't have a mentor\".",
+      facets: ["S1", "S1a", "S2"],
+    },
+    B: {
+      label: "Making it work",
+      describes:
+        "Already has a mentor, or is inside the BSC programme — the live question is how to use the relationship well: sessions, the mentor/sponsor distinction, maintaining it long-term, or structuring goals with a mentor's help. Giveaway words: \"my mentor\", \"our sessions\", \"sponsor\", naming an existing relationship.",
+      facets: ["S3", "S3a", "S4", "S4a", "S5", "S6"],
+    },
+  },
+};
+
 // One WORDALISE function per built area — see AREA_TOPIC_TO_FUNCTION_NAME
 // below, used by UpdateCareerTopic to decide where to chain, and by index.ts
 // to call the right one directly when an area is already open.
 export const AREAS: Record<string, AreaConfig> = {
   salary: SALARY_AREA,
   getting_started: GETTING_STARTED_AREA,
+  mentorship: MENTORSHIP_AREA,
 };
 
 export const AREA_TOPIC_TO_FUNCTION_NAME: Record<string, string> = {
   salary: "discussSalaryArea",
   getting_started: "discussGettingStartedArea",
+  mentorship: "discussMentorshipArea",
 };
 
 export const WRAP_UP_LINE =
